@@ -267,9 +267,24 @@ function createAdminSidebar(currentPage = 'index.html') {
         const createdSidebar = document.querySelector('.sidebar');
         if (!createdSidebar) {
             console.error('Sidebar HTML was inserted but element not found in DOM');
+            console.error('Body HTML after insertion:', body.innerHTML.substring(0, 500));
             return;
         }
         console.log('Sidebar element found in DOM:', createdSidebar);
+        
+        // Ensure sidebar is visible (fallback styles)
+        if (createdSidebar) {
+            createdSidebar.style.display = 'flex';
+            createdSidebar.style.position = 'fixed';
+            createdSidebar.style.left = '0';
+            createdSidebar.style.top = '0';
+            createdSidebar.style.width = '250px';
+            createdSidebar.style.height = '100vh';
+            createdSidebar.style.backgroundColor = '#4e73df';
+            createdSidebar.style.color = 'white';
+            createdSidebar.style.zIndex = '100';
+            console.log('Sidebar styles applied (fallback)');
+        }
         
         // Setup sidebar interactions
         setupSidebarInteractions();
