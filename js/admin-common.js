@@ -8,14 +8,19 @@
  * @param {string} currentPage - Current page filename (e.g., 'users.html', 'vouchers.html')
  */
 function createAdminSidebar(currentPage = 'index.html') {
-    // Wait for Firebase Auth to be available
-    if (!window.FirebaseAuth || !window.FirebaseAuth.isInitialized()) {
-        setTimeout(() => createAdminSidebar(currentPage), 200);
-        return;
+    // Check if sidebar already exists
+    if (document.querySelector('.sidebar')) {
+        return; // Sidebar already created
     }
     
-    const currentUser = window.FirebaseAuth.getCurrentUser();
-    const username = currentUser ? currentUser.username : 'Admin';
+    // Get username from Firebase Auth if available, otherwise use default
+    let username = 'Admin';
+    if (window.FirebaseAuth && window.FirebaseAuth.isInitialized()) {
+        const currentUser = window.FirebaseAuth.getCurrentUser();
+        if (currentUser) {
+            username = currentUser.username;
+        }
+    }
     
     // Map page names for active highlighting
     const pageMap = {
