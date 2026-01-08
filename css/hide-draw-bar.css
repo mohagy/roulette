@@ -1,0 +1,15 @@
+/**
+ * Hide Draw Information Bar
+ * This CSS file hides the draw information bar at the bottom of the roulette interface
+ * But keeps the draw container visible
+ */
+
+/* Hide the draw information bar */
+.tv-style-display {
+    display: none !important;
+}
+
+/* Make sure the draw container is always visible */
+.draw-container {
+    display: block !important;
+}

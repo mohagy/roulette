@@ -1,0 +1,221 @@
+/**
+ * Upcoming Draws Vertical Layout Restore
+ * Simple CSS that reverses the horizontal layout to restore vertical layout
+ * Uses body class targeting to override horizontal styles when disabled
+ */
+
+/* Vertical layout body - remove horizontal body padding */
+body.upcoming-draws-vertical {
+  padding-top: 0 !important;
+}
+
+/* Vertical panel - opposite of horizontal panel */
+body.upcoming-draws-vertical .upcoming-draws-panel {
+  position: fixed !important;
+  top: 80px !important;
+  left: 20px !important;
+  right: auto !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 450px !important;
+  min-width: 320px !important;
+  z-index: 1400 !important;
+  border-radius: 15px !important;
+  transform: none !important;
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%) !important;
+  border: 2px solid #ffcc00 !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 204, 0, 0.2) !important;
+  backdrop-filter: blur(15px) !important;
+}
+
+/* Vertical header - opposite of horizontal header */
+body.upcoming-draws-vertical .upcoming-draws-header {
+  background: linear-gradient(135deg, #ffcc00, #e6b800) !important;
+  padding: 12px 15px !important;
+  border-radius: 15px 15px 0 0 !important;
+  font-size: 14px !important;
+  min-height: auto !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+/* Vertical content - opposite of horizontal content */
+body.upcoming-draws-vertical .upcoming-draws-content {
+  padding: 15px !important;
+  max-height: 400px !important;
+  height: auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  display: block !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+}
+
+/* Vertical draws list - opposite of horizontal draws list */
+body.upcoming-draws-vertical .upcoming-draws-list {
+  display: block !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-width: auto !important;
+  align-items: stretch !important;
+}
+
+/* Vertical draw items - opposite of horizontal draw items */
+body.upcoming-draws-vertical .upcoming-draw-item {
+  flex: none !important;
+  min-width: auto !important;
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 0 8px 0 !important;
+  padding: 12px 15px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-right: none !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  text-align: left !important;
+  position: relative !important;
+  height: auto !important;
+}
+
+/* Remove last item margin */
+body.upcoming-draws-vertical .upcoming-draw-item:last-child {
+  margin-bottom: 0 !important;
+  border-bottom: none !important;
+}
+
+/* Vertical draw item hover */
+body.upcoming-draws-vertical .upcoming-draw-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  transform: translateX(5px) !important;
+  border-left: 3px solid #ffcc00 !important;
+}
+
+/* Vertical draw item header */
+body.upcoming-draws-vertical .draw-item-header {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  margin-bottom: 0 !important;
+  gap: 2px !important;
+}
+
+/* Vertical draw number */
+body.upcoming-draws-vertical .draw-number {
+  font-size: 18px !important;
+  font-weight: bold !important;
+  color: #ffcc00 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+  line-height: 1.2 !important;
+}
+
+/* Vertical draw time */
+body.upcoming-draws-vertical .draw-time {
+  font-size: 12px !important;
+  color: #ccc !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+}
+
+/* Vertical draw stats */
+body.upcoming-draws-vertical .draw-item-stats {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: auto !important;
+}
+
+body.upcoming-draws-vertical .draw-stats-left {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+body.upcoming-draws-vertical .draw-stat {
+  display: flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  font-size: 11px !important;
+  color: #bbb !important;
+}
+
+/* Vertical selected and next draw states */
+body.upcoming-draws-vertical .upcoming-draw-item.selected {
+  background: linear-gradient(135deg, rgba(23, 162, 184, 0.3), rgba(23, 162, 184, 0.1)) !important;
+  border-left: 4px solid #17a2b8 !important;
+  box-shadow: inset 0 0 15px rgba(23, 162, 184, 0.2) !important;
+}
+
+body.upcoming-draws-vertical .upcoming-draw-item.next-draw {
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.3), rgba(40, 167, 69, 0.1)) !important;
+  border-left: 4px solid #28a745 !important;
+  box-shadow: inset 0 0 15px rgba(40, 167, 69, 0.2) !important;
+}
+
+/* Vertical scrollbar */
+body.upcoming-draws-vertical .upcoming-draws-content::-webkit-scrollbar {
+  width: 6px !important;
+  height: auto !important;
+}
+
+body.upcoming-draws-vertical .upcoming-draws-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 3px !important;
+}
+
+body.upcoming-draws-vertical .upcoming-draws-content::-webkit-scrollbar-thumb {
+  background: #ffcc00 !important;
+  border-radius: 3px !important;
+}
+
+/* Show resize handles in vertical mode */
+body.upcoming-draws-vertical .upcoming-resize-handle {
+  display: block !important;
+}
+
+/* Responsive vertical adjustments */
+@media (max-width: 768px) {
+  body.upcoming-draws-vertical .upcoming-draws-panel {
+    max-width: 350px !important;
+    min-width: 280px !important;
+    left: 10px !important;
+  }
+  
+  body.upcoming-draws-vertical .upcoming-draw-item {
+    padding: 10px 12px !important;
+  }
+  
+  body.upcoming-draws-vertical .draw-number {
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body.upcoming-draws-vertical .upcoming-draws-panel {
+    max-width: 300px !important;
+    min-width: 250px !important;
+    left: 5px !important;
+  }
+  
+  body.upcoming-draws-vertical .upcoming-draw-item {
+    padding: 8px 10px !important;
+    margin-bottom: 6px !important;
+  }
+  
+  body.upcoming-draws-vertical .draw-number {
+    font-size: 14px !important;
+  }
+  
+  body.upcoming-draws-vertical .draw-stat {
+    font-size: 10px !important;
+  }
+}

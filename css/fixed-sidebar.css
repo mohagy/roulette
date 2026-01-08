@@ -1,0 +1,170 @@
+/* Fixed Sidebar Styles */
+
+/* Position the bet display container as a fixed sidebar */
+.bet-display-container {
+  position: fixed !important;
+  top: 5rem !important; /* Position below the top bar */
+  left: 0 !important;
+  height: calc(100vh - 5rem) !important; /* Full height minus top bar */
+  width: 250px !important;
+  transform: none !important;
+  border-radius: 0 !important;
+  border-right: 2px solid var(--global-gold-color) !important;
+  z-index: 100 !important;
+}
+
+/* Remove drag handle since it's now fixed */
+.drag-handle {
+  display: none !important;
+}
+
+/* Adjust the betting area to make room for the sidebar */
+.betting-area {
+  margin-left: 250px !important; /* Same as sidebar width */
+}
+
+/* Hide resize handles since we don't need them anymore */
+.resize-handle {
+  display: none !important;
+}
+
+/* Make the bet display body take up all available space but leave room for buttons and stake control */
+.bet-display-body {
+  max-height: calc(100vh - 5rem - 100px - 100px - 50px) !important; /* Full height minus top bar, header, footer and stake control */
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: thin !important;
+}
+
+/* Ensure stake control is visible */
+.stake-control {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Style the scrollbar */
+.bet-display-body::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.bet-display-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+.bet-display-body::-webkit-scrollbar-thumb {
+  background-color: var(--global-gold-color) !important;
+  border-radius: 3px !important;
+}
+
+/* Add a fixed footer for buttons */
+.bet-display-footer {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  border-top: 1px solid var(--global-gold-color) !important;
+  padding: 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.3) !important;
+  z-index: 10 !important;
+}
+
+/* Style the buttons */
+.bet-action-button {
+  width: 100% !important;
+  padding: 8px 12px !important;
+  border: none !important;
+  border-radius: 4px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.print-slip-button {
+  background: linear-gradient(to right, #d4af37, #f5d76e) !important;
+  color: #000 !important;
+}
+
+.print-slip-button:hover {
+  background: linear-gradient(to right, #f5d76e, #d4af37) !important;
+  transform: translateY(-2px) !important;
+}
+
+.cancel-slip-button {
+  background: #333 !important;
+  color: white !important;
+}
+
+.cancel-slip-button:hover {
+  background: #444 !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Adjust the toggle button to collapse horizontally instead of vertically */
+.bet-display-toggle i {
+  transform: rotate(-90deg) !important;
+}
+
+.bet-display-container.bet-display-collapsed {
+  left: -250px !important; /* Move off-screen when collapsed */
+}
+
+.bet-display-container.bet-display-collapsed .bet-display-toggle i {
+  transform: rotate(90deg) !important;
+}
+
+/* Add a toggle button that remains visible when collapsed */
+.bet-display-container.bet-display-collapsed .bet-display-toggle {
+  position: absolute !important;
+  right: -30px !important;
+  top: 50% !important;
+  background: var(--global-gold-color) !important;
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 0 4px 4px 0 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bet-display-container {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 300px !important;
+    top: 5rem !important;
+    left: 0 !important;
+    border-right: none !important;
+    border-bottom: 2px solid var(--global-gold-color) !important;
+  }
+
+  .betting-area {
+    margin-left: 0 !important;
+    margin-top: 300px !important;
+  }
+
+  .bet-display-container.bet-display-collapsed {
+    top: -300px !important;
+    left: 0 !important;
+  }
+
+  .bet-display-container.bet-display-collapsed .bet-display-toggle {
+    right: 50% !important;
+    top: 300px !important;
+    transform: translateX(50%) !important;
+    border-radius: 0 0 4px 4px !important;
+  }
+
+  .bet-display-toggle i {
+    transform: rotate(0deg) !important;
+  }
+
+  .bet-display-container.bet-display-collapsed .bet-display-toggle i {
+    transform: rotate(180deg) !important;
+  }
+}

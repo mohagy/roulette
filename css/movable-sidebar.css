@@ -1,0 +1,143 @@
+/* Movable Sidebar Styles */
+
+/* Make the user info container movable */
+.user-info {
+  position: absolute; /* Changed from fixed to absolute for dragging */
+  top: 20px;
+  left: 20px;
+  background: rgba(29, 53, 87, 0.9);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: move; /* Indicate it's draggable */
+  transition: box-shadow 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 250px; /* Set a fixed width */
+}
+
+/* Add a drag handle to make it clear it's draggable */
+.user-info-drag-handle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: move;
+}
+
+.user-info-drag-handle i {
+  color: #a8dadc;
+  font-size: 12px;
+}
+
+/* Style for when the sidebar is being dragged */
+.user-info.dragging {
+  opacity: 0.8;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Highlight effect when hovering over the drag handle */
+.user-info-drag-handle:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Make sure the user info container doesn't get too small */
+.user-info {
+  min-width: 200px;
+}
+
+/* Add a subtle animation when the sidebar is moved */
+@keyframes sidebar-moved {
+  0% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+.user-info.moved {
+  animation: sidebar-moved 0.3s ease;
+}
+
+/* Ensure the sidebar stays within viewport bounds */
+.user-info {
+  max-width: 300px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Style the scrollbar for the sidebar */
+.user-info::-webkit-scrollbar {
+  width: 4px;
+}
+
+.user-info::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.user-info::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+/* Stake control removed from sidebar */
+
+/* Numeric keypad for stake input */
+.numeric-keypad {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  background: rgba(29, 53, 87, 0.95);
+  border-radius: 5px;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  z-index: 10000;
+  margin-bottom: 5px;
+  display: none;
+}
+
+.numeric-keypad.visible {
+  display: grid;
+}
+
+.numeric-key {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.numeric-key:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.numeric-key.key-enter {
+  background: #a8dadc;
+  color: #1d3557;
+  font-weight: bold;
+}
+
+.numeric-key.key-clear {
+  background: rgba(230, 57, 70, 0.8);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .user-info {
+    max-width: 250px;
+  }
+}

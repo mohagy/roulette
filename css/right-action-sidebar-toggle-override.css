@@ -1,0 +1,233 @@
+/**
+ * Right Action Sidebar Toggle Override
+ * Maximum specificity CSS to ensure toggle functionality works
+ * regardless of role-based visibility rules or other conflicts
+ */
+
+/* NUCLEAR OVERRIDE - Maximum specificity for sidebar toggle functionality */
+
+/* Default hidden state - works for all users */
+html body .right-action-sidebar:not(.sidebar-visible),
+html body.user-admin .right-action-sidebar:not(.sidebar-visible),
+html body.user-regular .right-action-sidebar:not(.sidebar-visible),
+html body.user-unauthenticated .right-action-sidebar:not(.sidebar-visible),
+body .right-action-sidebar:not(.sidebar-visible),
+.right-action-sidebar.sidebar-hiding {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  z-index: -9999 !important;
+  transform: scale(0) !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Visible state - MAXIMUM OVERRIDE for all users when toggled */
+html body .right-action-sidebar.sidebar-visible,
+html body.user-admin .right-action-sidebar.sidebar-visible,
+html body.user-regular .right-action-sidebar.sidebar-visible,
+html body.user-unauthenticated .right-action-sidebar.sidebar-visible,
+body .right-action-sidebar.sidebar-visible,
+.right-action-sidebar.sidebar-visible.sidebar-showing {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  top: 50% !important;
+  right: 20px !important;
+  transform: translateY(-50%) !important;
+  z-index: 1500 !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  left: auto !important;
+  flex-direction: column !important;
+  gap: 15px !important;
+  padding: 20px 0 !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-radius: 15px !important;
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  min-width: 100px !important;
+  align-items: center !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Override role-based hiding when sidebar is explicitly visible */
+html body.user-regular .right-action-sidebar.sidebar-visible:has(.elegant-cancel-button),
+html body.user-regular .right-action-sidebar.sidebar-visible:has(.cancel-slip-button),
+html body.user-regular .right-action-sidebar.sidebar-visible:has([title*="Cancel"]),
+html body .right-action-sidebar.sidebar-visible:has(.elegant-cancel-button),
+html body .right-action-sidebar.sidebar-visible:has(.cancel-slip-button),
+html body .right-action-sidebar.sidebar-visible:has([title*="Cancel"]) {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  top: 50% !important;
+  right: 20px !important;
+  transform: translateY(-50%) !important;
+  z-index: 1500 !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  left: auto !important;
+}
+
+/* Ensure toggle control is always visible and functional */
+html body .right-action-sidebar-toggle-control,
+html body.user-admin .right-action-sidebar-toggle-control,
+html body.user-regular .right-action-sidebar-toggle-control,
+html body.user-unauthenticated .right-action-sidebar-toggle-control {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  right: 0 !important;
+  top: 45% !important;
+  transform: translateY(-50%) !important;
+  z-index: 10003 !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  left: auto !important;
+}
+
+/* Animation states with maximum specificity */
+html body .right-action-sidebar.sidebar-showing,
+html body.user-admin .right-action-sidebar.sidebar-showing,
+html body.user-regular .right-action-sidebar.sidebar-showing,
+body .right-action-sidebar.sidebar-showing {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  animation: sidebarSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Removed conflicting sidebar-hiding rule that kept sidebar visible */
+
+/* Ensure buttons inside visible sidebar are functional */
+html body .right-action-sidebar.sidebar-visible .floating-complete-button,
+html body .right-action-sidebar.sidebar-visible #independent-floating-complete-btn,
+html body .right-action-sidebar.sidebar-visible .reprint-slip-button,
+html body .right-action-sidebar.sidebar-visible .cancel-slip-button,
+html body .right-action-sidebar.sidebar-visible .elegant-cancel-button,
+html body .right-action-sidebar.sidebar-visible .cashout-button {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  z-index: auto !important;
+  transform: none !important;
+}
+
+/* Responsive overrides */
+@media (max-width: 768px) {
+  html body .right-action-sidebar.sidebar-visible,
+  html body.user-admin .right-action-sidebar.sidebar-visible,
+  html body.user-regular .right-action-sidebar.sidebar-visible {
+    right: 10px !important;
+    gap: 10px !important;
+    padding: 15px 0 !important;
+    min-width: 80px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  html body .right-action-sidebar.sidebar-visible,
+  html body.user-admin .right-action-sidebar.sidebar-visible,
+  html body.user-regular .right-action-sidebar.sidebar-visible {
+    right: 5px !important;
+    gap: 8px !important;
+    padding: 10px 0 !important;
+    min-width: 70px !important;
+  }
+}
+
+/* Animation keyframes with maximum specificity */
+@keyframes sidebarSlideIn {
+  from {
+    opacity: 0 !important;
+    transform: translateX(30px) translateY(-50%) scale(0.9) !important;
+    visibility: visible !important;
+    display: flex !important;
+  }
+  to {
+    opacity: 1 !important;
+    transform: translateX(0) translateY(-50%) scale(1) !important;
+    visibility: visible !important;
+    display: flex !important;
+  }
+}
+
+@keyframes sidebarSlideOut {
+  from {
+    opacity: 1 !important;
+    transform: translateX(0) translateY(-50%) scale(1) !important;
+    visibility: visible !important;
+    display: flex !important;
+  }
+  to {
+    opacity: 0 !important;
+    transform: translateX(30px) translateY(-50%) scale(0.9) !important;
+    visibility: visible !important;
+    display: flex !important;
+  }
+}
+
+/* Force visibility for debugging */
+.right-action-sidebar.force-visible {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  top: 50% !important;
+  right: 20px !important;
+  transform: translateY(-50%) !important;
+  z-index: 1500 !important;
+}
+
+/* Ensure sidebar content is properly styled when visible */
+html body .right-action-sidebar.sidebar-visible > *,
+html body.user-admin .right-action-sidebar.sidebar-visible > *,
+html body.user-regular .right-action-sidebar.sidebar-visible > * {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Override any conflicting display:none from other CSS files */
+html body .right-action-sidebar.sidebar-visible[style*="display: none"],
+html body.user-admin .right-action-sidebar.sidebar-visible[style*="display: none"],
+html body.user-regular .right-action-sidebar.sidebar-visible[style*="display: none"] {
+  display: flex !important;
+}
+
+/* Ensure proper stacking order */
+html body .right-action-sidebar.sidebar-visible {
+  z-index: 1500 !important;
+}
+
+html body .right-action-sidebar-toggle-control {
+  z-index: 10003 !important;
+}

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Live Stream Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #202020;
+            color: white;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #333;
+            border-radius: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #444;
+            border-radius: 5px;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+        .warning { color: #ffc107; }
+        button {
+            background: #FF5555;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #FF7777;
+        }
+        .youtube-test {
+            width: 100%;
+            height: 315px;
+            border: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .log {
+            background: #222;
+            padding: 10px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+    <link rel="stylesheet" href="css/live-stream-player.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎥 YouTube Live Stream Integration Test</h1>
+        <p>Testing YouTube live stream integration for the casino TV display system.</p>
+
+        <div class="test-section">
+            <h3>📺 Direct YouTube Embed Test</h3>
+            <p>This tests if the YouTube streams can be embedded directly:</p>
+
+            <h4>Cricket Stream 1:</h4>
+            <iframe
+                class="youtube-test"
+                src="https://www.youtube.com/embed/-g-E-eXp8iY?autoplay=0&mute=1&controls=1&rel=0&modestbranding=1"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+
+            <h4>Cricket Stream 2:</h4>
+            <iframe
+                class="youtube-test"
+                src="https://www.youtube.com/embed/LV9-E3qaHkg?autoplay=0&mute=1&controls=1&rel=0&modestbranding=1"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+
+            <div class="info">✅ If you can see both cricket streams above, YouTube embedding is working!</div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎮 Single Stream Player Test</h3>
+            <p>This tests the single live stream player with YouTube support:</p>
+            <button onclick="testLiveStreamPlayer()">Show Live Stream Player</button>
+            <button onclick="hideLiveStreamPlayer()">Hide Live Stream Player</button>
+            <button onclick="toggleLiveStreamPlayer()">Toggle Live Stream Player</button>
+            <button onclick="switchToCricket1()" style="background: #17a2b8;">Cricket Stream 1</button>
+            <button onclick="switchToCricket2()" style="background: #6f42c1;">Cricket Stream 2</button>
+            <button onclick="fixLoadingIndicator()" style="background: #28a745;">Fix Loading Indicator</button>
+            <div id="player-status" class="info">Player Status: Not initialized</div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎬 Multi-Stream Player Test</h3>
+            <p>This tests multiple players showing different streams simultaneously:</p>
+            <button onclick="showMultiPlayers()" style="background: #6f42c1;">Show Multiple Players</button>
+            <button onclick="hideMultiPlayers()" style="background: #dc3545;">Hide Multiple Players</button>
+            <button onclick="toggleMultiPlayers()" style="background: #fd7e14;">Toggle Multiple Players</button>
+            <button onclick="addCustomStream()" style="background: #20c997;">Add Custom Stream</button>
+            <div id="multi-player-status" class="info">Multi-Player Status: Not initialized</div>
+        </div>
+
+        <div class="test-section">
+            <h3>🖥️ Fullscreen Test</h3>
+            <p>This tests fullscreen functionality for the TV display:</p>
+            <button onclick="testEnterFullscreen()" style="background: #28a745;">Enter Fullscreen</button>
+            <button onclick="testExitFullscreen()" style="background: #dc3545;">Exit Fullscreen</button>
+            <button onclick="testToggleFullscreen()" style="background: #6c757d;">Toggle Fullscreen</button>
+            <div id="fullscreen-status" class="info">Fullscreen Status: Not initialized</div>
+            <div class="info">💡 <strong>Keyboard shortcuts:</strong> F11 to toggle, Escape to exit</div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 System Status</h3>
+            <div id="system-status">
+                <div class="info">🔄 Checking system components...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📝 Debug Log</h3>
+            <div id="debug-log" class="log">
+                Initializing test system...<br>
+            </div>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+    </div>
+
+    <!-- Load the live stream player -->
+    <script src="stream-config.js"></script>
+    <script src="js/live-stream-player.js"></script>
+    <script src="js/multi-stream-manager.js"></script>
+    <script src="js/fullscreen-manager.js"></script>
+    <script src="fix-loading-indicator.js"></script>
+    
+    <script>
+        // Debug logging
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('debug-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const colorClass = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info';
+            logElement.innerHTML += `<span class="${colorClass}">[${timestamp}] ${message}</span><br>`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function clearLog() {
+            document.getElementById('debug-log').innerHTML = 'Log cleared...<br>';
+        }
+
+        // Test functions
+        function testLiveStreamPlayer() {
+            log('Testing live stream player...', 'info');
+            
+            if (window.LiveStreamPlayer) {
+                try {
+                    const youtubeUrl = 'https://www.youtube.com/live/-g-E-eXp8iY?si=QdW6qLLLqmYyLKS-';
+                    LiveStreamPlayer.show(youtubeUrl);
+                    log('✅ Live stream player shown with YouTube URL', 'success');
+                    updatePlayerStatus();
+                } catch (error) {
+                    log('❌ Error showing live stream player: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ LiveStreamPlayer not available', 'error');
+            }
+        }
+
+        function hideLiveStreamPlayer() {
+            log('Hiding live stream player...', 'info');
+            
+            if (window.LiveStreamPlayer) {
+                try {
+                    LiveStreamPlayer.hide();
+                    log('✅ Live stream player hidden', 'success');
+                    updatePlayerStatus();
+                } catch (error) {
+                    log('❌ Error hiding live stream player: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ LiveStreamPlayer not available', 'error');
+            }
+        }
+
+        function toggleLiveStreamPlayer() {
+            log('Toggling live stream player...', 'info');
+
+            if (window.LiveStreamPlayer) {
+                try {
+                    const youtubeUrl = 'https://www.youtube.com/live/-g-E-eXp8iY?si=QdW6qLLLqmYyLKS-';
+                    LiveStreamPlayer.toggle(youtubeUrl);
+                    log('✅ Live stream player toggled', 'success');
+                    updatePlayerStatus();
+                } catch (error) {
+                    log('❌ Error toggling live stream player: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ LiveStreamPlayer not available', 'error');
+            }
+        }
+
+        function switchToCricket1() {
+            log('Switching to Cricket Stream 1...', 'info');
+
+            if (window.StreamConfig && window.StreamConfigHelper) {
+                try {
+                    window.StreamConfigHelper.switchStream('cricket1');
+                    log('✅ Switched to Cricket Stream 1', 'success');
+                    updatePlayerStatus();
+                } catch (error) {
+                    log('❌ Error switching to Cricket Stream 1: ' + error.message, 'error');
+                }
+            } else {
+                // Fallback: direct URL change
+                const cricket1Url = 'https://www.youtube.com/live/-g-E-eXp8iY?si=QdW6qLLLqmYyLKS-';
+                if (window.LiveStreamPlayer) {
+                    LiveStreamPlayer.hide();
+                    setTimeout(() => LiveStreamPlayer.show(cricket1Url), 500);
+                    log('✅ Switched to Cricket Stream 1 (fallback method)', 'success');
+                }
+            }
+        }
+
+        function switchToCricket2() {
+            log('Switching to Cricket Stream 2...', 'info');
+
+            if (window.StreamConfig && window.StreamConfigHelper) {
+                try {
+                    window.StreamConfigHelper.switchStream('cricket2');
+                    log('✅ Switched to Cricket Stream 2', 'success');
+                    updatePlayerStatus();
+                } catch (error) {
+                    log('❌ Error switching to Cricket Stream 2: ' + error.message, 'error');
+                }
+            } else {
+                // Fallback: direct URL change
+                const cricket2Url = 'https://www.youtube.com/live/LV9-E3qaHkg?si=6YV_zrpMXgLuw5EP';
+                if (window.LiveStreamPlayer) {
+                    LiveStreamPlayer.hide();
+                    setTimeout(() => LiveStreamPlayer.show(cricket2Url), 500);
+                    log('✅ Switched to Cricket Stream 2 (fallback method)', 'success');
+                }
+            }
+        }
+
+        function updatePlayerStatus() {
+            const statusElement = document.getElementById('player-status');
+
+            if (window.LiveStreamPlayer) {
+                const isVisible = LiveStreamPlayer.isVisible();
+
+                // Check for loading indicator visibility
+                const loadingIndicators = document.querySelectorAll('.live-stream-loading');
+                const loadingVisible = Array.from(loadingIndicators).some(el =>
+                    el.style.display !== 'none' && el.offsetParent !== null
+                );
+
+                let statusText = `Player Status: ${isVisible ? '<span class="success">Visible ✅</span>' : '<span class="warning">Hidden ❌</span>'}`;
+
+                if (isVisible && loadingVisible) {
+                    statusText += ' <span class="error">⚠️ Loading indicator still visible!</span>';
+                } else if (isVisible) {
+                    statusText += ' <span class="success">✅ Loading indicator hidden</span>';
+                }
+
+                statusElement.innerHTML = statusText;
+                statusElement.className = isVisible ? 'success' : 'warning';
+            } else {
+                statusElement.innerHTML = 'Player Status: <span class="error">Not Available ❌</span>';
+                statusElement.className = 'error';
+            }
+        }
+
+        function updateMultiPlayerStatus() {
+            const statusElement = document.getElementById('multi-player-status');
+
+            if (window.MultiStreamManager) {
+                const isActive = MultiStreamManager.isActive();
+                const playerCount = MultiStreamManager.getActivePlayerIds().length;
+
+                let statusText = `Multi-Player Status: ${isActive ? '<span class="success">Active ✅</span>' : '<span class="warning">Inactive ❌</span>'}`;
+
+                if (isActive) {
+                    statusText += ` <span class="info">(${playerCount} players)</span>`;
+                }
+
+                statusElement.innerHTML = statusText;
+                statusElement.className = isActive ? 'success' : 'warning';
+            } else {
+                statusElement.innerHTML = 'Multi-Player Status: <span class="error">Not Available ❌</span>';
+                statusElement.className = 'error';
+            }
+        }
+
+        function updateFullscreenStatus() {
+            const statusElement = document.getElementById('fullscreen-status');
+
+            if (window.FullscreenManager) {
+                const status = FullscreenManager.getStatus();
+
+                let statusText = `Fullscreen Status: ${status.isFullscreen ? '<span class="success">Active ✅</span>' : '<span class="warning">Inactive ❌</span>'}`;
+
+                if (status.isSupported) {
+                    statusText += ' <span class="success">✅ Supported</span>';
+                } else {
+                    statusText += ' <span class="warning">⚠️ Using fallback</span>';
+                }
+
+                statusElement.innerHTML = statusText;
+                statusElement.className = status.isFullscreen ? 'success' : 'warning';
+            } else {
+                statusElement.innerHTML = 'Fullscreen Status: <span class="error">Not Available ❌</span>';
+                statusElement.className = 'error';
+            }
+        }
+
+        // Fullscreen test functions
+        function testEnterFullscreen() {
+            log('Testing enter fullscreen...', 'info');
+
+            if (window.FullscreenManager) {
+                try {
+                    FullscreenManager.enter();
+                    log('✅ Fullscreen entered', 'success');
+                    setTimeout(updateFullscreenStatus, 500);
+                } catch (error) {
+                    log('❌ Error entering fullscreen: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ FullscreenManager not available', 'error');
+            }
+        }
+
+        function testExitFullscreen() {
+            log('Testing exit fullscreen...', 'info');
+
+            if (window.FullscreenManager) {
+                try {
+                    FullscreenManager.exit();
+                    log('✅ Fullscreen exited', 'success');
+                    setTimeout(updateFullscreenStatus, 500);
+                } catch (error) {
+                    log('❌ Error exiting fullscreen: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ FullscreenManager not available', 'error');
+            }
+        }
+
+        function testToggleFullscreen() {
+            log('Testing toggle fullscreen...', 'info');
+
+            if (window.FullscreenManager) {
+                try {
+                    FullscreenManager.toggle();
+                    log('✅ Fullscreen toggled', 'success');
+                    setTimeout(updateFullscreenStatus, 500);
+                } catch (error) {
+                    log('❌ Error toggling fullscreen: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ FullscreenManager not available', 'error');
+            }
+        }
+
+        // Multi-player functions
+        function showMultiPlayers() {
+            log('Showing multiple players...', 'info');
+
+            if (window.MultiStreamManager) {
+                try {
+                    MultiStreamManager.showAll();
+                    log('✅ Multiple players shown', 'success');
+                    updateMultiPlayerStatus();
+                } catch (error) {
+                    log('❌ Error showing multiple players: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ MultiStreamManager not available', 'error');
+            }
+        }
+
+        function hideMultiPlayers() {
+            log('Hiding multiple players...', 'info');
+
+            if (window.MultiStreamManager) {
+                try {
+                    MultiStreamManager.hideAll();
+                    log('✅ Multiple players hidden', 'success');
+                    updateMultiPlayerStatus();
+                } catch (error) {
+                    log('❌ Error hiding multiple players: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ MultiStreamManager not available', 'error');
+            }
+        }
+
+        function toggleMultiPlayers() {
+            log('Toggling multiple players...', 'info');
+
+            if (window.MultiStreamManager) {
+                try {
+                    MultiStreamManager.toggle();
+                    log('✅ Multiple players toggled', 'success');
+                    updateMultiPlayerStatus();
+                } catch (error) {
+                    log('❌ Error toggling multiple players: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ MultiStreamManager not available', 'error');
+            }
+        }
+
+        function addCustomStream() {
+            const url = prompt('Enter YouTube live stream URL:', 'https://www.youtube.com/live/VIDEO_ID');
+            const label = prompt('Enter stream label:', 'CUSTOM STREAM');
+
+            if (url && label) {
+                log('Adding custom stream: ' + label, 'info');
+
+                if (window.MultiStreamManager) {
+                    try {
+                        const playerId = MultiStreamManager.addStream(url, label);
+                        log('✅ Custom stream added: ' + playerId, 'success');
+                        updateMultiPlayerStatus();
+                    } catch (error) {
+                        log('❌ Error adding custom stream: ' + error.message, 'error');
+                    }
+                } else {
+                    log('❌ MultiStreamManager not available', 'error');
+                }
+            }
+        }
+
+        function checkSystemStatus() {
+            const statusElement = document.getElementById('system-status');
+            let statusHtml = '';
+
+            // Check LiveStreamPlayer
+            if (window.LiveStreamPlayer) {
+                statusHtml += '<div class="success">✅ LiveStreamPlayer: Available</div>';
+                log('✅ LiveStreamPlayer is available', 'success');
+            } else {
+                statusHtml += '<div class="error">❌ LiveStreamPlayer: Not Available</div>';
+                log('❌ LiveStreamPlayer is not available', 'error');
+            }
+
+            // Check CSS
+            const cssLoaded = document.querySelector('link[href*="live-stream-player.css"]');
+            if (cssLoaded) {
+                statusHtml += '<div class="success">✅ CSS: Live Stream Player styles loaded</div>';
+                log('✅ Live stream player CSS is loaded', 'success');
+            } else {
+                statusHtml += '<div class="warning">⚠️ CSS: Live Stream Player styles may not be loaded</div>';
+                log('⚠️ Live stream player CSS may not be loaded', 'warning');
+            }
+
+            // Check Font Awesome
+            const faLoaded = document.querySelector('link[href*="font-awesome"]');
+            if (faLoaded) {
+                statusHtml += '<div class="success">✅ Font Awesome: Icons loaded</div>';
+                log('✅ Font Awesome icons are loaded', 'success');
+            } else {
+                statusHtml += '<div class="warning">⚠️ Font Awesome: Icons may not be loaded</div>';
+                log('⚠️ Font Awesome icons may not be loaded', 'warning');
+            }
+
+            statusElement.innerHTML = statusHtml;
+        }
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Test page loaded', 'info');
+            
+            // Check system status after a short delay
+            setTimeout(() => {
+                checkSystemStatus();
+                updatePlayerStatus();
+                updateMultiPlayerStatus();
+                updateFullscreenStatus();
+            }, 1000);
+        });
+
+        // Override console.log to also show in our debug log
+        const originalConsoleLog = console.log;
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            if (args.length > 0 && typeof args[0] === 'string') {
+                log('Console: ' + args.join(' '), 'info');
+            }
+        };
+
+        // Override console.error to also show in our debug log
+        const originalConsoleError = console.error;
+        console.error = function(...args) {
+            originalConsoleError.apply(console, args);
+            if (args.length > 0 && typeof args[0] === 'string') {
+                log('Error: ' + args.join(' '), 'error');
+            }
+        };
+    </script>
+</body>
+</html>

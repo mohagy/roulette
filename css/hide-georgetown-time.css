@@ -1,0 +1,38 @@
+/**
+ * Hide Georgetown Time Display
+ * This CSS file specifically hides the Georgetown Time display in the top-right corner
+ * of the main cashier interface while preserving the floating upcoming draws panel
+ * and keeping the Georgetown Time display visible on the TV display page.
+ */
+
+/* Hide the Georgetown time display ONLY on the main cashier interface */
+body.index:not(.tvdisplay) #georgetown-time-display,
+body.index:not(.tvdisplay) div#georgetown-time-display,
+html body.index:not(.tvdisplay) #georgetown-time-display {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    z-index: -9999 !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+/* Make sure the upcoming draw display is visible */
+#upcoming-draw-display,
+div#upcoming-draw-display,
+body #upcoming-draw-display,
+html body #upcoming-draw-display {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+}

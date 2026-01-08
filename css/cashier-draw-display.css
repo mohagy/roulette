@@ -1,0 +1,349 @@
+/* Cashier Draw Number Display - Floating Panel */
+:root {
+  --cashier-gold: #ffcc00;
+  --cashier-dark: #1a1a1a;
+  --cashier-green: #28a745;
+  --cashier-blue: #007bff;
+  --cashier-red: #dc3545;
+  --cashier-border: #444;
+}
+
+/* Main floating draw display container */
+.cashier-draw-display {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1500;
+  background: linear-gradient(135deg, var(--cashier-dark) 0%, #2a2a2a 100%);
+  border: 2px solid var(--cashier-gold);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 204, 0, 0.2);
+  min-width: 280px;
+  max-width: 350px;
+  font-family: 'Arial', sans-serif;
+  user-select: none;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.cashier-draw-display:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 204, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Header with drag handle */
+.cashier-draw-header {
+  background: linear-gradient(90deg, var(--cashier-gold), #e6b800);
+  color: var(--cashier-dark);
+  padding: 8px 12px;
+  border-radius: 10px 10px 0 0;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.cashier-draw-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+  border-radius: 10px 10px 0 0;
+  pointer-events: none;
+}
+
+.cashier-draw-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cashier-draw-title i {
+  font-size: 16px;
+}
+
+.cashier-draw-controls {
+  display: flex;
+  gap: 5px;
+}
+
+.cashier-draw-control {
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  color: var(--cashier-dark);
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.cashier-draw-control:hover {
+  background: rgba(0, 0, 0, 0.4);
+  transform: scale(1.1);
+}
+
+/* Main content area */
+.cashier-draw-content {
+  padding: 16px;
+  color: white;
+}
+
+/* Draw information sections */
+.cashier-draw-section {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--cashier-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+.cashier-draw-section:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--cashier-gold);
+}
+
+.cashier-draw-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Section labels */
+.cashier-draw-label {
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cashier-draw-label i {
+  font-size: 12px;
+}
+
+.cashier-draw-label.upcoming {
+  color: var(--cashier-green);
+}
+
+.cashier-draw-label.completed {
+  color: var(--cashier-blue);
+}
+
+/* Draw numbers */
+.cashier-draw-number {
+  font-size: 24px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  padding: 8px;
+  border-radius: 6px;
+  position: relative;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.cashier-draw-number.upcoming {
+  background: linear-gradient(135deg, var(--cashier-green), #1e7e34);
+  color: white;
+  border: 2px solid #34ce57;
+  animation: cashier-pulse-green 2s infinite;
+}
+
+.cashier-draw-number.completed {
+  background: linear-gradient(135deg, var(--cashier-blue), #0056b3);
+  color: white;
+  border: 2px solid #4dabf7;
+}
+
+@keyframes cashier-pulse-green {
+  0%, 100% { 
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(40, 167, 69, 0.6);
+    transform: scale(1.02);
+  }
+}
+
+/* Additional info */
+.cashier-draw-info {
+  font-size: 12px;
+  color: #ccc;
+  text-align: center;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.cashier-draw-info.highlight {
+  color: var(--cashier-gold);
+  font-weight: bold;
+}
+
+/* Status indicators */
+.cashier-status-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  animation: cashier-blink 1.5s infinite;
+}
+
+.cashier-status-indicator.active {
+  background: var(--cashier-green);
+}
+
+.cashier-status-indicator.syncing {
+  background: var(--cashier-gold);
+}
+
+.cashier-status-indicator.error {
+  background: var(--cashier-red);
+}
+
+@keyframes cashier-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+/* Sync status */
+.cashier-sync-status {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 11px;
+  text-align: center;
+  margin-top: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cashier-sync-time {
+  color: #999;
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+/* Collapsed state */
+.cashier-draw-display.collapsed .cashier-draw-content {
+  display: none;
+}
+
+.cashier-draw-display.collapsed {
+  min-width: auto;
+  width: auto;
+}
+
+/* Dragging state */
+.cashier-draw-display.dragging {
+  opacity: 0.8;
+  transform: rotate(2deg);
+  z-index: 2000;
+}
+
+/* Resize handles */
+.cashier-resize-handle {
+  position: absolute;
+  background: var(--cashier-gold);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.cashier-draw-display:hover .cashier-resize-handle {
+  opacity: 0.6;
+}
+
+.cashier-resize-handle:hover {
+  opacity: 1;
+}
+
+.cashier-resize-se {
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  cursor: se-resize;
+  border-radius: 0 0 10px 0;
+}
+
+.cashier-resize-e {
+  top: 20%;
+  right: 0;
+  width: 4px;
+  height: 60%;
+  cursor: e-resize;
+}
+
+.cashier-resize-s {
+  bottom: 0;
+  left: 20%;
+  width: 60%;
+  height: 4px;
+  cursor: s-resize;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .cashier-draw-display {
+    top: 10px;
+    right: 10px;
+    min-width: 250px;
+    max-width: 300px;
+  }
+  
+  .cashier-draw-number {
+    font-size: 20px;
+  }
+  
+  .cashier-draw-header {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
+/* Animation for new draw updates */
+.cashier-draw-number.updated {
+  animation: cashier-update-flash 0.8s ease;
+}
+
+@keyframes cashier-update-flash {
+  0% { background: var(--cashier-gold); color: var(--cashier-dark); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Notification badge */
+.cashier-notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--cashier-red);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: cashier-badge-pulse 1s infinite;
+}
+
+@keyframes cashier-badge-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}

@@ -1,0 +1,153 @@
+/**
+ * Video Ads Player Styles
+ */
+
+#ads-player-container {
+  position: absolute;
+  left: 20px;
+  top: 100px;
+  width: 320px;
+  height: 240px;
+  background-color: #000;
+  border: 3px solid #FFD700;
+  border-radius: 5px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 1000;
+  transition: box-shadow 0.3s ease;
+}
+
+#ads-player-container:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+}
+
+#ads-player-header {
+  background-color: #FFD700;
+  color: #000;
+  padding: 5px 10px;
+  cursor: move;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+#ads-player-header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 5px;
+  padding: 0;
+  transition: transform 0.2s ease;
+}
+
+#ads-player-header button:hover {
+  transform: scale(1.2);
+}
+
+#ads-player-header button:last-child {
+  margin-right: 0;
+}
+
+#ads-player-container video {
+  width: 100%;
+  height: calc(100% - 30px);
+  background-color: #000;
+}
+
+#ads-player-resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 15px;
+  height: 15px;
+  cursor: nwse-resize;
+  background-image: linear-gradient(135deg, transparent 70%, #FFD700 70%, #FFD700 100%);
+}
+
+#ads-player-container.dragging {
+  opacity: 0.8;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+}
+
+#ads-player-container.resizing {
+  opacity: 0.8;
+}
+
+/* Add a pulsing animation to the video player border when a new ad starts */
+@keyframes pulse-border {
+  0% {
+    border-color: #FFD700;
+  }
+  50% {
+    border-color: #FFD700AA;
+  }
+  100% {
+    border-color: #FFD700;
+  }
+}
+
+.pulse-border {
+  animation: pulse-border 1s ease-in-out 3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #ads-player-container {
+    width: 240px;
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  #ads-player-container {
+    width: 200px;
+    height: 150px;
+  }
+}
+
+/* Add a error message display */
+.video-error-message {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  text-align: center;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  z-index: 1001;
+}
+
+.play-button-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.play-button-overlay i {
+  font-size: 48px;
+  color: white;
+  opacity: 0.8;
+  transition: transform 0.2s ease;
+}
+
+.play-button-overlay:hover i {
+  transform: scale(1.2);
+  opacity: 1;
+} 

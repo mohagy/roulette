@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#202020">
+    <title>Offline - Roulette POS System</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/icons/ios/180.png">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #00ad00;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 90%;
+            width: 500px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgb(247, 176, 46);
+        }
+        
+        h1 {
+            color: rgb(247, 176, 46);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            color: rgb(247, 176, 46);
+        }
+        
+        .button {
+            background-color: rgb(247, 176, 46);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        
+        .button:hover {
+            background-color: #ffd700;
+        }
+        
+        .roulette-wheel {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 20px;
+            animation: spin 10s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="images/roulette-wheel.png" alt="Roulette Wheel" class="roulette-wheel">
+        <h1>You're Offline</h1>
+        <p>It looks like you've lost your internet connection. The Roulette POS System requires an active connection to function properly.</p>
+        <p>Please check your network settings and try again.</p>
+        <button class="button" onclick="window.location.reload()">Try Again</button>
+    </div>
+
+    <script>
+        // Check if we're back online
+        window.addEventListener('online', () => {
+            window.location.reload();
+        });
+    </script>
+</body>
+</html>

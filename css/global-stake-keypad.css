@@ -1,0 +1,76 @@
+/* Global Stake Keypad Styles */
+
+/* Numeric keypad for stake input */
+.numeric-keypad {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  background: rgba(29, 53, 87, 0.95);
+  border-radius: 5px;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  z-index: 10000;
+  margin-bottom: 5px;
+  display: none;
+  border: 1px solid var(--global-gold-color);
+}
+
+.numeric-keypad.visible {
+  display: grid;
+}
+
+.numeric-key {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.numeric-key:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.numeric-key:active {
+  transform: scale(0.95);
+}
+
+.numeric-key.key-enter {
+  background: var(--global-gold-color);
+  color: #1d3557;
+  font-weight: bold;
+}
+
+.numeric-key.key-enter:hover {
+  background: #f8d348;
+}
+
+.numeric-key.key-clear {
+  background: rgba(230, 57, 70, 0.8);
+}
+
+.numeric-key.key-clear:hover {
+  background: rgba(230, 57, 70, 1);
+}
+
+/* Position the keypad for the global stake input */
+.stake-input-wrapper {
+  position: relative;
+}
+
+/* Add a highlight to the input when focused */
+#global-stake-input:focus {
+  border-color: var(--global-gold-color);
+  box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+  outline: none;
+}

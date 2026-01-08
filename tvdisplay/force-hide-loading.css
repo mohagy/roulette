@@ -1,0 +1,118 @@
+/* EMERGENCY CSS FIX: Force hide loading indicators */
+
+/* Hide all loading indicators with maximum specificity */
+.live-stream-loading,
+.live-stream-player .live-stream-loading,
+div.live-stream-loading,
+.live-stream-player div.live-stream-loading {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    top: -9999px !important;
+    left: -9999px !important;
+    width: 0 !important;
+    height: 0 !important;
+    z-index: -1 !important;
+}
+
+/* Hide any element containing "Loading stream" text */
+*[style*="Loading stream"],
+*:contains("Loading stream") {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+/* Specific targeting for the live stream player */
+.live-stream-player > .live-stream-loading {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+/* Force hide with animation override */
+@keyframes forceHide {
+    0%, 100% {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+}
+
+.live-stream-loading {
+    animation: forceHide 0.1s infinite !important;
+}
+
+/* Additional specificity for stubborn elements */
+body .live-stream-player .live-stream-loading,
+html body .live-stream-player .live-stream-loading,
+html body div.live-stream-player div.live-stream-loading {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    position: absolute !important;
+    top: -10000px !important;
+    left: -10000px !important;
+    width: 0px !important;
+    height: 0px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Target by content */
+.live-stream-player *:before,
+.live-stream-player *:after {
+    content: none !important;
+}
+
+/* Remove any pseudo-elements that might show loading text */
+.live-stream-player::before,
+.live-stream-player::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* Force hide any flex containers with loading content */
+.live-stream-player [style*="flex"][style*="Loading"],
+.live-stream-player [style*="display: flex"]:contains("Loading") {
+    display: none !important;
+}
+
+/* Nuclear option: hide all text nodes containing "Loading" */
+.live-stream-player * {
+    font-size: 0 !important;
+}
+
+.live-stream-player *:not(.youtube-iframe):not(.youtube-iframe *) {
+    color: transparent !important;
+    background: transparent !important;
+}
+
+/* Restore visibility for YouTube iframe and its contents */
+.live-stream-player .youtube-iframe,
+.live-stream-player .youtube-iframe * {
+    font-size: initial !important;
+    color: initial !important;
+    background: initial !important;
+}
+
+/* Restore visibility for controls */
+.live-stream-player .live-stream-controls,
+.live-stream-player .live-stream-controls * {
+    font-size: initial !important;
+    color: initial !important;
+    background: initial !important;
+}
+
+/* Restore visibility for labels */
+.live-stream-player [style*="CRICKET"],
+.live-stream-player [style*="LIVE STREAM"] {
+    font-size: initial !important;
+    color: initial !important;
+    background: initial !important;
+}

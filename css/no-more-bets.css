@@ -1,0 +1,347 @@
+/**
+ * Glass Morphism No More Bets System
+ * 
+ * Elegant translucent overlay with modern glass effects
+ * Professional, non-intrusive design for roulette betting board
+ */
+
+/* Main Glass Morphism Overlay */
+.no-more-bets-overlay {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 1;
+    visibility: visible;
+}
+
+.no-more-bets-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Glass Morphism Container */
+.no-more-bets-container {
+    text-align: center;
+    color: #2c3e50;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.25) 0%, 
+        rgba(255, 255, 255, 0.15) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    padding: 50px 60px;
+    box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    animation: elegantFloat 4s ease-in-out infinite;
+    max-width: 500px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Shimmer Effect */
+.no-more-bets-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(100, 181, 246, 0.2),
+        transparent);
+    animation: shimmer 5s infinite;
+    z-index: 1;
+}
+
+/* Elegant Clock Icon */
+.no-more-bets-icon {
+    font-size: 80px;
+    color: #64b5f6;
+    margin-bottom: 25px;
+    text-shadow: 0 0 20px rgba(100, 181, 246, 0.4);
+    animation: gentleGlow 3s ease-in-out infinite;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 5px 15px rgba(100, 181, 246, 0.2));
+}
+
+/* Professional Main Message */
+.no-more-bets-message {
+    font-size: 42px;
+    font-weight: 300;
+    color: #2c3e50;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative;
+    z-index: 2;
+}
+
+/* Elegant Subtitle */
+.no-more-bets-subtitle {
+    font-size: 18px;
+    color: rgba(44, 62, 80, 0.8);
+    margin-bottom: 30px;
+    font-weight: 300;
+    font-style: italic;
+    position: relative;
+    z-index: 2;
+}
+
+/* Beautiful Countdown Display */
+.no-more-bets-countdown {
+    font-size: 32px;
+    font-weight: 500;
+    color: #64b5f6;
+    font-family: 'Segoe UI', sans-serif;
+    text-shadow: 0 0 15px rgba(100, 181, 246, 0.3);
+    background: linear-gradient(135deg, 
+        rgba(100, 181, 246, 0.15) 0%, 
+        rgba(100, 181, 246, 0.08) 100%);
+    padding: 15px 30px;
+    border-radius: 20px;
+    border: 1px solid rgba(100, 181, 246, 0.3);
+    display: inline-block;
+    min-width: 140px;
+    position: relative;
+    z-index: 2;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 10px 30px rgba(100, 181, 246, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Elegant Animations */
+@keyframes elegantFloat {
+    0%, 100% { 
+        transform: translateY(0px) scale(1);
+        box-shadow:
+            0 25px 50px rgba(0, 0, 0, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    50% { 
+        transform: translateY(-10px) scale(1.01);
+        box-shadow:
+            0 35px 60px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+}
+
+@keyframes gentleGlow {
+    0%, 100% { 
+        text-shadow: 0 0 20px rgba(100, 181, 246, 0.4);
+        transform: scale(1);
+    }
+    50% { 
+        text-shadow: 0 0 30px rgba(100, 181, 246, 0.6);
+        transform: scale(1.05);
+    }
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Elegant Betting Area Disabled State */
+.betting-area.betting-disabled {
+    pointer-events: none !important;
+    opacity: 0.4 !important;
+    filter: blur(2px) saturate(0.3) !important;
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    position: relative;
+}
+
+.betting-area.betting-disabled::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(100, 181, 246, 0.05) 0%, 
+        rgba(232, 234, 246, 0.03) 100%);
+    z-index: 1000;
+    pointer-events: none;
+    backdrop-filter: blur(1px);
+}
+
+/* Individual Betting Elements Disabled */
+.betting-area.betting-disabled .number,
+.betting-area.betting-disabled .part {
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    opacity: 0.5 !important;
+    filter: saturate(0.2) brightness(0.8) !important;
+    transition: all 0.8s ease !important;
+}
+
+/* Bet Display Container Disabled */
+.bet-display-container.betting-disabled {
+    pointer-events: none !important;
+    opacity: 0.5 !important;
+    filter: saturate(0.3) brightness(0.9) !important;
+    transition: all 0.8s ease !important;
+}
+
+.bet-display-container.betting-disabled .bet-action-button {
+    cursor: not-allowed !important;
+    background: rgba(100, 100, 100, 0.3) !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Complete Button Disabled */
+.button-complete.betting-disabled {
+    pointer-events: none !important;
+    opacity: 0.5 !important;
+    filter: saturate(0.3) brightness(0.9) !important;
+    transition: all 0.8s ease !important;
+}
+
+.button-complete.betting-disabled .circle {
+    background: rgba(100, 100, 100, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.button-complete.betting-disabled .button-text {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Stake Input Disabled */
+#global-stake-input:disabled {
+    background: rgba(200, 200, 200, 0.3) !important;
+    color: rgba(100, 100, 100, 0.6) !important;
+    cursor: not-allowed !important;
+    opacity: 0.5 !important;
+}
+
+/* Elegant Notification Bar */
+.alert-message-container.alert-no-more-bets {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    background: linear-gradient(135deg, 
+        rgba(100, 181, 246, 0.9) 0%, 
+        rgba(232, 234, 246, 0.9) 100%);
+    backdrop-filter: blur(15px);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 400;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(100, 181, 246, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: elegantSlideIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: none;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+@keyframes elegantSlideIn {
+    0% { 
+        transform: translateX(-50%) translateY(-100px);
+        opacity: 0;
+    }
+    100% { 
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .no-more-bets-container {
+        padding: 40px 45px;
+        max-width: 90%;
+        margin: 0 20px;
+    }
+    
+    .no-more-bets-message {
+        font-size: 32px;
+        letter-spacing: 2px;
+    }
+    
+    .no-more-bets-icon {
+        font-size: 70px;
+    }
+    
+    .no-more-bets-countdown {
+        font-size: 28px;
+        padding: 12px 25px;
+    }
+}
+
+@media (max-width: 480px) {
+    .no-more-bets-container {
+        padding: 35px 30px;
+    }
+    
+    .no-more-bets-message {
+        font-size: 28px;
+        letter-spacing: 1px;
+    }
+    
+    .no-more-bets-icon {
+        font-size: 60px;
+    }
+    
+    .no-more-bets-countdown {
+        font-size: 24px;
+        padding: 10px 20px;
+    }
+    
+    .no-more-bets-subtitle {
+        font-size: 16px;
+    }
+}
+
+/* Ensure overlay appears above all other elements */
+.no-more-bets-overlay {
+    z-index: 999999 !important;
+}
+
+/* Prevent any interaction with betting elements when disabled */
+.betting-disabled * {
+    pointer-events: none !important;
+}
+
+/* Special handling for mobile touch events */
+@media (hover: none) and (pointer: coarse) {
+    .betting-area.betting-disabled {
+        touch-action: none !important;
+    }
+    
+    .betting-area.betting-disabled .number,
+    .betting-area.betting-disabled .part {
+        touch-action: none !important;
+    }
+}
+
+/* Ensure countdown timer remains visible and functional */
+.countdown-timer-display {
+    z-index: 1000000 !important;
+    position: relative !important;
+}
+
+/* Make sure the overlay doesn't interfere with the countdown timer */
+.no-more-bets-overlay ~ .countdown-timer-display {
+    z-index: 1000001 !important;
+}

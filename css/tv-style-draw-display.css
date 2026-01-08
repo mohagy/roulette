@@ -1,0 +1,228 @@
+/* TV-style draw display CSS */
+:root {
+  --gold-color: #ffcc00;
+  --dark-bg: #000;
+  --red-number: #ff3333;
+  --green-text: #33ff33;
+  --blue-text: #3399ff;
+}
+
+/* Main container for the TV-style display */
+.tv-style-display {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--dark-bg);
+  color: white;
+  padding: 5px 10px;
+  height: auto;
+  width: auto;
+  border: 2px solid var(--gold-color);
+  border-radius: 5px;
+  min-width: 400px;
+  box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+}
+
+/* Draw info container */
+.tv-draw-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 10px;
+}
+
+/* Draw section */
+.tv-draw-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 10px;
+}
+
+/* Draw labels */
+.tv-draw-label {
+  color: var(--gold-color);
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+/* Draw numbers */
+.tv-draw-number {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+}
+
+.tv-previous-draw .tv-draw-number {
+  color: var(--gold-color);
+  position: relative;
+}
+
+.tv-current-draw .tv-draw-number {
+  color: var(--green-text);
+  position: relative;
+}
+
+.tv-next-draw .tv-draw-number {
+  color: var(--blue-text);
+}
+
+/* Winning number color indicators */
+.tv-draw-number.color-red::before,
+.tv-draw-number.color-black::before,
+.tv-draw-number.color-green::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.tv-draw-number.color-red::before {
+  background-color: var(--red-number);
+}
+
+.tv-draw-number.color-black::before {
+  background-color: #333;
+}
+
+.tv-draw-number.color-green::before {
+  background-color: var(--green-text);
+}
+
+/* Timer container */
+.tv-timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #000;
+  border: 1px solid var(--gold-color);
+  border-radius: 4px;
+  padding: 2px 10px;
+  margin-left: 10px;
+}
+
+.tv-timer-label {
+  color: var(--gold-color);
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 0;
+}
+
+.tv-timer-display {
+  color: var(--gold-color);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+}
+
+.tv-timer-warning {
+  color: var(--red-number);
+  text-shadow: 0 0 5px rgba(255, 51, 51, 0.8);
+  animation: tv-pulse 0.8s infinite alternate;
+}
+
+@keyframes tv-pulse {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+/* Draw numbers header */
+.tv-draw-numbers-header {
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background-color: #1a2a3a;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  min-width: 600px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.tv-draw-numbers-title {
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 5px;
+}
+
+.tv-draw-numbers-row {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 5px 0;
+}
+
+.tv-draw-number-item {
+  padding: 5px 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-weight: bold;
+  min-width: 40px;
+  text-align: center;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.tv-draw-number-item.current {
+  background-color: var(--red-number);
+  box-shadow: 0 0 5px rgba(255, 51, 51, 0.7);
+}
+
+.tv-draw-number-item:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transform: translateY(-2px);
+}
+
+.tv-draw-number-item small {
+  display: block;
+  font-size: 10px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tv-style-display {
+    min-width: 350px;
+  }
+
+  .tv-draw-label {
+    font-size: 10px;
+  }
+
+  .tv-draw-number {
+    font-size: 16px;
+  }
+
+  .tv-timer-display {
+    font-size: 16px;
+  }
+
+  .tv-draw-numbers-header {
+    min-width: 90%;
+  }
+}

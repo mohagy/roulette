@@ -1,0 +1,298 @@
+/**
+ * Role-Based Cancel Slip Button Visibility
+ * Controls visibility of cancel slip buttons based on user role
+ * - Regular users: Only see edge toggle
+ * - Admin users: Can see both edge toggle and floating buttons
+ */
+
+/* Default: Hide floating cancel slip buttons for all users */
+.elegant-cancel-button,
+.cancel-slip-button,
+#elegant-cancel-button,
+#cancel-slip-button,
+.right-action-sidebar .elegant-cancel-button,
+.right-action-sidebar .cancel-slip-button {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  z-index: -9999 !important;
+  transform: scale(0) !important;
+}
+
+/* Hide right action sidebar by default if it contains cancel buttons */
+.right-action-sidebar:has(.elegant-cancel-button),
+.right-action-sidebar:has(.cancel-slip-button),
+.right-action-sidebar:has([title*="Cancel"]) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  z-index: -9999 !important;
+  transform: scale(0) !important;
+}
+
+/* Admin users: Show floating cancel slip buttons */
+body.user-admin .elegant-cancel-button,
+body.user-admin .cancel-slip-button,
+body.user-admin #elegant-cancel-button,
+body.user-admin #cancel-slip-button {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  left: auto !important;
+  top: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  z-index: auto !important;
+  transform: none !important;
+}
+
+/* Admin users: Show right action sidebar */
+body.user-admin .right-action-sidebar {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  left: auto !important;
+  top: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  z-index: auto !important;
+  transform: none !important;
+}
+
+/* Hide cancel slip edge toggle by default for all users */
+.cancel-slip-edge-toggle-control {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  z-index: -9999 !important;
+  transform: scale(0) !important;
+}
+
+/* Admin users: Show cancel slip edge toggle */
+body.user-admin .cancel-slip-edge-toggle-control {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  right: 0 !important;
+  top: 75% !important;
+  left: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  transform: translateY(-50%) !important;
+  z-index: 10004 !important;
+}
+
+/* Regular users: Hide cancel slip edge toggle and floating buttons - MAXIMUM SPECIFICITY */
+html body.user-regular .cancel-slip-edge-toggle-control,
+html body.user-regular #cancel-slip-edge-toggle,
+body.user-regular .cancel-slip-edge-toggle-control,
+body.user-regular #cancel-slip-edge-toggle,
+html body.user-regular .elegant-cancel-button,
+html body.user-regular .cancel-slip-button,
+html body.user-regular #elegant-cancel-button,
+html body.user-regular #cancel-slip-button,
+body.user-regular .elegant-cancel-button,
+body.user-regular .cancel-slip-button,
+body.user-regular #elegant-cancel-button,
+body.user-regular #cancel-slip-button,
+body.user-regular .right-action-sidebar .elegant-cancel-button,
+body.user-regular .right-action-sidebar .cancel-slip-button {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  z-index: -9999 !important;
+  transform: scale(0) !important;
+}
+
+/* Regular users: Hide right action sidebar if it contains cancel buttons */
+body.user-regular .right-action-sidebar:has(.elegant-cancel-button),
+body.user-regular .right-action-sidebar:has(.cancel-slip-button),
+body.user-regular .right-action-sidebar:has([title*="Cancel"]) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  z-index: -9999 !important;
+  transform: scale(0) !important;
+}
+
+/* Unauthenticated users: Hide all cancel slip functionality */
+body.user-unauthenticated .elegant-cancel-button,
+body.user-unauthenticated .cancel-slip-button,
+body.user-unauthenticated #elegant-cancel-button,
+body.user-unauthenticated #cancel-slip-button,
+body.user-unauthenticated .cancel-slip-edge-toggle-control,
+body.user-unauthenticated .right-action-sidebar {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  z-index: -9999 !important;
+  transform: scale(0) !important;
+}
+
+/* Hide specific button content structures for regular users */
+body.user-regular .button-content[title*="Cancel"],
+body.user-regular .button-content:has(span:contains("CANCEL SLIP")),
+body.user-regular *:has(.button-content[title*="Cancel"]) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  z-index: -9999 !important;
+  transform: scale(0) !important;
+}
+
+/* Show specific button content structures for admin users */
+body.user-admin .button-content[title*="Cancel"],
+body.user-admin .button-content:has(span:contains("CANCEL SLIP")),
+body.user-admin *:has(.button-content[title*="Cancel"]) {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  z-index: auto !important;
+  transform: none !important;
+}
+
+/* Role-based class for elements hidden by JavaScript */
+.role-hidden {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Admin override for role-hidden elements */
+body.user-admin .role-hidden.elegant-cancel-button,
+body.user-admin .role-hidden.cancel-slip-button {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Responsive design for role-based visibility */
+@media (max-width: 768px) {
+  /* Admin users: Show edge toggle on mobile */
+  body.user-admin .cancel-slip-edge-toggle-control {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    position: fixed !important;
+    right: 0 !important;
+    top: 75% !important;
+    transform: translateY(-50%) !important;
+    z-index: 10004 !important;
+  }
+
+  /* Admin floating buttons on mobile */
+  body.user-admin .elegant-cancel-button,
+  body.user-admin .cancel-slip-button {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Hide floating buttons on very small screens even for admins */
+  body.user-admin .elegant-cancel-button,
+  body.user-admin .cancel-slip-button {
+    display: none !important;
+  }
+
+  /* Admin users: Keep edge toggle visible on small screens */
+  body.user-admin .cancel-slip-edge-toggle-control {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    position: fixed !important;
+    right: 0 !important;
+    top: 75% !important;
+    transform: translateY(-50%) !important;
+    z-index: 10004 !important;
+  }
+}
+
+/* Loading state - hide everything until role is determined */
+body:not(.user-admin):not(.user-regular):not(.user-unauthenticated) .elegant-cancel-button,
+body:not(.user-admin):not(.user-regular):not(.user-unauthenticated) .cancel-slip-button,
+body:not(.user-admin):not(.user-regular):not(.user-unauthenticated) #elegant-cancel-button,
+body:not(.user-admin):not(.user-regular):not(.user-unauthenticated) #cancel-slip-button {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Hide edge toggle during loading until role is determined */
+body:not(.user-admin):not(.user-regular):not(.user-unauthenticated) .cancel-slip-edge-toggle-control {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

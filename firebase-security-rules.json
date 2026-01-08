@@ -1,0 +1,77 @@
+{
+  "rules": {
+    "gameState": {
+      ".read": true,
+      ".write": true,
+      "current": {
+        ".read": true,
+        ".write": true
+      },
+      "drawInfo": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "draws": {
+      ".read": true,
+      ".write": true,
+      "$drawNumber": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "analytics": {
+      ".read": true,
+      ".write": true,
+      "current": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "bettingSlips": {
+      ".read": true,
+      ".write": true,
+      "$slipId": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "bets": {
+      ".read": true,
+      ".write": true,
+      "$betId": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "users": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$userId": {
+        ".read": "auth != null || $userId == auth.uid",
+        ".write": "auth != null || $userId == auth.uid"
+      }
+    },
+    "transactions": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$transactionId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "mysql_tables": {
+      ".read": true,
+      ".write": true,
+      "$tableName": {
+        ".read": true,
+        ".write": true,
+        "$rowId": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    }
+  }
+}
+

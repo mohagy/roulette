@@ -1,0 +1,43 @@
+/* Sidebar Layout Styles */
+
+/* Main layout container */
+.betting-area-container {
+  display: flex;
+  width: 100%;
+}
+
+/* Left sidebar for bets */
+.bets-sidebar {
+  width: 250px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-right: 2px solid var(--global-gold-color);
+  margin-right: 20px;
+  height: 100%;
+  position: relative;
+}
+
+/* Main betting area */
+.betting-area {
+  flex: 1;
+}
+
+/* Hide the floating bet display when using the sidebar */
+.bet-display-container {
+  display: none !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .betting-area-container {
+    flex-direction: column;
+  }
+  
+  .bets-sidebar {
+    width: 100%;
+    height: auto;
+    margin-right: 0;
+    margin-bottom: 20px;
+    border-right: none;
+    border-bottom: 2px solid var(--global-gold-color);
+  }
+}

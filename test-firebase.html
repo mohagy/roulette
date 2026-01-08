@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Connection Test</title>
+</head>
+<body>
+    <h1>Firebase Connection Test</h1>
+    <div id="status">Testing...</div>
+    <div id="results"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
+    <script src="js/firebase-config.js"></script>
+    <script src="js/firebase-service.js"></script>
+    
+    <script>
+        const statusDiv = document.getElementById('status');
+        const resultsDiv = document.getElementById('results');
+        
+        function log(message, isError = false) {
+            const p = document.createElement('p');
+            p.style.color = isError ? 'red' : 'green';
+            p.textContent = message;
+            resultsDiv.appendChild(p);
+            console.log(message);
+        }
+        
+        setTimeout(() => {
+            log('Checking Firebase initialization...');
+            
+            if (typeof firebase === 'undefined') {
+                log('❌ ERROR: Firebase SDK not loaded', true);
+                statusDiv.textContent = 'FAILED: Firebase SDK not loaded';
+                return;
+            }
+            log('✅ Firebase SDK loaded');
+            
+            if (!window.firebaseDatabase) {
+                log('❌ ERROR: Firebase database not initialized', true);
+                statusDiv.textContent = 'FAILED: Database not initialized';
+                return;
+            }
+            log('✅ Firebase database initialized');
+            
+            if (!window.FirebaseService) {
+                log('❌ ERROR: FirebaseService not available', true);
+                statusDiv.textContent = 'FAILED: FirebaseService not available';
+                return;
+            }
+            log('✅ FirebaseService available');
+            
+            // Test write
+            log('Testing write operation...');
+            FirebaseService.GameState.setCurrent({
+                test: true,
+                timestamp: Date.now()
+            }).then(() => {
+                log('✅ Write operation successful');
+                
+                // Test read
+                log('Testing read operation...');
+                return FirebaseService.GameState.getCurrent();
+            }).then((data) => {
+                log('✅ Read operation successful');
+                log('Data: ' + JSON.stringify(data));
+                
+                // Test listener
+                log('Testing real-time listener...');
+                const listener = FirebaseService.GameState.listen((data) => {
+                    log('✅ Real-time listener triggered!');
+                    log('Received data: ' + JSON.stringify(data));
+                });
+                
+                setTimeout(() => {
+                    log('✅ All tests passed!');
+                    statusDiv.textContent = 'SUCCESS: Firebase is working!';
+                    statusDiv.style.color = 'green';
+                }, 2000);
+            }).catch((error) => {
+                log('❌ ERROR: ' + error.message, true);
+                statusDiv.textContent = 'FAILED: ' + error.message;
+            });
+        }, 2000);
+    </script>
+</body>
+</html>
+

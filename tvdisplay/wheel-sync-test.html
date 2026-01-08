@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎡 Wheel Animation & Results Sync Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .display-card {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #FFD700;
+        }
+        .display-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #FFD700;
+        }
+        .iframe-container {
+            width: 100%;
+            height: 350px;
+            border: 2px solid #555;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transform: scale(0.6);
+            transform-origin: 0 0;
+            width: 166.67%;
+            height: 166.67%;
+        }
+        .status-panel {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .status-good { border-left: 5px solid #28a745; }
+        .status-warning { border-left: 5px solid #ffc107; }
+        .status-error { border-left: 5px solid #dc3545; }
+        .test-button {
+            background: #FFD700;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            width: 100%;
+        }
+        .test-button:hover {
+            background: #e6c200;
+        }
+        .sync-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .sync-metric {
+            background: #444;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .sync-metric .label {
+            font-size: 12px;
+            color: #ccc;
+        }
+        .sync-metric .value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        .console-output {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 11px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .control-panel {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+            margin: 20px 0;
+        }
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .animation-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .indicator-spinning { background: #ffc107; animation: pulse 1s infinite; }
+        .indicator-result { background: #28a745; }
+        .indicator-idle { background: #6c757d; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎡 Wheel Animation & Results Synchronization Test</h1>
+            <p>Real-time testing of roulette wheel animations, spin results, and game phase synchronization</p>
+            <div id="overall-status" class="status-panel status-warning">
+                <strong>Status:</strong> Initializing wheel sync test...
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h2>🎮 Test Controls</h2>
+            <div class="control-grid">
+                <button class="test-button" onclick="testWheelSync()">🎡 Test Wheel Animation Sync</button>
+                <button class="test-button" onclick="testResultSync()">🎯 Test Result Sync</button>
+                <button class="test-button" onclick="testGamePhases()">🎮 Test Game Phase Sync</button>
+                <button class="test-button" onclick="simulateSpin()">🎰 Simulate Complete Spin</button>
+                <button class="test-button" onclick="refreshAllDisplays()">🔄 Refresh All Displays</button>
+                <button class="test-button" onclick="clearLogs()">🗑️ Clear Logs</button>
+            </div>
+        </div>
+
+        <div class="test-grid">
+            <!-- Master Display -->
+            <div class="display-card">
+                <div class="display-title">👑 MASTER DISPLAY</div>
+                <div class="iframe-container">
+                    <iframe id="master-frame" src="index.html"></iframe>
+                </div>
+                <div class="sync-info">
+                    <div class="sync-metric">
+                        <div class="label">Animation State</div>
+                        <div class="value" id="master-animation">
+                            <span class="animation-indicator indicator-idle"></span>Idle
+                        </div>
+                    </div>
+                    <div class="sync-metric">
+                        <div class="label">Current Number</div>
+                        <div class="value" id="master-number">--</div>
+                    </div>
+                    <div class="sync-metric">
+                        <div class="label">Game Phase</div>
+                        <div class="value" id="master-phase">Betting</div>
+                    </div>
+                    <div class="sync-metric">
+                        <div class="label">Last Update</div>
+                        <div class="value" id="master-update">--:--</div>
+                    </div>
+                </div>
+                <div class="status-panel" id="master-status">Master display status...</div>
+                <button class="test-button" onclick="refreshMaster()">🔄 Refresh Master</button>
+            </div>
+
+            <!-- Client 1 Display -->
+            <div class="display-card">
+                <div class="display-title">📺 CLIENT 1 (Shop 1)</div>
+                <div class="iframe-container">
+                    <iframe id="client1-frame" src="shop1.html"></iframe>
+                </div>
+                <div class="sync-info">
+                    <div class="sync-metric">
+                        <div class="label">Animation State</div>
+                        <div class="value" id="client1-animation">
+                            <span class="animation-indicator indicator-idle"></span>Idle
+                        </div>
+                    </div>
+                    <div class="sync-metric">
+                        <div class="label">Current Number</div>
+                        <div class="value" id="client1-number">--</div>
+                    </div>
+                    <div class="sync-metric">
+                        <div class="label">Sync Status</div>
+                        <div class="value" id="client1-sync">Waiting</div>
+                    </div>
+                    <div class="sync-metric">
+                        <div class="label">Last Sync</div>
+                        <div class="value" id="client1-update">--:--</div>
+                    </div>
+                </div>
+                <div class="status-panel" id="client1-status">Client 1 status...</div>
+                <button class="test-button" onclick="refreshClient1()">🔄 Refresh Client 1</button>
+            </div>
+
+            <!-- Client 2 Display -->
+            <div class="display-card">
+                <div class="display-title">📺 CLIENT 2 (Shop 2)</div>
+                <div class="iframe-container">
+                    <iframe id="client2-frame" src="shop2.html"></iframe>
+                </div>
+                <div class="sync-info">
+                    <div class="sync-metric">
+                        <div class="label">Animation State</div>
+                        <div class="value" id="client2-animation">
+                            <span class="animation-indicator indicator-idle"></span>Idle
+                        </div>
+                    </div>
+                    <div class="sync-metric">
+                        <div class="label">Current Number</div>
+                        <div class="value" id="client2-number">--</div>
+                    </div>
+                    <div class="sync-metric">
+                        <div class="label">Sync Status</div>
+                        <div class="value" id="client2-sync">Waiting</div>
+                    </div>
+                    <div class="sync-metric">
+                        <div class="label">Last Sync</div>
+                        <div class="value" id="client2-update">--:--</div>
+                    </div>
+                </div>
+                <div class="status-panel" id="client2-status">Client 2 status...</div>
+                <button class="test-button" onclick="refreshClient2()">🔄 Refresh Client 2</button>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h2>📊 Synchronization Analysis</h2>
+            <div id="sync-analysis" class="status-panel status-warning">
+                Waiting for synchronization data...
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h2>🖥️ Console Output</h2>
+            <div class="console-output" id="console-output">
+                Wheel sync test initializing...<br>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testInterval;
+        let syncData = {
+            master: { animation: 'idle', number: '--', phase: 'betting', lastUpdate: null },
+            client1: { animation: 'idle', number: '--', sync: 'waiting', lastUpdate: null },
+            client2: { animation: 'idle', number: '--', sync: 'waiting', lastUpdate: null }
+        };
+
+        // Debug console
+        const consoleOutput = document.getElementById('console-output');
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff6b6b' : type === 'warn' ? '#ffd93d' : '#00ff00';
+            consoleOutput.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span><br>`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function getFrameData(frameId) {
+            try {
+                const frame = document.getElementById(frameId);
+                if (frame && frame.contentDocument) {
+                    const wheelContainer = frame.contentDocument.querySelector('.roulette-wheel-container');
+                    const isWheelVisible = wheelContainer && wheelContainer.classList.contains('roulette-wheel-visible');
+                    const currentNumber = frame.contentDocument.querySelector('.roll-number')?.textContent || '--';
+                    const resultVisible = frame.contentDocument.querySelector('.alert-spin-result')?.classList.contains('alert-message-visible');
+                    
+                    return {
+                        wheelVisible: isWheelVisible,
+                        currentNumber: currentNumber,
+                        resultVisible: resultVisible,
+                        rouletteNumber: frame.contentWindow.rouletteNumber || null
+                    };
+                }
+            } catch (error) {
+                log(`Cannot access ${frameId} content: ${error.message}`, 'warn');
+            }
+            return null;
+        }
+
+        function updateDisplayMetrics() {
+            const masterData = getFrameData('master-frame');
+            const client1Data = getFrameData('client1-frame');
+            const client2Data = getFrameData('client2-frame');
+
+            if (masterData) {
+                const animation = masterData.wheelVisible ? 'spinning' : (masterData.resultVisible ? 'result' : 'idle');
+                document.getElementById('master-animation').innerHTML = 
+                    `<span class="animation-indicator indicator-${animation}"></span>${animation.charAt(0).toUpperCase() + animation.slice(1)}`;
+                document.getElementById('master-number').textContent = masterData.currentNumber;
+                document.getElementById('master-phase').textContent = masterData.resultVisible ? 'Results' : 'Betting';
+                document.getElementById('master-update').textContent = new Date().toLocaleTimeString();
+                syncData.master = { animation, number: masterData.currentNumber, phase: masterData.resultVisible ? 'results' : 'betting', lastUpdate: Date.now() };
+            }
+
+            if (client1Data) {
+                const animation = client1Data.wheelVisible ? 'spinning' : (client1Data.resultVisible ? 'result' : 'idle');
+                const syncStatus = (masterData && client1Data.currentNumber === masterData.currentNumber) ? 'synced' : 'out-of-sync';
+                document.getElementById('client1-animation').innerHTML = 
+                    `<span class="animation-indicator indicator-${animation}"></span>${animation.charAt(0).toUpperCase() + animation.slice(1)}`;
+                document.getElementById('client1-number').textContent = client1Data.currentNumber;
+                document.getElementById('client1-sync').textContent = syncStatus.charAt(0).toUpperCase() + syncStatus.slice(1);
+                document.getElementById('client1-update').textContent = new Date().toLocaleTimeString();
+                syncData.client1 = { animation, number: client1Data.currentNumber, sync: syncStatus, lastUpdate: Date.now() };
+            }
+
+            if (client2Data) {
+                const animation = client2Data.wheelVisible ? 'spinning' : (client2Data.resultVisible ? 'result' : 'idle');
+                const syncStatus = (masterData && client2Data.currentNumber === masterData.currentNumber) ? 'synced' : 'out-of-sync';
+                document.getElementById('client2-animation').innerHTML = 
+                    `<span class="animation-indicator indicator-${animation}"></span>${animation.charAt(0).toUpperCase() + animation.slice(1)}`;
+                document.getElementById('client2-number').textContent = client2Data.currentNumber;
+                document.getElementById('client2-sync').textContent = syncStatus.charAt(0).toUpperCase() + syncStatus.slice(1);
+                document.getElementById('client2-update').textContent = new Date().toLocaleTimeString();
+                syncData.client2 = { animation, number: client2Data.currentNumber, sync: syncStatus, lastUpdate: Date.now() };
+            }
+
+            updateSyncAnalysis();
+        }
+
+        function updateSyncAnalysis() {
+            const analysis = document.getElementById('sync-analysis');
+            const overallStatus = document.getElementById('overall-status');
+            
+            let analysisText = `Last Update: ${new Date().toLocaleTimeString()}\n\n`;
+            analysisText += `Master: ${syncData.master.animation} | Number: ${syncData.master.number} | Phase: ${syncData.master.phase}\n`;
+            analysisText += `Client 1: ${syncData.client1.animation} | Number: ${syncData.client1.number} | Sync: ${syncData.client1.sync}\n`;
+            analysisText += `Client 2: ${syncData.client2.animation} | Number: ${syncData.client2.number} | Sync: ${syncData.client2.sync}\n\n`;
+            
+            const client1Synced = syncData.client1.sync === 'synced';
+            const client2Synced = syncData.client2.sync === 'synced';
+            const animationsSynced = syncData.master.animation === syncData.client1.animation && syncData.master.animation === syncData.client2.animation;
+            
+            if (client1Synced && client2Synced && animationsSynced) {
+                analysisText += '✅ PERFECT SYNCHRONIZATION\n';
+                overallStatus.className = 'status-panel status-good';
+                overallStatus.innerHTML = '<strong>Status:</strong> ✅ Perfect Synchronization';
+            } else if (client1Synced || client2Synced) {
+                analysisText += '⚠️ PARTIAL SYNCHRONIZATION\n';
+                overallStatus.className = 'status-panel status-warning';
+                overallStatus.innerHTML = '<strong>Status:</strong> ⚠️ Partial Synchronization';
+            } else {
+                analysisText += '❌ SYNCHRONIZATION FAILED\n';
+                overallStatus.className = 'status-panel status-error';
+                overallStatus.innerHTML = '<strong>Status:</strong> ❌ Synchronization Failed';
+            }
+            
+            analysis.textContent = analysisText;
+        }
+
+        // Test functions
+        function testWheelSync() {
+            log('🎡 Testing wheel animation synchronization...');
+            updateDisplayMetrics();
+        }
+
+        function testResultSync() {
+            log('🎯 Testing result synchronization...');
+            updateDisplayMetrics();
+        }
+
+        function testGamePhases() {
+            log('🎮 Testing game phase synchronization...');
+            updateDisplayMetrics();
+        }
+
+        function simulateSpin() {
+            log('🎰 Simulating complete spin cycle...');
+            // This would trigger a spin on the master if we could access it
+            updateDisplayMetrics();
+        }
+
+        function refreshMaster() {
+            document.getElementById('master-frame').src = 'index.html?' + Date.now();
+            log('🔄 Master display refreshed');
+        }
+
+        function refreshClient1() {
+            document.getElementById('client1-frame').src = 'shop1.html?' + Date.now();
+            log('🔄 Client 1 display refreshed');
+        }
+
+        function refreshClient2() {
+            document.getElementById('client2-frame').src = 'shop2.html?' + Date.now();
+            log('🔄 Client 2 display refreshed');
+        }
+
+        function refreshAllDisplays() {
+            refreshMaster();
+            refreshClient1();
+            refreshClient2();
+            log('🔄 All displays refreshed');
+        }
+
+        function clearLogs() {
+            consoleOutput.innerHTML = 'Console cleared.<br>';
+        }
+
+        // Auto-monitoring
+        window.addEventListener('load', function() {
+            log('🎡 Wheel sync test page loaded');
+            
+            setTimeout(() => {
+                updateDisplayMetrics();
+                testInterval = setInterval(updateDisplayMetrics, 2000);
+                log('📊 Started automatic monitoring (2s intervals)');
+            }, 3000);
+        });
+
+        window.addEventListener('beforeunload', function() {
+            if (testInterval) {
+                clearInterval(testInterval);
+            }
+        });
+    </script>
+</body>
+</html>

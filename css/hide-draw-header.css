@@ -1,0 +1,26 @@
+/**
+ * Hide Draw Header
+ * This CSS file hides the draw header container and related elements
+ */
+
+/* Hide the draw header container */
+.draw-header-container,
+#drawHeaderContainer {
+    display: none !important;
+}
+
+/* Hide the draw header toggle button */
+.draw-header-toggle-button {
+    display: none !important;
+}
+
+/* Hide the overlay and dialog */
+#overlay,
+#drawSelectDialog {
+    display: none !important;
+}
+
+/* Hide any draw number indicators */
+.draw-number-indicator {
+    display: none !important;
+}

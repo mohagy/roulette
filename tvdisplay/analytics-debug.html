@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Analytics Synchronization Debug Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+        }
+        .debug-section {
+            background: #2a2a2a;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #FFD700;
+        }
+        .debug-section h3 {
+            margin: 0 0 15px 0;
+            color: #FFD700;
+        }
+        .debug-output {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+        .test-button {
+            background: #FFD700;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #e6c200;
+        }
+        .status-good { color: #28a745; }
+        .status-warning { color: #ffc107; }
+        .status-error { color: #dc3545; }
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Analytics Synchronization Debug Tool</h1>
+            <p>Comprehensive diagnostics for analytics synchronization issues</p>
+        </div>
+
+        <div class="debug-section">
+            <h3>🎮 Debug Controls</h3>
+            <div class="control-grid">
+                <button class="test-button" onclick="checkBroadcastChannel()">📡 Check BroadcastChannel</button>
+                <button class="test-button" onclick="checkAnalyticsElements()">🔍 Check Analytics Elements</button>
+                <button class="test-button" onclick="checkMasterSync()">👑 Check Master Sync</button>
+                <button class="test-button" onclick="checkClientSync()">📺 Check Client Sync</button>
+                <button class="test-button" onclick="testAnalyticsToggle()">📊 Test Analytics Toggle</button>
+                <button class="test-button" onclick="simulateAnalyticsData()">📈 Simulate Analytics Data</button>
+                <button class="test-button" onclick="runFullDiagnostic()">🧪 Run Full Diagnostic</button>
+                <button class="test-button" onclick="clearAllLogs()">🗑️ Clear All Logs</button>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h3>📡 BroadcastChannel Status</h3>
+            <div class="debug-output" id="broadcast-status">Checking BroadcastChannel...</div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🔍 Analytics Elements Detection</h3>
+            <div class="debug-output" id="elements-status">Checking analytics elements...</div>
+        </div>
+
+        <div class="debug-section">
+            <h3>👑 Master Synchronization Status</h3>
+            <div class="debug-output" id="master-status">Checking master sync...</div>
+        </div>
+
+        <div class="debug-section">
+            <h3>📺 Client Synchronization Status</h3>
+            <div class="debug-output" id="client-status">Checking client sync...</div>
+        </div>
+
+        <div class="debug-section">
+            <h3>📊 Analytics Data Status</h3>
+            <div class="debug-output" id="data-status">Checking analytics data...</div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🖥️ Debug Console</h3>
+            <div class="debug-output" id="debug-console">Analytics debug tool initialized...<br></div>
+        </div>
+    </div>
+
+    <script>
+        let debugChannel;
+        let messageCount = 0;
+
+        function log(message, type = 'info', targetId = 'debug-console') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff6b6b' : type === 'warn' ? '#ffd93d' : type === 'success' ? '#28a745' : '#00ff00';
+            const output = document.getElementById(targetId);
+            if (output) {
+                output.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span>\n`;
+                output.scrollTop = output.scrollHeight;
+            }
+        }
+
+        function checkBroadcastChannel() {
+            log('🔍 Checking BroadcastChannel functionality...', 'info', 'broadcast-status');
+            
+            try {
+                // Test BroadcastChannel support
+                if (typeof BroadcastChannel === 'undefined') {
+                    log('❌ BroadcastChannel not supported in this browser', 'error', 'broadcast-status');
+                    return;
+                }
+                log('✅ BroadcastChannel is supported', 'success', 'broadcast-status');
+
+                // Create test channel
+                debugChannel = new BroadcastChannel('roulette-sync-channel');
+                log('✅ Successfully created roulette-sync-channel', 'success', 'broadcast-status');
+
+                // Set up message listener
+                debugChannel.onmessage = function(event) {
+                    messageCount++;
+                    const message = event.data;
+                    log(`📨 Received message #${messageCount}: ${message.type}`, 'info', 'broadcast-status');
+                    
+                    if (message.type === 'analytics_visibility') {
+                        log(`📊 Analytics visibility: Left=${message.leftSidebarVisible}, Right=${message.rightSidebarVisible}`, 'info', 'broadcast-status');
+                    } else if (message.type === 'analytics_data') {
+                        log(`📈 Analytics data update: ${Object.keys(message.analyticsData || {}).length} properties`, 'info', 'broadcast-status');
+                    } else if (message.type === 'analytics_full_sync') {
+                        log(`🔄 Full analytics sync received`, 'info', 'broadcast-status');
+                    }
+                };
+
+                // Send test message
+                debugChannel.postMessage({
+                    type: 'debug_test',
+                    timestamp: Date.now(),
+                    message: 'Debug tool test message'
+                });
+                log('📤 Sent test message', 'info', 'broadcast-status');
+
+            } catch (error) {
+                log(`❌ BroadcastChannel error: ${error.message}`, 'error', 'broadcast-status');
+            }
+        }
+
+        function checkAnalyticsElements() {
+            log('🔍 Checking analytics elements in current page...', 'info', 'elements-status');
+            
+            // Check for analytics panels
+            const leftSidebar = document.querySelector('.analytics-left-sidebar');
+            const rightSidebar = document.querySelector('.analytics-right-sidebar');
+            const footerBar = document.querySelector('.analytics-footer-bar');
+            const analyticsButton = document.getElementById('analytics-button');
+
+            log(`Left Sidebar: ${leftSidebar ? '✅ Found' : '❌ Not found'}`, leftSidebar ? 'success' : 'error', 'elements-status');
+            log(`Right Sidebar: ${rightSidebar ? '✅ Found' : '❌ Not found'}`, rightSidebar ? 'success' : 'error', 'elements-status');
+            log(`Footer Bar: ${footerBar ? '✅ Found' : '❌ Not found'}`, footerBar ? 'warn' : 'info', 'elements-status');
+            log(`Analytics Button: ${analyticsButton ? '✅ Found' : '❌ Not found'}`, analyticsButton ? 'success' : 'error', 'elements-status');
+
+            // Check analytics data elements
+            const hotNumbers = document.getElementById('hot-numbers');
+            const coldNumbers = document.getElementById('cold-numbers');
+            const redPercentage = document.getElementById('red-percentage');
+            const blackPercentage = document.getElementById('black-percentage');
+
+            log(`Hot Numbers Container: ${hotNumbers ? '✅ Found' : '❌ Not found'}`, hotNumbers ? 'success' : 'error', 'elements-status');
+            log(`Cold Numbers Container: ${coldNumbers ? '✅ Found' : '❌ Not found'}`, coldNumbers ? 'success' : 'error', 'elements-status');
+            log(`Red Percentage Element: ${redPercentage ? '✅ Found' : '❌ Not found'}`, redPercentage ? 'success' : 'error', 'elements-status');
+            log(`Black Percentage Element: ${blackPercentage ? '✅ Found' : '❌ Not found'}`, blackPercentage ? 'success' : 'error', 'elements-status');
+
+            // Check visibility states
+            if (leftSidebar) {
+                const leftVisible = leftSidebar.classList.contains('visible') || leftSidebar.style.display !== 'none';
+                log(`Left Sidebar Visible: ${leftVisible ? 'Yes' : 'No'}`, 'info', 'elements-status');
+            }
+            if (rightSidebar) {
+                const rightVisible = rightSidebar.classList.contains('visible') || rightSidebar.style.display !== 'none';
+                log(`Right Sidebar Visible: ${rightVisible ? 'Yes' : 'No'}`, 'info', 'elements-status');
+            }
+        }
+
+        function checkMasterSync() {
+            log('🔍 Checking master synchronization functions...', 'info', 'master-status');
+            
+            // Check if master-client-sync.js is loaded
+            if (typeof window.MasterClientSync !== 'undefined') {
+                log('✅ MasterClientSync object found', 'success', 'master-status');
+            } else {
+                log('❌ MasterClientSync object not found', 'error', 'master-status');
+            }
+
+            // Check for sync functions
+            const syncFunctions = [
+                'setupAnalyticsMonitoring',
+                'setupAnalyticsPanelMonitoring', 
+                'setupAnalyticsDataMonitoring',
+                'captureAnalyticsData',
+                'broadcastAnalyticsFullSync'
+            ];
+
+            syncFunctions.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    log(`✅ Function ${funcName} found`, 'success', 'master-status');
+                } else {
+                    log(`❌ Function ${funcName} not found`, 'error', 'master-status');
+                }
+            });
+
+            // Check global analytics variables
+            log(`window.allSpins: ${window.allSpins ? `Array(${window.allSpins.length})` : 'undefined'}`, 'info', 'master-status');
+            log(`window.numberFrequency: ${window.numberFrequency ? 'Object' : 'undefined'}`, 'info', 'master-status');
+            log(`window.currentDrawNumber: ${window.currentDrawNumber || 'undefined'}`, 'info', 'master-status');
+        }
+
+        function checkClientSync() {
+            log('🔍 Checking client synchronization status...', 'info', 'client-status');
+            
+            // Check if this is a client or master
+            const url = window.location.href;
+            const isClient = url.includes('shop1.html') || url.includes('shop2.html');
+            const isMaster = url.includes('index.html');
+            
+            log(`Current page: ${url}`, 'info', 'client-status');
+            log(`Is Client: ${isClient}`, isClient ? 'info' : 'warn', 'client-status');
+            log(`Is Master: ${isMaster}`, isMaster ? 'info' : 'warn', 'client-status');
+
+            // Check client-specific functions
+            const clientFunctions = [
+                'handleClientAnalyticsVisibility',
+                'handleClientAnalyticsData',
+                'handleClientAnalyticsFullSync',
+                'applyClientAnalyticsData'
+            ];
+
+            clientFunctions.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    log(`✅ Client function ${funcName} found`, 'success', 'client-status');
+                } else {
+                    log(`❌ Client function ${funcName} not found`, 'error', 'client-status');
+                }
+            });
+        }
+
+        function testAnalyticsToggle() {
+            log('🔍 Testing analytics toggle functionality...', 'info', 'debug-console');
+            
+            const analyticsButton = document.getElementById('analytics-button');
+            if (analyticsButton) {
+                log('📊 Found analytics button, simulating click...', 'info', 'debug-console');
+                analyticsButton.click();
+                
+                setTimeout(() => {
+                    checkAnalyticsElements();
+                }, 500);
+            } else {
+                log('❌ Analytics button not found', 'error', 'debug-console');
+            }
+        }
+
+        function simulateAnalyticsData() {
+            log('🔍 Simulating analytics data update...', 'info', 'data-status');
+            
+            // Create fake analytics data
+            const fakeData = {
+                allSpins: [17, 23, 8, 31, 14],
+                numberFrequency: { 17: 3, 23: 2, 8: 1, 31: 2, 14: 1 },
+                currentDrawNumber: 5,
+                hotNumbersHTML: '<div class="hot-number">17</div><div class="hot-number">23</div>',
+                coldNumbersHTML: '<div class="cold-number">8</div><div class="cold-number">14</div>',
+                distributions: {
+                    red: { percentage: '60%', count: '(3)' },
+                    black: { percentage: '40%', count: '(2)' },
+                    green: { percentage: '0%', count: '(0)' }
+                }
+            };
+
+            if (debugChannel) {
+                debugChannel.postMessage({
+                    type: 'analytics_data',
+                    analyticsData: fakeData,
+                    timestamp: Date.now()
+                });
+                log('📤 Sent fake analytics data', 'success', 'data-status');
+            } else {
+                log('❌ No debug channel available', 'error', 'data-status');
+            }
+
+            // Also try to apply data directly if we're on a client
+            if (typeof window.applyClientAnalyticsData === 'function') {
+                try {
+                    window.applyClientAnalyticsData(fakeData);
+                    log('✅ Applied fake data directly to client', 'success', 'data-status');
+                } catch (error) {
+                    log(`❌ Error applying fake data: ${error.message}`, 'error', 'data-status');
+                }
+            }
+        }
+
+        function runFullDiagnostic() {
+            log('🧪 Running full diagnostic suite...', 'info', 'debug-console');
+            
+            setTimeout(() => checkBroadcastChannel(), 100);
+            setTimeout(() => checkAnalyticsElements(), 500);
+            setTimeout(() => checkMasterSync(), 1000);
+            setTimeout(() => checkClientSync(), 1500);
+            setTimeout(() => {
+                log('🧪 Full diagnostic completed', 'success', 'debug-console');
+            }, 2000);
+        }
+
+        function clearAllLogs() {
+            const outputs = ['broadcast-status', 'elements-status', 'master-status', 'client-status', 'data-status', 'debug-console'];
+            outputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.innerHTML = `${id.replace('-', ' ')} cleared...\n`;
+                }
+            });
+            messageCount = 0;
+        }
+
+        // Auto-initialize
+        window.addEventListener('load', function() {
+            log('🔍 Analytics debug tool loaded', 'success', 'debug-console');
+            setTimeout(runFullDiagnostic, 1000);
+        });
+
+        // Cleanup
+        window.addEventListener('beforeunload', function() {
+            if (debugChannel) {
+                debugChannel.close();
+            }
+        });
+    </script>
+</body>
+</html>

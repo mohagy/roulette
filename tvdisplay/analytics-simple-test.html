@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Simple Analytics Sync Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .display-card {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #FFD700;
+        }
+        .display-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #FFD700;
+        }
+        .iframe-container {
+            width: 100%;
+            height: 300px;
+            border: 2px solid #555;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transform: scale(0.6);
+            transform-origin: 0 0;
+            width: 166.67%;
+            height: 166.67%;
+        }
+        .status-info {
+            background: #333;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 11px;
+        }
+        .test-button {
+            background: #FFD700;
+            color: black;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 3px;
+            width: 100%;
+            font-size: 12px;
+        }
+        .test-button:hover {
+            background: #e6c200;
+        }
+        .control-panel {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .instructions {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 5px solid #FFD700;
+        }
+        .instructions h3 {
+            margin: 0 0 10px 0;
+            color: #FFD700;
+        }
+        .status-good { color: #28a745; }
+        .status-warning { color: #ffc107; }
+        .status-error { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Simple Analytics Synchronization Test</h1>
+            <p>Quick test to verify analytics panels and data sync across displays</p>
+        </div>
+
+        <div class="instructions">
+            <h3>🧪 Test Instructions:</h3>
+            <ol>
+                <li><strong>Step 1:</strong> Wait for all displays to load (about 5 seconds)</li>
+                <li><strong>Step 2:</strong> Click on the <strong>MASTER</strong> display and press the <strong>'A'</strong> key to toggle analytics</li>
+                <li><strong>Step 3:</strong> Verify that analytics panels appear on <strong>ALL THREE</strong> displays simultaneously</li>
+                <li><strong>Step 4:</strong> Press <strong>'A'</strong> again to hide analytics and verify they disappear on all displays</li>
+                <li><strong>Step 5:</strong> Check the status info below each display for sync confirmation</li>
+            </ol>
+        </div>
+
+        <div class="test-grid">
+            <!-- Master Display -->
+            <div class="display-card">
+                <div class="display-title">👑 MASTER</div>
+                <div class="iframe-container">
+                    <iframe id="master-frame" src="index.html"></iframe>
+                </div>
+                <div class="status-info" id="master-status">
+                    Status: Loading...<br>
+                    Analytics: Checking...<br>
+                    Role: Master
+                </div>
+                <button class="test-button" onclick="refreshMaster()">🔄 Refresh</button>
+            </div>
+
+            <!-- Client 1 Display -->
+            <div class="display-card">
+                <div class="display-title">📺 CLIENT 1</div>
+                <div class="iframe-container">
+                    <iframe id="client1-frame" src="shop1.html"></iframe>
+                </div>
+                <div class="status-info" id="client1-status">
+                    Status: Loading...<br>
+                    Analytics: Checking...<br>
+                    Sync: Waiting...
+                </div>
+                <button class="test-button" onclick="refreshClient1()">🔄 Refresh</button>
+            </div>
+
+            <!-- Client 2 Display -->
+            <div class="display-card">
+                <div class="display-title">📺 CLIENT 2</div>
+                <div class="iframe-container">
+                    <iframe id="client2-frame" src="shop2.html"></iframe>
+                </div>
+                <div class="status-info" id="client2-status">
+                    Status: Loading...<br>
+                    Analytics: Checking...<br>
+                    Sync: Waiting...
+                </div>
+                <button class="test-button" onclick="refreshClient2()">🔄 Refresh</button>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h3>🎮 Test Controls</h3>
+            <button class="test-button" onclick="checkAnalyticsSync()" style="width: auto; margin: 5px;">📊 Check Analytics Sync</button>
+            <button class="test-button" onclick="refreshAll()" style="width: auto; margin: 5px;">🔄 Refresh All</button>
+            <button class="test-button" onclick="openDebugTool()" style="width: auto; margin: 5px;">🔍 Open Debug Tool</button>
+        </div>
+
+        <div class="instructions">
+            <h3>✅ Success Criteria:</h3>
+            <ul>
+                <li><span class="status-good">✅ Analytics panels show/hide simultaneously on all displays</span></li>
+                <li><span class="status-good">✅ Client displays show "Sync: ✅ Synced" status</span></li>
+                <li><span class="status-good">✅ Analytics data appears identical across all displays</span></li>
+                <li><span class="status-good">✅ Client analytics buttons are disabled (grayed out)</span></li>
+            </ul>
+            
+            <h3>❌ Failure Indicators:</h3>
+            <ul>
+                <li><span class="status-error">❌ Analytics panels don't appear on client displays</span></li>
+                <li><span class="status-error">❌ Client displays show "Sync: ❌ Failed" status</span></li>
+                <li><span class="status-error">❌ Analytics data differs between displays</span></li>
+                <li><span class="status-error">❌ Browser console shows sync errors</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let testInterval;
+
+        function getAnalyticsState(frameId) {
+            try {
+                const frame = document.getElementById(frameId);
+                if (frame && frame.contentDocument) {
+                    const leftSidebar = frame.contentDocument.querySelector('.analytics-left-sidebar');
+                    const rightSidebar = frame.contentDocument.querySelector('.analytics-right-sidebar');
+                    
+                    const leftVisible = leftSidebar && (leftSidebar.classList.contains('visible') || 
+                                      (leftSidebar.style.display !== 'none' && leftSidebar.style.display !== ''));
+                    const rightVisible = rightSidebar && (rightSidebar.classList.contains('visible') || 
+                                        (rightSidebar.style.display !== 'none' && rightSidebar.style.display !== ''));
+                    
+                    return {
+                        leftVisible: leftVisible,
+                        rightVisible: rightVisible,
+                        anyVisible: leftVisible || rightVisible,
+                        leftElement: !!leftSidebar,
+                        rightElement: !!rightSidebar
+                    };
+                }
+            } catch (error) {
+                console.log(`Cannot access ${frameId} analytics:`, error.message);
+            }
+            return null;
+        }
+
+        function updateStatus() {
+            const masterState = getAnalyticsState('master-frame');
+            const client1State = getAnalyticsState('client1-frame');
+            const client2State = getAnalyticsState('client2-frame');
+
+            // Update master status
+            if (masterState) {
+                const analyticsStatus = masterState.anyVisible ? 'Visible' : 'Hidden';
+                document.getElementById('master-status').innerHTML = `
+                    Status: <span class="status-good">✅ Active</span><br>
+                    Analytics: <span class="${masterState.anyVisible ? 'status-good' : 'status-warning'}">${analyticsStatus}</span><br>
+                    Role: Master
+                `;
+            } else {
+                document.getElementById('master-status').innerHTML = `
+                    Status: <span class="status-error">❌ Loading</span><br>
+                    Analytics: Checking...<br>
+                    Role: Master
+                `;
+            }
+
+            // Update client 1 status
+            if (client1State && masterState) {
+                const synced = (client1State.anyVisible === masterState.anyVisible);
+                const analyticsStatus = client1State.anyVisible ? 'Visible' : 'Hidden';
+                const syncStatus = synced ? '✅ Synced' : '❌ Out of Sync';
+                
+                document.getElementById('client1-status').innerHTML = `
+                    Status: <span class="status-good">✅ Active</span><br>
+                    Analytics: <span class="${client1State.anyVisible ? 'status-good' : 'status-warning'}">${analyticsStatus}</span><br>
+                    Sync: <span class="${synced ? 'status-good' : 'status-error'}">${syncStatus}</span>
+                `;
+            } else {
+                document.getElementById('client1-status').innerHTML = `
+                    Status: <span class="status-error">❌ Loading</span><br>
+                    Analytics: Checking...<br>
+                    Sync: Waiting...
+                `;
+            }
+
+            // Update client 2 status
+            if (client2State && masterState) {
+                const synced = (client2State.anyVisible === masterState.anyVisible);
+                const analyticsStatus = client2State.anyVisible ? 'Visible' : 'Hidden';
+                const syncStatus = synced ? '✅ Synced' : '❌ Out of Sync';
+                
+                document.getElementById('client2-status').innerHTML = `
+                    Status: <span class="status-good">✅ Active</span><br>
+                    Analytics: <span class="${client2State.anyVisible ? 'status-good' : 'status-warning'}">${analyticsStatus}</span><br>
+                    Sync: <span class="${synced ? 'status-good' : 'status-error'}">${syncStatus}</span>
+                `;
+            } else {
+                document.getElementById('client2-status').innerHTML = `
+                    Status: <span class="status-error">❌ Loading</span><br>
+                    Analytics: Checking...<br>
+                    Sync: Waiting...
+                `;
+            }
+        }
+
+        function checkAnalyticsSync() {
+            console.log('📊 Checking analytics synchronization...');
+            updateStatus();
+            
+            const masterState = getAnalyticsState('master-frame');
+            const client1State = getAnalyticsState('client1-frame');
+            const client2State = getAnalyticsState('client2-frame');
+            
+            if (masterState && client1State && client2State) {
+                const allSynced = (masterState.anyVisible === client1State.anyVisible && 
+                                 masterState.anyVisible === client2State.anyVisible);
+                
+                if (allSynced) {
+                    alert('✅ Analytics synchronization is working correctly!');
+                } else {
+                    alert('❌ Analytics synchronization failed. Check the displays and try again.');
+                }
+            } else {
+                alert('⚠️ Cannot check synchronization - some displays are still loading.');
+            }
+        }
+
+        function refreshMaster() {
+            document.getElementById('master-frame').src = 'index.html?' + Date.now();
+        }
+
+        function refreshClient1() {
+            document.getElementById('client1-frame').src = 'shop1.html?' + Date.now();
+        }
+
+        function refreshClient2() {
+            document.getElementById('client2-frame').src = 'shop2.html?' + Date.now();
+        }
+
+        function refreshAll() {
+            refreshMaster();
+            refreshClient1();
+            refreshClient2();
+        }
+
+        function openDebugTool() {
+            window.open('analytics-debug.html', '_blank');
+        }
+
+        // Auto-monitoring
+        window.addEventListener('load', function() {
+            console.log('📊 Simple analytics sync test loaded');
+            
+            setTimeout(() => {
+                updateStatus();
+                testInterval = setInterval(updateStatus, 2000);
+                console.log('📊 Started automatic status monitoring');
+            }, 3000);
+        });
+
+        window.addEventListener('beforeunload', function() {
+            if (testInterval) {
+                clearInterval(testInterval);
+            }
+        });
+    </script>
+</body>
+</html>

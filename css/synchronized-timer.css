@@ -1,0 +1,97 @@
+/**
+ * Synchronized Timer Styles
+ */
+
+/* Hide any non-synchronized timers */
+.timer-display:not(.synchronized) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+}
+
+/* Style for the bottom timer when it's synchronized */
+.timer-display.synchronized {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transition: color 0.3s ease;
+    color: #ffcc00 !important; /* Bright yellow to indicate synchronization */
+    text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+    position: relative !important;
+    z-index: 10 !important;
+    height: auto !important;
+    width: auto !important;
+    overflow: visible !important;
+    left: auto !important;
+    top: auto !important;
+}
+
+/* Pulse animation for the timer when it's synchronized */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Apply the pulse animation when the timer is synchronized */
+.timer-display.synchronized {
+    animation: pulse 2s infinite;
+}
+
+/* Make the timer container more prominent */
+.timer-container {
+    position: relative;
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 1px solid #ffcc00;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+    overflow: hidden; /* Hide any overflow content */
+
+    /* Ensure the container only contains the label and the synchronized timer */
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Ensure only the timer label and synchronized timer are visible */
+.timer-container > *:not(.timer-label):not(.synchronized) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+}
+
+/* Style for the timer label */
+.timer-label {
+    font-weight: bold;
+    color: #ffffff;
+    position: relative;
+    z-index: 5;
+}
+
+/* Style for the timer display */
+.timer-display {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    position: relative;
+}

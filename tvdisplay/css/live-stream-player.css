@@ -1,0 +1,540 @@
+/**
+ * Live Stream Player CSS
+ * Styles for the draggable and resizable live stream player
+ */
+
+/* Live Stream Toggle Button */
+.live-stream-toggle-button {
+    position: fixed;
+    right: 20px;
+    bottom: 80px;
+    background-color: #FF5555;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 9998;
+    transition: all 0.3s ease;
+}
+
+.live-stream-toggle-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.live-stream-toggle-button i {
+    font-size: 20px;
+}
+
+/* Fullscreen Toggle Button */
+.fullscreen-toggle-button {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background-color: #28a745;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 9998;
+    transition: all 0.3s ease;
+}
+
+.fullscreen-toggle-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.fullscreen-toggle-button i {
+    font-size: 20px;
+}
+
+/* Fullscreen mode styles */
+.fullscreen-mode {
+    background-color: #000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+}
+
+/* Force fullscreen on html and body elements */
+html.fullscreen-mode,
+body.fullscreen-mode {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    background-color: #000 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+}
+
+.fullscreen-mode .fullscreen-toggle-button {
+    background-color: #dc3545;
+}
+
+.fullscreen-mode .fullscreen-toggle-button i:before {
+    content: "\f066"; /* fa-compress icon */
+}
+
+/* Hide scrollbars in fullscreen */
+.fullscreen-mode::-webkit-scrollbar {
+    display: none;
+}
+
+.fullscreen-mode {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Force main container to fill entire screen */
+.fullscreen-mode .website-wrapper,
+.fullscreen-mode #website-wrapper,
+.fullscreen-mode .roulette-table,
+.fullscreen-mode #main-container,
+.fullscreen-mode .main-content,
+.fullscreen-mode .container {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    border: none !important;
+    outline: none !important;
+}
+
+/* Optimize roulette table for fullscreen */
+.fullscreen-mode .roulette-table {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Ensure analytics panels work well in fullscreen */
+.fullscreen-mode .analytics-left-sidebar,
+.fullscreen-mode .analytics-right-sidebar {
+    height: 100vh !important;
+}
+
+/* Optimize timer display for fullscreen */
+.fullscreen-mode .timer-container {
+    font-size: 1.2em !important;
+}
+
+/* Better button positioning in fullscreen */
+.fullscreen-mode .live-stream-toggle-button,
+.fullscreen-mode .multi-stream-toggle-button,
+.fullscreen-mode .fullscreen-toggle-button,
+.fullscreen-mode .analytics-button {
+    position: fixed !important;
+    z-index: 10000 !important;
+}
+
+/* Remove any default browser margins/padding in fullscreen */
+.fullscreen-mode * {
+    box-sizing: border-box !important;
+}
+
+/* Ensure no elements have margins that push content away from edges */
+.fullscreen-mode body,
+.fullscreen-mode html,
+.fullscreen-mode #root,
+.fullscreen-mode .app,
+.fullscreen-mode .main-wrapper,
+.fullscreen-mode .website-wrapper,
+.fullscreen-mode #website-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    outline: none !important;
+}
+
+/* Override any existing CSS that might add margins/padding */
+.fullscreen-mode .roulette-table {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    outline: none !important;
+    transform: none !important;
+}
+
+/* Ensure the body takes full viewport in fullscreen */
+.fullscreen-mode body.index {
+    width: 100vw !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+}
+
+/* Player Styles */
+.live-stream-player {
+    position: fixed !important;
+    z-index: 9999 !important;
+    background-color: #000 !important;
+    border: 3px solid #FF5555 !important; /* Red border to make it stand out */
+    border-radius: 5px !important;
+    box-shadow: 0 0 20px rgba(255, 85, 85, 0.5) !important; /* Red glow */
+    overflow: hidden !important;
+}
+
+.live-stream-player:before {
+    content: "LIVE STREAM";
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background-color: rgba(255, 0, 0, 0.7);
+    color: white;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+    border-radius: 3px;
+    z-index: 10;
+}
+
+.live-stream-controls {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    border-top: 1px solid #FF5555 !important;
+}
+
+.live-stream-loading {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    color: #FF5555 !important;
+    font-family: Arial, sans-serif !important;
+}
+
+/* FORCE HIDE loading indicator when YouTube iframe is present */
+.live-stream-player .youtube-iframe ~ .live-stream-loading {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+/* Additional force hide for loading indicators */
+.live-stream-loading.force-hidden {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+/* Hide loading indicator after 2 seconds automatically */
+.live-stream-player.youtube-loaded .live-stream-loading {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+.live-stream-error {
+    background-color: rgba(255, 0, 0, 0.3) !important;
+    color: white !important;
+    font-family: Arial, sans-serif !important;
+}
+
+.live-stream-button {
+    color: white !important;
+    cursor: pointer !important;
+}
+
+.live-stream-button:hover {
+    color: #FF5555 !important;
+}
+
+.live-stream-resize-handle {
+    background: linear-gradient(135deg, transparent 70%, #FF5555 70%) !important;
+}
+
+/* Keyframe animation to make the player pulse slightly */
+@keyframes pulse-border {
+    0% { border-color: #FF5555; }
+    50% { border-color: #FF8888; }
+    100% { border-color: #FF5555; }
+}
+
+.live-stream-player {
+    animation: pulse-border 2s infinite;
+}
+
+#live-stream-container {
+    position: fixed;
+    z-index: var(--stream-player-z-index, 1001);
+    background-color: #202020;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+    min-height: 200px;
+    resize: both;
+    border: 1px solid #444;
+}
+
+#live-stream-container.dragging {
+    cursor: grabbing;
+    opacity: 0.8;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+}
+
+#live-stream-container.resizing {
+    cursor: nwse-resize;
+}
+
+#live-stream-header {
+    background-color: #222;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: grab;
+    user-select: none;
+    height: 30px;
+    border-bottom: 1px solid #333;
+}
+
+#live-stream-header button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0 5px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+#live-stream-header button:hover {
+    opacity: 1;
+}
+
+#live-stream-header > div {
+    display: flex;
+    gap: 8px;
+}
+
+#live-stream-resize {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 15px;
+    height: 15px;
+    cursor: nwse-resize;
+    background-image: linear-gradient(135deg, transparent 0%, transparent 50%, #777 50%, #777 100%);
+}
+
+.play-button-overlay {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.video-error-message {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background-color: rgba(200, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    z-index: 11;
+}
+
+.stream-url-container {
+    display: flex;
+    padding: 5px;
+    background-color: #1a1a1a;
+    border-top: 1px solid #333;
+    height: 40px;
+}
+
+.stream-url-input {
+    flex: 1;
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 3px;
+    color: white;
+    padding: 5px 10px;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.load-stream-button {
+    background-color: #2e86de;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.2s;
+}
+
+.load-stream-button:hover {
+    background-color: #3498db;
+}
+
+/* Responsive styles */
+@media (max-width: 500px) {
+    #live-stream-container {
+        min-width: 250px;
+        min-height: 180px;
+    }
+
+    .stream-url-input {
+        font-size: 10px;
+        padding: 4px 6px;
+    }
+
+    .load-stream-button {
+        padding: 4px 6px;
+        font-size: 10px;
+    }
+}
+
+/* Video controls customize */
+#live-stream-container video::-webkit-media-controls-panel {
+    background-color: rgba(20, 20, 20, 0.7);
+}
+
+#live-stream-container video::-webkit-media-controls-play-button {
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+}
+
+/* Multi-Stream Player Styles */
+.multi-stream-player {
+    border: 3px solid #6f42c1 !important;
+    border-radius: 5px !important;
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3) !important;
+    overflow: hidden !important;
+    background-color: #000 !important;
+}
+
+.multi-stream-player:hover {
+    box-shadow: 0 6px 16px rgba(111, 66, 193, 0.5) !important;
+}
+
+.multi-stream-header {
+    background-color: #6f42c1 !important;
+    color: white !important;
+    font-weight: bold !important;
+    border-bottom: 1px solid #5a2d91 !important;
+}
+
+.multi-stream-header:hover {
+    background-color: #5a2d91 !important;
+}
+
+.multi-stream-iframe {
+    background-color: #000 !important;
+}
+
+/* Multi-Stream Toggle Button */
+.multi-stream-toggle-button {
+    position: fixed !important;
+    right: 20px !important;
+    bottom: 140px !important;
+    background-color: #6f42c1 !important;
+    color: white !important;
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+    z-index: 9998 !important;
+    transition: all 0.3s ease !important;
+}
+
+.multi-stream-toggle-button:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+.multi-stream-toggle-button i {
+    font-size: 20px !important;
+}
+
+/* Animation for multi-stream players */
+@keyframes multiStreamFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.multi-stream-player {
+    animation: multiStreamFadeIn 0.3s ease-out !important;
+}
+
+/* Responsive multi-stream layout */
+@media (max-width: 1200px) {
+    .multi-stream-player {
+        width: 350px !important;
+        height: 200px !important;
+    }
+}
+
+@media (max-width: 800px) {
+    .multi-stream-player {
+        width: 300px !important;
+        height: 170px !important;
+    }
+}

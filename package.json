@@ -1,0 +1,12 @@
+{
+  "name": "roulette-firebase-migration",
+  "version": "1.0.0",
+  "description": "Migrate MySQL database to Firebase Realtime Database",
+  "main": "migrate-to-firebase.js",
+  "scripts": {
+    "migrate": "node migrate-to-firebase.js"
+  },
+  "dependencies": {
+    "mysql2": "^3.16.0"
+  }
+}

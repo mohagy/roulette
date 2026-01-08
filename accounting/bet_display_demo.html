@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persistent Bet Display Demo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .demo-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .demo-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .demo-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .demo-btn.danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .demo-btn.success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        .demo-btn.warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .demo-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .demo-info h3 {
+            margin-top: 0;
+            color: #3498db;
+        }
+
+        .demo-info ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .demo-info li {
+            margin: 5px 0;
+        }
+
+        .status-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .status-item {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .status-label {
+            color: #bdc3c7;
+        }
+
+        .status-value {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        /* Include the bet display styles from the main file */
+        .bet-display-container {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            max-width: 90vw;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+            cursor: move;
+            user-select: none;
+            transition: box-shadow 0.3s ease;
+            display: none;
+        }
+
+        .bet-display-container:hover {
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .bet-display-container.dragging {
+            cursor: grabbing;
+            transform: none;
+            transition: none;
+        }
+
+        .bet-display-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px 15px 0 0;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+
+        .bet-display-header .title {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bet-display-header .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bet-display-header .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .bet-display-header .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .bet-display-content {
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            color: #333;
+        }
+
+        .betting-slip-preview {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .betting-slip-preview.has-content {
+            background: white;
+            border: 1px solid #dee2e6;
+            color: #333;
+            font-style: normal;
+        }
+
+        .slip-header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .bet-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .bet-item:last-child {
+            border-bottom: none;
+        }
+
+        .slip-total {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #dee2e6;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .slip-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .slip-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .slip-btn.primary {
+            background: #28a745;
+            color: white;
+        }
+
+        .slip-btn.primary:hover {
+            background: #218838;
+        }
+
+        .slip-btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .slip-btn.secondary:hover {
+            background: #5a6268;
+        }
+
+        .position-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            z-index: 1001;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-title">
+            <i class="fas fa-receipt"></i> Persistent Bet Display Demo
+        </div>
+
+        <div class="demo-info">
+            <h3><i class="fas fa-info-circle"></i> How to Test</h3>
+            <ul>
+                <li><strong>Show Window:</strong> Click "Show Bet Display" to open the floating window</li>
+                <li><strong>Drag to Move:</strong> Click and drag the header to move the window around</li>
+                <li><strong>Position Persistence:</strong> Refresh the page - the window will appear in the same position</li>
+                <li><strong>Reset Position:</strong> Click "Reset Position" to return to center</li>
+                <li><strong>Debug Mode:</strong> Enable to see real-time position coordinates</li>
+            </ul>
+        </div>
+
+        <div class="demo-controls">
+            <button class="demo-btn success" onclick="showBetDisplay()">
+                <i class="fas fa-eye"></i> Show Bet Display
+            </button>
+            
+            <button class="demo-btn" onclick="loadSampleData()">
+                <i class="fas fa-ticket-alt"></i> Load Sample Slip
+            </button>
+            
+            <button class="demo-btn warning" onclick="toggleDebugMode()">
+                <i class="fas fa-bug"></i> Toggle Debug
+            </button>
+            
+            <button class="demo-btn danger" onclick="resetPosition()">
+                <i class="fas fa-undo"></i> Reset Position
+            </button>
+            
+            <button class="demo-btn" onclick="clearStorage()">
+                <i class="fas fa-trash"></i> Clear Storage
+            </button>
+            
+            <button class="demo-btn" onclick="updateStatus()">
+                <i class="fas fa-sync"></i> Update Status
+            </button>
+        </div>
+
+        <div class="status-display" id="status-display">
+            <div class="status-item">
+                <span class="status-label">Position Saved:</span>
+                <span class="status-value" id="position-saved">No</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Current Position:</span>
+                <span class="status-value" id="current-position">Not shown</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Debug Mode:</span>
+                <span class="status-value" id="debug-status">Disabled</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Window Visible:</span>
+                <span class="status-value" id="window-visible">No</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the bet display HTML structure -->
+    <div id="bet-display-container" class="bet-display-container">
+        <div class="bet-display-header" id="bet-display-header">
+            <div class="title">
+                <i class="fas fa-receipt"></i>
+                Betting Slip Preview
+            </div>
+            <div class="controls">
+                <button class="control-btn" id="minimize-btn" title="Minimize">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button class="control-btn" id="close-btn" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="bet-display-content" id="bet-display-content">
+            <div class="betting-slip-preview" id="betting-slip-preview">
+                <i class="fas fa-ticket-alt" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
+                <p>No betting slip selected</p>
+                <p><small>Click "Load Sample Slip" to preview a slip here</small></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="position-indicator" class="position-indicator">
+        Position: <span id="position-coords">0, 0</span>
+    </div>
+
+    <script>
+        // Include the persistent positioning system from the main file
+        // (This would normally be included from the main index.php file)
+        
+        // Configuration
+        const BET_DISPLAY_CONFIG = {
+            storageKey: 'roulette_bet_display_position',
+            defaultPosition: { x: null, y: 100 },
+            minDistance: 50,
+            debugMode: false
+        };
+
+        // Global variables
+        let isDragging = false;
+        let dragOffset = { x: 0, y: 0 };
+        let betDisplayContainer = null;
+        let positionIndicator = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBetDisplayContainer();
+            updateStatus();
+        });
+
+        // Initialize the bet display container system
+        function initializeBetDisplayContainer() {
+            betDisplayContainer = document.getElementById('bet-display-container');
+            positionIndicator = document.getElementById('position-indicator');
+
+            if (!betDisplayContainer) {
+                console.warn('Bet display container not found');
+                return;
+            }
+
+            loadSavedPosition();
+            initializeDragFunctionality();
+            initializeControlButtons();
+            window.addEventListener('resize', handleWindowResize);
+
+            console.log('Bet display container initialized');
+        }
+
+        // Load saved position from localStorage
+        function loadSavedPosition() {
+            try {
+                const savedPosition = localStorage.getItem(BET_DISPLAY_CONFIG.storageKey);
+
+                if (savedPosition) {
+                    const position = JSON.parse(savedPosition);
+
+                    if (isValidPosition(position)) {
+                        applyPosition(position);
+                        console.log('Restored saved position:', position);
+                    } else {
+                        console.log('Saved position invalid, using default');
+                        applyDefaultPosition();
+                    }
+                } else {
+                    console.log('No saved position found, using default');
+                    applyDefaultPosition();
+                }
+            } catch (error) {
+                console.error('Error loading saved position:', error);
+                applyDefaultPosition();
+            }
+        }
+
+        // Save current position to localStorage
+        function saveCurrentPosition() {
+            try {
+                const rect = betDisplayContainer.getBoundingClientRect();
+                const position = {
+                    x: rect.left,
+                    y: rect.top,
+                    timestamp: Date.now()
+                };
+
+                localStorage.setItem(BET_DISPLAY_CONFIG.storageKey, JSON.stringify(position));
+                console.log('Position saved:', position);
+                updatePositionIndicator(position);
+                updateStatus();
+            } catch (error) {
+                console.error('Error saving position:', error);
+            }
+        }
+
+        // Apply position to the container
+        function applyPosition(position) {
+            if (!betDisplayContainer) return;
+
+            betDisplayContainer.style.left = position.x + 'px';
+            betDisplayContainer.style.top = position.y + 'px';
+            betDisplayContainer.style.transform = 'none';
+
+            updatePositionIndicator(position);
+        }
+
+        // Apply default centered position
+        function applyDefaultPosition() {
+            if (!betDisplayContainer) return;
+
+            const defaultPos = BET_DISPLAY_CONFIG.defaultPosition;
+
+            if (defaultPos.x === null) {
+                betDisplayContainer.style.left = '50%';
+                betDisplayContainer.style.transform = 'translateX(-50%)';
+            } else {
+                betDisplayContainer.style.left = defaultPos.x + 'px';
+                betDisplayContainer.style.transform = 'none';
+            }
+
+            betDisplayContainer.style.top = defaultPos.y + 'px';
+            updatePositionIndicator({ x: defaultPos.x || 'center', y: defaultPos.y });
+        }
+
+        // Validate if position is within viewport bounds
+        function isValidPosition(position) {
+            const viewport = {
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+
+            const containerWidth = 400;
+            const containerHeight = 200;
+            const minDist = BET_DISPLAY_CONFIG.minDistance;
+
+            return (
+                position.x >= minDist &&
+                position.y >= minDist &&
+                position.x + containerWidth <= viewport.width - minDist &&
+                position.y + containerHeight <= viewport.height - minDist
+            );
+        }
+
+        // Initialize drag functionality
+        function initializeDragFunctionality() {
+            const header = document.getElementById('bet-display-header');
+
+            if (!header) return;
+
+            header.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+            header.addEventListener('touchstart', startDrag, { passive: false });
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('touchend', endDrag);
+        }
+
+        // Start dragging
+        function startDrag(e) {
+            e.preventDefault();
+            isDragging = true;
+
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+            const rect = betDisplayContainer.getBoundingClientRect();
+            dragOffset.x = clientX - rect.left;
+            dragOffset.y = clientY - rect.top;
+
+            betDisplayContainer.classList.add('dragging');
+            document.body.style.userSelect = 'none';
+        }
+
+        // Handle dragging
+        function drag(e) {
+            if (!isDragging) return;
+
+            e.preventDefault();
+
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+            const newX = clientX - dragOffset.x;
+            const newY = clientY - dragOffset.y;
+
+            const constrainedPosition = constrainToViewport({ x: newX, y: newY });
+
+            betDisplayContainer.style.left = constrainedPosition.x + 'px';
+            betDisplayContainer.style.top = constrainedPosition.y + 'px';
+            betDisplayContainer.style.transform = 'none';
+
+            updatePositionIndicator(constrainedPosition);
+        }
+
+        // End dragging
+        function endDrag(e) {
+            if (!isDragging) return;
+
+            isDragging = false;
+            betDisplayContainer.classList.remove('dragging');
+            document.body.style.userSelect = '';
+            saveCurrentPosition();
+        }
+
+        // Constrain position to viewport bounds
+        function constrainToViewport(position) {
+            const viewport = {
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+
+            const containerRect = betDisplayContainer.getBoundingClientRect();
+            const containerWidth = containerRect.width || 400;
+            const containerHeight = containerRect.height || 200;
+            const minDist = BET_DISPLAY_CONFIG.minDistance;
+
+            return {
+                x: Math.max(minDist, Math.min(position.x, viewport.width - containerWidth - minDist)),
+                y: Math.max(minDist, Math.min(position.y, viewport.height - containerHeight - minDist))
+            };
+        }
+
+        // Handle window resize
+        function handleWindowResize() {
+            if (!betDisplayContainer) return;
+
+            const rect = betDisplayContainer.getBoundingClientRect();
+            const currentPosition = { x: rect.left, y: rect.top };
+
+            if (!isValidPosition(currentPosition)) {
+                const constrainedPosition = constrainToViewport(currentPosition);
+                applyPosition(constrainedPosition);
+                saveCurrentPosition();
+            }
+        }
+
+        // Initialize control buttons
+        function initializeControlButtons() {
+            const minimizeBtn = document.getElementById('minimize-btn');
+            const closeBtn = document.getElementById('close-btn');
+
+            if (minimizeBtn) {
+                minimizeBtn.addEventListener('click', toggleMinimize);
+            }
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', hideBetDisplay);
+            }
+        }
+
+        // Toggle minimize state
+        function toggleMinimize() {
+            const content = document.getElementById('bet-display-content');
+            const minimizeBtn = document.getElementById('minimize-btn');
+
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                minimizeBtn.innerHTML = '<i class="fas fa-minus"></i>';
+                minimizeBtn.title = 'Minimize';
+            } else {
+                content.style.display = 'none';
+                minimizeBtn.innerHTML = '<i class="fas fa-plus"></i>';
+                minimizeBtn.title = 'Restore';
+            }
+        }
+
+        // Show/hide functions
+        function showBetDisplay() {
+            betDisplayContainer.style.display = 'block';
+            updateStatus();
+        }
+
+        function hideBetDisplay() {
+            betDisplayContainer.style.display = 'none';
+            updateStatus();
+        }
+
+        // Update position indicator
+        function updatePositionIndicator(position) {
+            if (positionIndicator && BET_DISPLAY_CONFIG.debugMode) {
+                const coords = document.getElementById('position-coords');
+                if (coords) {
+                    coords.textContent = `${Math.round(position.x)}, ${Math.round(position.y)}`;
+                }
+            }
+        }
+
+        // Demo control functions
+        function loadSampleData() {
+            showBetDisplay();
+
+            const sampleSlipData = {
+                slipNumber: 'BS' + Math.floor(Math.random() * 1000).toString().padStart(3, '0'),
+                drawNumber: 42,
+                bets: [
+                    { type: 'Straight Up', selection: '7', amount: 50.00 },
+                    { type: 'Straight Up', selection: '23', amount: 100.00 },
+                    { type: 'Corner', selection: '1,2,4,5', amount: 25.00 },
+                    { type: 'Red/Black', selection: 'Red', amount: 75.00 }
+                ]
+            };
+
+            updateBettingSlipPreview(sampleSlipData);
+        }
+
+        function toggleDebugMode() {
+            BET_DISPLAY_CONFIG.debugMode = !BET_DISPLAY_CONFIG.debugMode;
+
+            if (BET_DISPLAY_CONFIG.debugMode) {
+                positionIndicator.style.display = 'block';
+                const rect = betDisplayContainer.getBoundingClientRect();
+                updatePositionIndicator({ x: rect.left, y: rect.top });
+            } else {
+                positionIndicator.style.display = 'none';
+            }
+
+            updateStatus();
+        }
+
+        function resetPosition() {
+            localStorage.removeItem(BET_DISPLAY_CONFIG.storageKey);
+            applyDefaultPosition();
+            updateStatus();
+            console.log('Position reset to default');
+        }
+
+        function clearStorage() {
+            localStorage.clear();
+            updateStatus();
+            console.log('All localStorage cleared');
+        }
+
+        function updateStatus() {
+            const savedPosition = localStorage.getItem(BET_DISPLAY_CONFIG.storageKey);
+            const isVisible = betDisplayContainer && betDisplayContainer.style.display !== 'none';
+
+            document.getElementById('position-saved').textContent = savedPosition ? 'Yes' : 'No';
+            document.getElementById('debug-status').textContent = BET_DISPLAY_CONFIG.debugMode ? 'Enabled' : 'Disabled';
+            document.getElementById('window-visible').textContent = isVisible ? 'Yes' : 'No';
+
+            if (isVisible && betDisplayContainer) {
+                const rect = betDisplayContainer.getBoundingClientRect();
+                document.getElementById('current-position').textContent = `${Math.round(rect.left)}, ${Math.round(rect.top)}`;
+            } else {
+                document.getElementById('current-position').textContent = 'Not shown';
+            }
+        }
+
+        // Update betting slip preview content
+        function updateBettingSlipPreview(slipData) {
+            const preview = document.getElementById('betting-slip-preview');
+
+            if (!slipData || !slipData.bets || slipData.bets.length === 0) {
+                preview.innerHTML = `
+                    <i class="fas fa-ticket-alt" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.5;"></i>
+                    <p>No betting slip selected</p>
+                    <p><small>Click "Load Sample Slip" to preview a slip here</small></p>
+                `;
+                preview.className = 'betting-slip-preview';
+                return;
+            }
+
+            preview.className = 'betting-slip-preview has-content';
+
+            let betsHtml = '';
+            let totalAmount = 0;
+
+            slipData.bets.forEach(bet => {
+                betsHtml += `
+                    <div class="bet-item">
+                        <span>${bet.type}: ${bet.selection}</span>
+                        <span>$${bet.amount.toFixed(2)}</span>
+                    </div>
+                `;
+                totalAmount += bet.amount;
+            });
+
+            preview.innerHTML = `
+                <div class="slip-header">
+                    <h6>ROULETTE BETTING SLIP</h6>
+                    <small>${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</small><br>
+                    <small>Draw #: ${slipData.drawNumber || 'TBD'}</small>
+                </div>
+                <div class="slip-details">
+                    ${betsHtml}
+                </div>
+                <div class="slip-total">
+                    Total Stakes: $${totalAmount.toFixed(2)}<br>
+                    <small>Slip #: ${slipData.slipNumber || 'Generating...'}</small>
+                </div>
+                <div class="slip-actions">
+                    <button class="slip-btn primary" onclick="alert('Print functionality would be implemented here')">
+                        <i class="fas fa-print"></i> Print Slip
+                    </button>
+                    <button class="slip-btn secondary" onclick="hideBetDisplay()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

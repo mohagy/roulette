@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floating Countdown Timer Demo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+
+        .demo-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .demo-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .demo-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .demo-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .demo-btn.danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .demo-btn.success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        .demo-btn.warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .demo-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .demo-info h3 {
+            margin-top: 0;
+            color: #3498db;
+        }
+
+        .demo-info ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .demo-info li {
+            margin: 5px 0;
+        }
+
+        .status-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .status-item {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .status-label {
+            color: #bdc3c7;
+        }
+
+        .status-value {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        /* Include countdown timer styles */
+        .countdown-timer-widget {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 280px;
+            background: rgba(44, 62, 80, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 999;
+            cursor: move;
+            user-select: none;
+            transition: all 0.3s ease;
+            color: white;
+            display: block;
+        }
+
+        .countdown-timer-widget:hover {
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .countdown-timer-widget.dragging {
+            cursor: grabbing;
+            transition: none;
+        }
+
+        .countdown-timer-widget.minimized .timer-content {
+            display: none;
+        }
+
+        .countdown-timer-widget.warning {
+            border-color: #f39c12;
+            box-shadow: 0 20px 40px rgba(243, 156, 18, 0.3);
+        }
+
+        .countdown-timer-widget.critical {
+            border-color: #e74c3c;
+            box-shadow: 0 20px 40px rgba(231, 76, 60, 0.4);
+            animation: criticalPulse 1s infinite;
+        }
+
+        @keyframes criticalPulse {
+            0%, 100% { 
+                box-shadow: 0 20px 40px rgba(231, 76, 60, 0.4);
+                border-color: #e74c3c;
+            }
+            50% { 
+                box-shadow: 0 25px 50px rgba(231, 76, 60, 0.6);
+                border-color: #ff6b6b;
+            }
+        }
+
+        .timer-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            padding: 12px 15px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .timer-header .title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-header .timer-icon {
+            font-size: 1rem;
+            animation: tickTock 1s infinite;
+        }
+
+        @keyframes tickTock {
+            0%, 50% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+        }
+
+        .timer-header .controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .timer-control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .timer-control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .timer-content {
+            padding: 20px 15px;
+            text-align: center;
+        }
+
+        .countdown-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 2px;
+        }
+
+        .countdown-display.warning {
+            color: #f39c12;
+        }
+
+        .countdown-display.critical {
+            color: #e74c3c;
+            animation: criticalFlash 0.5s infinite;
+        }
+
+        @keyframes criticalFlash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .timer-label {
+            font-size: 0.85rem;
+            color: #bdc3c7;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timer-info {
+            font-size: 0.8rem;
+            color: #95a5a6;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .timer-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .timer-status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #27ae60;
+            animation: pulse 2s infinite;
+        }
+
+        .timer-status-indicator.warning {
+            background: #f39c12;
+        }
+
+        .timer-status-indicator.critical {
+            background: #e74c3c;
+        }
+
+        .timer-status-text {
+            font-size: 0.75rem;
+            color: #bdc3c7;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .countdown-timer-widget {
+                width: 240px;
+                top: 10px;
+                right: 10px;
+            }
+            
+            .countdown-display {
+                font-size: 2rem;
+            }
+            
+            .timer-content {
+                padding: 15px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-title">
+            <i class="fas fa-clock"></i> Floating Countdown Timer Demo
+        </div>
+
+        <div class="demo-info">
+            <h3><i class="fas fa-info-circle"></i> How to Test</h3>
+            <ul>
+                <li><strong>Drag to Move:</strong> Click and drag the timer header to reposition the widget</li>
+                <li><strong>Position Persistence:</strong> Refresh the page - the timer will appear in the same position</li>
+                <li><strong>Time Controls:</strong> Use buttons below to test different countdown scenarios</li>
+                <li><strong>Visual States:</strong> Watch color changes as time runs low (warning at 60s, critical at 30s)</li>
+                <li><strong>Minimize/Close:</strong> Use the control buttons in the timer header</li>
+            </ul>
+        </div>
+
+        <div class="demo-controls">
+            <button class="demo-btn success" onclick="setCountdownTime(180)">
+                <i class="fas fa-play"></i> Start 3 Minutes
+            </button>
+            
+            <button class="demo-btn warning" onclick="setCountdownTime(90)">
+                <i class="fas fa-clock"></i> Set 90 Seconds
+            </button>
+            
+            <button class="demo-btn warning" onclick="setCountdownTime(45)">
+                <i class="fas fa-exclamation-triangle"></i> Warning State
+            </button>
+            
+            <button class="demo-btn danger" onclick="setCountdownTime(15)">
+                <i class="fas fa-fire"></i> Critical State
+            </button>
+            
+            <button class="demo-btn" onclick="pauseTimer()">
+                <i class="fas fa-pause"></i> Pause Timer
+            </button>
+            
+            <button class="demo-btn" onclick="resumeTimer()">
+                <i class="fas fa-play"></i> Resume Timer
+            </button>
+            
+            <button class="demo-btn" onclick="resetTimerPosition()">
+                <i class="fas fa-undo"></i> Reset Position
+            </button>
+            
+            <button class="demo-btn" onclick="toggleTimer()">
+                <i class="fas fa-eye"></i> Toggle Visibility
+            </button>
+        </div>
+
+        <div class="status-display" id="status-display">
+            <div class="status-item">
+                <span class="status-label">Current Time:</span>
+                <span class="status-value" id="current-time">03:00</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Timer State:</span>
+                <span class="status-value" id="timer-state">Active</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Position Saved:</span>
+                <span class="status-value" id="position-saved">No</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Timer Visible:</span>
+                <span class="status-value" id="timer-visible">Yes</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the countdown timer HTML structure -->
+    <div id="countdown-timer-widget" class="countdown-timer-widget">
+        <div class="timer-header" id="timer-header">
+            <div class="title">
+                <i class="fas fa-clock timer-icon"></i>
+                <span>Next Draw</span>
+            </div>
+            <div class="controls">
+                <button class="timer-control-btn" id="timer-minimize-btn" title="Minimize">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button class="timer-control-btn" id="timer-close-btn" title="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="timer-content" id="timer-content">
+            <div class="timer-label">Time Remaining</div>
+            <div class="countdown-display" id="countdown-display">03:00</div>
+            <div class="timer-info">
+                <div>Draw #<span id="timer-draw-number">42</span></div>
+                <div class="timer-status">
+                    <div class="timer-status-indicator" id="timer-status-indicator"></div>
+                    <span class="timer-status-text" id="timer-status-text">Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration for countdown timer
+        const COUNTDOWN_CONFIG = {
+            storageKey: 'roulette_countdown_timer_position',
+            defaultPosition: { x: null, y: 20 },
+            minDistance: 20,
+            warningThreshold: 60,
+            criticalThreshold: 30,
+            updateInterval: 1000,
+            debugMode: false
+        };
+
+        // Global variables
+        let countdownTimerWidget = null;
+        let countdownInterval = null;
+        let currentCountdownTime = 180;
+        let isTimerDragging = false;
+        let timerDragOffset = { x: 0, y: 0 };
+        let isPaused = false;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCountdownTimer();
+            updateStatus();
+        });
+
+        // Initialize countdown timer widget
+        function initializeCountdownTimer() {
+            countdownTimerWidget = document.getElementById('countdown-timer-widget');
+
+            if (!countdownTimerWidget) {
+                console.warn('Countdown timer widget not found');
+                return;
+            }
+
+            loadTimerSavedPosition();
+            initializeTimerDragFunctionality();
+            initializeTimerControlButtons();
+            startCountdownTimer();
+            window.addEventListener('resize', handleTimerWindowResize);
+
+            console.log('Countdown timer widget initialized');
+        }
+
+        // Load saved position for timer
+        function loadTimerSavedPosition() {
+            try {
+                const savedPosition = localStorage.getItem(COUNTDOWN_CONFIG.storageKey);
+
+                if (savedPosition) {
+                    const position = JSON.parse(savedPosition);
+
+                    if (isValidTimerPosition(position)) {
+                        applyTimerPosition(position);
+                        console.log('Restored timer position:', position);
+                    } else {
+                        applyDefaultTimerPosition();
+                    }
+                } else {
+                    applyDefaultTimerPosition();
+                }
+            } catch (error) {
+                console.error('Error loading timer position:', error);
+                applyDefaultTimerPosition();
+            }
+        }
+
+        // Save current timer position
+        function saveTimerCurrentPosition() {
+            try {
+                const rect = countdownTimerWidget.getBoundingClientRect();
+                const position = {
+                    x: rect.left,
+                    y: rect.top,
+                    timestamp: Date.now()
+                };
+
+                localStorage.setItem(COUNTDOWN_CONFIG.storageKey, JSON.stringify(position));
+                updateStatus();
+            } catch (error) {
+                console.error('Error saving timer position:', error);
+            }
+        }
+
+        // Apply position to timer
+        function applyTimerPosition(position) {
+            if (!countdownTimerWidget) return;
+            countdownTimerWidget.style.left = position.x + 'px';
+            countdownTimerWidget.style.top = position.y + 'px';
+            countdownTimerWidget.style.right = 'auto';
+        }
+
+        // Apply default timer position
+        function applyDefaultTimerPosition() {
+            if (!countdownTimerWidget) return;
+            const defaultPos = COUNTDOWN_CONFIG.defaultPosition;
+
+            if (defaultPos.x === null) {
+                countdownTimerWidget.style.right = '20px';
+                countdownTimerWidget.style.left = 'auto';
+            } else {
+                countdownTimerWidget.style.left = defaultPos.x + 'px';
+                countdownTimerWidget.style.right = 'auto';
+            }
+
+            countdownTimerWidget.style.top = defaultPos.y + 'px';
+        }
+
+        // Validate timer position
+        function isValidTimerPosition(position) {
+            const viewport = { width: window.innerWidth, height: window.innerHeight };
+            const timerWidth = 280, timerHeight = 150, minDist = COUNTDOWN_CONFIG.minDistance;
+
+            return (
+                position.x >= minDist &&
+                position.y >= minDist &&
+                position.x + timerWidth <= viewport.width - minDist &&
+                position.y + timerHeight <= viewport.height - minDist
+            );
+        }
+
+        // Initialize timer drag functionality
+        function initializeTimerDragFunctionality() {
+            const header = document.getElementById('timer-header');
+            if (!header) return;
+
+            header.addEventListener('mousedown', startTimerDrag);
+            document.addEventListener('mousemove', dragTimer);
+            document.addEventListener('mouseup', endTimerDrag);
+            header.addEventListener('touchstart', startTimerDrag, { passive: false });
+            document.addEventListener('touchmove', dragTimer, { passive: false });
+            document.addEventListener('touchend', endTimerDrag);
+        }
+
+        // Start timer dragging
+        function startTimerDrag(e) {
+            e.preventDefault();
+            isTimerDragging = true;
+
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+            const rect = countdownTimerWidget.getBoundingClientRect();
+            timerDragOffset.x = clientX - rect.left;
+            timerDragOffset.y = clientY - rect.top;
+
+            countdownTimerWidget.classList.add('dragging');
+            document.body.style.userSelect = 'none';
+        }
+
+        // Handle timer dragging
+        function dragTimer(e) {
+            if (!isTimerDragging) return;
+            e.preventDefault();
+
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+            const newX = clientX - timerDragOffset.x;
+            const newY = clientY - timerDragOffset.y;
+
+            const constrainedPosition = constrainTimerToViewport({ x: newX, y: newY });
+
+            countdownTimerWidget.style.left = constrainedPosition.x + 'px';
+            countdownTimerWidget.style.top = constrainedPosition.y + 'px';
+            countdownTimerWidget.style.right = 'auto';
+        }
+
+        // End timer dragging
+        function endTimerDrag(e) {
+            if (!isTimerDragging) return;
+
+            isTimerDragging = false;
+            countdownTimerWidget.classList.remove('dragging');
+            document.body.style.userSelect = '';
+            saveTimerCurrentPosition();
+        }
+
+        // Constrain timer to viewport
+        function constrainTimerToViewport(position) {
+            const viewport = { width: window.innerWidth, height: window.innerHeight };
+            const timerRect = countdownTimerWidget.getBoundingClientRect();
+            const timerWidth = timerRect.width || 280;
+            const timerHeight = timerRect.height || 150;
+            const minDist = COUNTDOWN_CONFIG.minDistance;
+
+            return {
+                x: Math.max(minDist, Math.min(position.x, viewport.width - timerWidth - minDist)),
+                y: Math.max(minDist, Math.min(position.y, viewport.height - timerHeight - minDist))
+            };
+        }
+
+        // Handle timer window resize
+        function handleTimerWindowResize() {
+            if (!countdownTimerWidget) return;
+
+            const rect = countdownTimerWidget.getBoundingClientRect();
+            const currentPosition = { x: rect.left, y: rect.top };
+
+            if (!isValidTimerPosition(currentPosition)) {
+                const constrainedPosition = constrainTimerToViewport(currentPosition);
+                applyTimerPosition(constrainedPosition);
+                saveTimerCurrentPosition();
+            }
+        }
+
+        // Initialize timer control buttons
+        function initializeTimerControlButtons() {
+            const minimizeBtn = document.getElementById('timer-minimize-btn');
+            const closeBtn = document.getElementById('timer-close-btn');
+
+            if (minimizeBtn) {
+                minimizeBtn.addEventListener('click', toggleTimerMinimize);
+            }
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', hideCountdownTimer);
+            }
+        }
+
+        // Toggle timer minimize
+        function toggleTimerMinimize() {
+            if (countdownTimerWidget.classList.contains('minimized')) {
+                countdownTimerWidget.classList.remove('minimized');
+                document.getElementById('timer-minimize-btn').innerHTML = '<i class="fas fa-minus"></i>';
+            } else {
+                countdownTimerWidget.classList.add('minimized');
+                document.getElementById('timer-minimize-btn').innerHTML = '<i class="fas fa-plus"></i>';
+            }
+            updateStatus();
+        }
+
+        // Hide/show countdown timer
+        function hideCountdownTimer() {
+            countdownTimerWidget.style.display = 'none';
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+            updateStatus();
+        }
+
+        function showCountdownTimer() {
+            countdownTimerWidget.style.display = 'block';
+            if (!countdownInterval && !isPaused) {
+                startCountdownTimer();
+            }
+            updateStatus();
+        }
+
+        // Start countdown timer
+        function startCountdownTimer() {
+            updateCountdownDisplay();
+
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            countdownInterval = setInterval(function() {
+                if (!isPaused) {
+                    currentCountdownTime--;
+                    updateCountdownDisplay();
+                    updateStatus();
+
+                    if (currentCountdownTime <= 0) {
+                        handleTimerExpiration();
+                    }
+                }
+            }, COUNTDOWN_CONFIG.updateInterval);
+        }
+
+        // Update countdown display
+        function updateCountdownDisplay() {
+            const display = document.getElementById('countdown-display');
+            const statusIndicator = document.getElementById('timer-status-indicator');
+            const statusText = document.getElementById('timer-status-text');
+
+            if (!display) return;
+
+            // Format time as MM:SS
+            const minutes = Math.floor(Math.max(0, currentCountdownTime) / 60);
+            const seconds = Math.max(0, currentCountdownTime) % 60;
+            const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            display.textContent = timeString;
+
+            // Update visual state based on time remaining
+            countdownTimerWidget.classList.remove('warning', 'critical');
+            display.classList.remove('warning', 'critical');
+            statusIndicator.classList.remove('warning', 'critical');
+
+            if (currentCountdownTime <= 0) {
+                statusText.textContent = 'Draw Completed';
+                display.textContent = '00:00';
+            } else if (currentCountdownTime <= COUNTDOWN_CONFIG.criticalThreshold) {
+                countdownTimerWidget.classList.add('critical');
+                display.classList.add('critical');
+                statusIndicator.classList.add('critical');
+                statusText.textContent = 'Critical';
+            } else if (currentCountdownTime <= COUNTDOWN_CONFIG.warningThreshold) {
+                countdownTimerWidget.classList.add('warning');
+                display.classList.add('warning');
+                statusIndicator.classList.add('warning');
+                statusText.textContent = 'Warning';
+            } else {
+                statusText.textContent = 'Active';
+            }
+        }
+
+        // Handle timer expiration
+        function handleTimerExpiration() {
+            console.log('Countdown timer expired');
+
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+
+            updateCountdownDisplay();
+            updateStatus();
+
+            // Auto-restart with 3 minutes after 3 seconds
+            setTimeout(function() {
+                currentCountdownTime = 180;
+                startCountdownTimer();
+            }, 3000);
+        }
+
+        // Demo control functions
+        function setCountdownTime(seconds) {
+            currentCountdownTime = seconds;
+            isPaused = false;
+
+            if (countdownTimerWidget.style.display === 'none') {
+                showCountdownTimer();
+            } else {
+                startCountdownTimer();
+            }
+
+            updateStatus();
+        }
+
+        function pauseTimer() {
+            isPaused = true;
+            updateStatus();
+        }
+
+        function resumeTimer() {
+            isPaused = false;
+            if (!countdownInterval) {
+                startCountdownTimer();
+            }
+            updateStatus();
+        }
+
+        function resetTimerPosition() {
+            localStorage.removeItem(COUNTDOWN_CONFIG.storageKey);
+            applyDefaultTimerPosition();
+            updateStatus();
+        }
+
+        function toggleTimer() {
+            if (countdownTimerWidget.style.display === 'none') {
+                showCountdownTimer();
+            } else {
+                hideCountdownTimer();
+            }
+        }
+
+        function updateStatus() {
+            const savedPosition = localStorage.getItem(COUNTDOWN_CONFIG.storageKey);
+            const isVisible = countdownTimerWidget && countdownTimerWidget.style.display !== 'none';
+            const isMinimized = countdownTimerWidget && countdownTimerWidget.classList.contains('minimized');
+
+            // Format current time
+            const minutes = Math.floor(Math.max(0, currentCountdownTime) / 60);
+            const seconds = Math.max(0, currentCountdownTime) % 60;
+            const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            document.getElementById('current-time').textContent = timeString;
+            document.getElementById('position-saved').textContent = savedPosition ? 'Yes' : 'No';
+            document.getElementById('timer-visible').textContent = isVisible ? (isMinimized ? 'Minimized' : 'Yes') : 'No';
+
+            let state = 'Stopped';
+            if (isVisible && countdownInterval) {
+                if (isPaused) {
+                    state = 'Paused';
+                } else if (currentCountdownTime <= 0) {
+                    state = 'Expired';
+                } else if (currentCountdownTime <= COUNTDOWN_CONFIG.criticalThreshold) {
+                    state = 'Critical';
+                } else if (currentCountdownTime <= COUNTDOWN_CONFIG.warningThreshold) {
+                    state = 'Warning';
+                } else {
+                    state = 'Active';
+                }
+            }
+
+            document.getElementById('timer-state').textContent = state;
+        }
+
+        // Update status every second
+        setInterval(updateStatus, 1000);
+    </script>
+</body>
+</html>

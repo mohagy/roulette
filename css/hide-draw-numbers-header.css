@@ -1,0 +1,38 @@
+/**
+ * Hide Draw Numbers Header
+ * This CSS file specifically hides the draw numbers header at the top of the screen
+ * while preserving the floating upcoming draws panel.
+ */
+
+/* Hide the draw numbers header */
+.tv-draw-numbers-header,
+div.tv-draw-numbers-header,
+body .tv-draw-numbers-header,
+html body .tv-draw-numbers-header {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    z-index: -9999 !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+/* Make sure the upcoming draws panel is still visible */
+.upcoming-draws-panel,
+div.upcoming-draws-panel,
+body .upcoming-draws-panel,
+html body .upcoming-draws-panel {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+}

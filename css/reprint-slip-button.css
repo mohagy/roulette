@@ -1,0 +1,313 @@
+/**
+ * Reprint Slip Button Styles
+ * A beautiful, movable floating button for reprinting betting slips
+ */
+
+/* Main button container */
+.reprint-slip-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 130px;
+    height: 45px;
+    background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3), 0 0 10px rgba(76, 175, 80, 0.2);
+    z-index: 1000;
+    display: flex;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+    user-select: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Drag handle - Made more prominent and easier to grab */
+.reprint-slip-button .drag-handle {
+    width: 25px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.2);
+    cursor: grab;
+    transition: all 0.2s ease;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.reprint-slip-button .drag-handle:hover {
+    background: rgba(0, 0, 0, 0.3);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.reprint-slip-button .drag-handle i {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Button content */
+.reprint-slip-button .button-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+.reprint-slip-button .button-content:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.reprint-slip-button .button-content:active {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.reprint-slip-button .icon {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.reprint-slip-button .text {
+    font-weight: bold;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+/* Hover state */
+.reprint-slip-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(76, 175, 80, 0.3);
+}
+
+/* Active state */
+.reprint-slip-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3), 0 0 5px rgba(76, 175, 80, 0.2);
+}
+
+/* Dragging state */
+.reprint-slip-button.dragging {
+    opacity: 0.9;
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(76, 175, 80, 0.4);
+    z-index: 1001;
+}
+
+.reprint-slip-button.dragging .drag-handle {
+    cursor: grabbing;
+}
+
+/* Pulse animation */
+@keyframes reprint-pulse {
+    0% {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3), 0 0 10px rgba(76, 175, 80, 0.2);
+    }
+    50% {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 20px rgba(76, 175, 80, 0.6);
+    }
+    100% {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3), 0 0 10px rgba(76, 175, 80, 0.2);
+    }
+}
+
+.reprint-slip-button.pulse {
+    animation: reprint-pulse 1.5s infinite;
+}
+
+/* Modal styles */
+.reprint-slip-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(3px);
+}
+
+.reprint-slip-modal .modal-content {
+    background: linear-gradient(to bottom, #2c2c2c, #1a1a1a);
+    margin: 10% auto;
+    padding: 25px;
+    border: 1px solid #4CAF50;
+    border-radius: 15px;
+    width: 450px;
+    max-width: 85%;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    animation: modal-appear 0.3s ease-out;
+}
+
+@keyframes modal-appear {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.reprint-slip-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.reprint-slip-modal .modal-header h2 {
+    margin: 0;
+    color: #4CAF50;
+    font-size: 24px;
+    text-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+.reprint-slip-modal .modal-close {
+    font-size: 24px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.2s ease;
+}
+
+.reprint-slip-modal .modal-close:hover {
+    color: #fff;
+}
+
+/* Input styles */
+.reprint-slip-modal .input-group {
+    margin-bottom: 20px;
+}
+
+.reprint-slip-modal .input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    color: #ccc;
+}
+
+.reprint-slip-modal .input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.reprint-slip-modal .input-container .barcode-icon {
+    position: absolute;
+    left: 10px;
+    color: #4CAF50;
+}
+
+.reprint-slip-modal .input-container input {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid #4CAF50;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.reprint-slip-modal .input-container input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5);
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Error message */
+.reprint-slip-modal .error-message {
+    color: #ff6b6b;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    background: rgba(255, 107, 107, 0.1);
+    display: none;
+}
+
+/* Loading indicator */
+.reprint-slip-modal .loading {
+    display: none;
+    text-align: center;
+    padding: 20px;
+}
+
+.reprint-slip-modal .loading .spinner {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 15px;
+    border: 4px solid rgba(76, 175, 80, 0.3);
+    border-top: 4px solid #4CAF50;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Buttons */
+.reprint-slip-modal .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.reprint-slip-modal .btn-primary {
+    background: #4CAF50;
+    color: white;
+}
+
+.reprint-slip-modal .btn-primary:hover {
+    background: #3e8e41;
+}
+
+.reprint-slip-modal .btn-secondary {
+    background: #555;
+    color: white;
+    margin-right: 10px;
+}
+
+.reprint-slip-modal .btn-secondary:hover {
+    background: #444;
+}
+
+.reprint-slip-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .reprint-slip-modal .modal-content {
+        width: 90%;
+        margin: 15% auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .reprint-slip-modal .modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .reprint-slip-modal .modal-header h2 {
+        font-size: 20px;
+    }
+}

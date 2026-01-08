@@ -1,0 +1,64 @@
+/**
+ * Hide Entire Menu Container Structure
+ * Completely removes the menu container and its parent elements
+ * that were housing the sound and complete buttons
+ */
+
+/* ===== HIDE ENTIRE MENU CONTAINER STRUCTURE ===== */
+
+/* Hide the main menu container */
+.menu-container {
+    display: none !important;
+    /* This hides the entire menu container that held the sound and complete buttons */
+}
+
+/* Hide the selections container that wraps the menu container */
+.selections-container {
+    display: none !important;
+    /* This hides the parent container that may have backgrounds or borders */
+}
+
+/* Alternative approach - hide just the menu container and keep betting chips */
+.selections-container .menu-container {
+    display: none !important;
+    /* More specific targeting of the menu container */
+}
+
+/* Ensure betting chips container remains visible if it exists */
+.selections-container .betting-chips-container {
+    display: block !important;
+    /* Keep betting chips visible if they exist */
+}
+
+/* Hide any remaining button elements that might be floating */
+.button-complete,
+.button-sound {
+    display: none !important;
+    /* Ensure all complete and sound buttons are hidden */
+}
+
+/* Hide any circle overlays or button backgrounds that might remain */
+.circle-overlay,
+.button .circle {
+    display: none !important;
+    /* Hide any circular button backgrounds */
+}
+
+/* Clean up any button text that might be floating */
+.button-text {
+    display: none !important;
+    /* Hide any button text elements */
+}
+
+/* Ensure floating complete button remains visible */
+.floating-complete-button,
+#independent-floating-complete-btn {
+    display: block !important;
+    /* Keep the floating complete button visible */
+}
+
+/* Make sure reprint button remains visible */
+.reprint-slip-button {
+    display: block !important;
+    /* Keep the reprint button visible */
+}

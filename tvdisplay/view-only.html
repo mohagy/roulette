@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="Description" content="Roulette TV Display - View Only Mode" />
+    <title>Roulette TV Display - View Only</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/live-stream-player.css" />
+    <link rel="stylesheet" href="css/analytics-panel.css" />
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+    <style>
+      body {
+        overflow: hidden;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+      }
+
+      /* Hide all interactive elements */
+      .debug-panel, #debug-toggle, .debug-button,
+      .button-spin, .button-reset, .button-sound,
+      .betting-chips-container, .selections-container,
+      .money-container, .analytics-button, .live-stream-toggle-button {
+        display: none !important;
+      }
+
+      /* Add view-only indicator */
+      .view-only-indicator {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        z-index: 9999;
+      }
+
+      /* Prevent any interaction with the wheel */
+      .roulette-wheel-container {
+        pointer-events: none;
+      }
+
+      /* Prevent any interaction with the betting area */
+      .betting-area {
+        pointer-events: none;
+      }
+
+      /* Make timer more prominent */
+      .timer-container {
+        background-color: rgba(0, 0, 0, 0.7);
+        border-radius: 5px;
+        padding: 5px;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+      }
+
+      .timer-display {
+        font-size: 28px;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 5px rgba(0,0,0,0.5);
+      }
+
+      /* Make draw numbers more prominent */
+      .draw-container {
+        background-color: rgba(0, 0, 0, 0.7);
+        border-radius: 5px;
+        padding: 10px;
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+        display: flex;
+        justify-content: center;
+      }
+
+      .draw-number {
+        font-size: 24px;
+        font-weight: bold;
+        color: #fff;
+      }
+
+      /* Style for the forced number indicator (hidden from players) */
+      #forced-number-indicator {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-weight: bold;
+        z-index: 9999;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        font-size: 16px;
+        display: none !important; /* Always hide the forced number indicator */
+      }
+
+      #forced-number-indicator.red {
+        background-color: #dc3545;
+      }
+
+      #forced-number-indicator.black {
+        background-color: #212529;
+      }
+
+      #forced-number-indicator.green {
+        background-color: #198754;
+      }
+
+      /* Style for the last spin result */
+      .last-spin-result {
+        position: fixed;
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        font-size: 18px;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .result-number {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .result-number.red {
+        background-color: #dc3545;
+      }
+
+      .result-number.black {
+        background-color: #212529;
+      }
+
+      .result-number.green {
+        background-color: #198754;
+      }
+
+      /* Auto-refresh indicator */
+      .refresh-indicator {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 5px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        z-index: 9999;
+      }
+
+      .refresh-indicator.active {
+        background-color: rgba(40, 167, 69, 0.7);
+      }
+
+      /* Fullscreen button */
+      .fullscreen-button {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 9999;
+      }
+
+      .fullscreen-button:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+    </style>
+  </head>
+  <body class="index">
+    <!-- View-only indicator -->
+    <div class="view-only-indicator">VIEW ONLY MODE</div>
+
+    <!-- Fullscreen button -->
+    <div class="fullscreen-button" id="fullscreen-toggle">
+      <i class="fas fa-expand"></i>
+    </div>
+
+    <!-- Auto-refresh indicator -->
+    <div class="refresh-indicator" id="refresh-indicator">
+      AUTO-SYNC
+    </div>
+
+    <div class="website-wrapper" id="website-wrapper">
+      <div class="roulette-table">
+        <div class="top-bar">
+          <div class="roulette-rolls-container">
+            <div class="roll roll5"></div>
+            <div class="roll roll4"></div>
+            <div class="roll roll3"></div>
+            <div class="roll roll2"></div>
+            <div class="roll roll1"></div>
+            <div class="roll roll-last"></div>
+          </div>
+          <div class="game-name">ROULETTE</div>
+          <div class="min-max-bet">
+            <div class="min-bet bet-size"><span class="text-color">MIN:</span> $100.00</div>
+            <div class="max-bet bet-size"><span class="text-color">MAX:</span> $1600.00</div>
+          </div>
+        </div>
+        <div class="roulette-wheel-container">
+          <div class="roulette-wheel">
+            <div class="roulette-wheel-main roulette-image"></div>
+            <div class="roulette-center roulette-image"></div>
+            <div class="roulette-cross-shadow roulette-image"></div>
+            <div class="roulette-cross roulette-image">
+              <div class="number-glow-container"></div>
+            </div>
+            <div class="ball-container"></div>
+          </div>
+        </div>
+
+        <!-- Complete betting area (display only) -->
+        <div class="betting-area">
+          <div class="top-area">
+            <div class="number number0 regular regular0 part"></div>
+            <div class="number number3 black"></div>
+            <div class="number number2 red"></div>
+            <div class="number number1 black"></div>
+            <div class="number number6 red"></div>
+            <div class="number number5 black"></div>
+            <div class="number number4 red"></div>
+            <div class="number number9 black"></div>
+            <div class="number number8 red"></div>
+            <div class="number number7 black"></div>
+            <div class="number number12 red"></div>
+            <div class="number number11 black"></div>
+            <div class="number number10 red"></div>
+            <div class="number number15 black"></div>
+            <div class="number number14 red"></div>
+            <div class="number number13 black"></div>
+            <div class="number number18 red"></div>
+            <div class="number number17 black"></div>
+            <div class="number number16 red"></div>
+            <div class="number number21 black"></div>
+            <div class="number number20 red"></div>
+            <div class="number number19 black"></div>
+            <div class="number number24 red"></div>
+            <div class="number number23 black"></div>
+            <div class="number number22 red"></div>
+            <div class="number number27 black"></div>
+            <div class="number number26 red"></div>
+            <div class="number number25 black"></div>
+            <div class="number number30 red"></div>
+            <div class="number number29 black"></div>
+            <div class="number number28 red"></div>
+            <div class="number number33 black"></div>
+            <div class="number number32 red"></div>
+            <div class="number number31 black"></div>
+            <div class="number number36 red"></div>
+            <div class="number number35 black"></div>
+            <div class="number number34 red"></div>
+            <div class="number bet2to1-1 part"></div>
+            <div class="number bet2to1-2 part"></div>
+            <div class="number bet2to1-3 part"></div>
+          </div>
+          <div class="bottom-area">
+            <div class="bottom-column bottom-column1 column-1st12 part"></div>
+            <div class="bottom-column bottom-column2 column-2nd12 part"></div>
+            <div class="bottom-column bottom-column3 column-3rd12 part"></div>
+            <div class="bottom-column bottom-column4 column-1to18 part"></div>
+            <div class="bottom-column bottom-column5 column-even part"></div>
+            <div class="bottom-column bottom-column6 column-red part"></div>
+            <div class="bottom-column bottom-column7 column-black part"></div>
+            <div class="bottom-column bottom-column8 column-odd part"></div>
+            <div class="bottom-column bottom-column9 column-19to36 part"></div>
+          </div>
+        </div>
+
+        <!-- Timer Container -->
+        <div class="timer-container">
+          <div class="timer-label">NEXT SPIN IN</div>
+          <div class="timer-display" id="countdown-timer">02:00</div>
+        </div>
+
+        <!-- Draw Number Container -->
+        <div class="draw-container">
+          <div class="draw-information">
+            <div class="next-draw">
+              <div class="draw-label">CURRENT DRAW</div>
+              <div class="draw-number" id="next-draw-number">#1</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Last Spin Result -->
+        <div class="last-spin-result" id="last-spin-result" style="display: none;">
+          <span>LAST RESULT:</span>
+          <div class="result-number" id="result-number">0</div>
+        </div>
+
+        <!-- Forced Number Indicator (hidden from players) -->
+        <div id="forced-number-indicator" style="display: none !important;">
+          NEXT NUMBER: <span id="forced-number-value">34</span>
+        </div>
+
+        <!-- Alert messages for spin results -->
+        <div class="alert-message-container alert-spin-result">
+          <div class="results">
+            <div class="odd-even text">ODD</div>
+            <div class="high-low text">HIGH</div>
+            <div class="roll-number text">26</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Script Source -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" data-auto-replace-svg="nest"></script>
+    <script src="js/scripts.js"></script>
+    <!-- Draw Results Management -->
+    <script src="js/save-detailed-draw.js"></script>
+    <!-- Draw Synchronization -->
+    <script src="../js/draw-sync.js"></script>
+    <!-- Forced Number Synchronization -->
+    <script src="js/forced-number-sync.js"></script>
+    <!-- Wheel Control - Connects forced numbers with the wheel -->
+    <script src="js/wheel-control.js"></script>
+
+    <!-- View-only mode script -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Disable all interactive elements
+        const interactiveElements = document.querySelectorAll('button:not(#fullscreen-toggle), input, .betting-chip');
+        interactiveElements.forEach(el => {
+          el.disabled = true;
+          el.style.pointerEvents = 'none';
+        });
+
+        // Initialize the refresh indicator
+        const refreshIndicator = document.getElementById('refresh-indicator');
+
+        // Set up auto-refresh to keep the display in sync
+        setInterval(function() {
+          // Show refresh indicator
+          refreshIndicator.classList.add('active');
+
+          // Fetch latest draw info without full page reload
+          if (typeof DrawSync !== 'undefined') {
+            DrawSync.fetchDrawInfo().then(() => {
+              // Hide refresh indicator after successful refresh
+              setTimeout(() => {
+                refreshIndicator.classList.remove('active');
+              }, 500);
+            });
+          }
+
+          // Update the last spin result
+          updateLastSpinResult();
+        }, 5000); // Refresh every 5 seconds
+
+        // Fullscreen toggle
+        const fullscreenToggle = document.getElementById('fullscreen-toggle');
+        fullscreenToggle.addEventListener('click', function() {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+              console.log(`Error attempting to enable fullscreen: ${err.message}`);
+            });
+            fullscreenToggle.innerHTML = '<i class="fas fa-compress"></i>';
+          } else {
+            if (document.exitFullscreen) {
+              document.exitFullscreen();
+              fullscreenToggle.innerHTML = '<i class="fas fa-expand"></i>';
+            }
+          }
+        });
+
+        // Function to update the last spin result
+        function updateLastSpinResult() {
+          const lastSpinResult = document.getElementById('last-spin-result');
+          const resultNumber = document.getElementById('result-number');
+
+          // Get the last roll from the UI
+          const lastRoll = document.querySelector('.roll-last');
+          if (lastRoll && lastRoll.textContent) {
+            const number = parseInt(lastRoll.textContent);
+            if (!isNaN(number)) {
+              resultNumber.textContent = number;
+
+              // Set the appropriate color class
+              resultNumber.className = 'result-number';
+              if (number === 0) {
+                resultNumber.classList.add('green');
+              } else if ([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36].includes(number)) {
+                resultNumber.classList.add('red');
+              } else {
+                resultNumber.classList.add('black');
+              }
+
+              // Show the result
+              lastSpinResult.style.display = 'flex';
+            }
+          }
+        }
+
+        // Listen for draw sync updates
+        document.addEventListener('drawSync:updated', function(event) {
+          console.log('Draw sync updated:', event.detail);
+
+          // Update the draw number display
+          const nextDrawNumber = document.getElementById('next-draw-number');
+          if (nextDrawNumber && event.detail.nextDraw) {
+            nextDrawNumber.textContent = '#' + event.detail.nextDraw;
+          }
+        });
+
+        // Prevent right-click
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // Prevent keyboard shortcuts
+        document.addEventListener('keydown', event => {
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+          }
+        });
+
+        // Initialize the last spin result
+        updateLastSpinResult();
+
+        console.log('View-only mode initialized');
+      });
+    </script>
+  </body>
+</html>

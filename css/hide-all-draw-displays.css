@@ -1,0 +1,101 @@
+/**
+ * Hide All Draw Displays
+ * This CSS file overrides all other CSS files to ensure all draw displays are hidden
+ * except for the floating upcoming draws panel
+ */
+
+/* Hide the draw container with maximum specificity */
+.draw-container,
+div.draw-container,
+body .draw-container,
+html body .draw-container {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    z-index: -9999 !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+/* Hide the Georgetown time display with maximum specificity */
+#georgetown-time-display,
+div#georgetown-time-display,
+body #georgetown-time-display,
+html body #georgetown-time-display {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    z-index: -9999 !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+/* Hide the TV-style draw display with maximum specificity */
+.tv-style-display,
+div.tv-style-display,
+body .tv-style-display,
+html body .tv-style-display {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    z-index: -9999 !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+/* Hide the TV-style draw numbers header with maximum specificity */
+.tv-draw-numbers-header,
+div.tv-draw-numbers-header,
+body .tv-draw-numbers-header,
+html body .tv-draw-numbers-header {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    z-index: -9999 !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+/* Make sure the upcoming draw display is visible */
+#upcoming-draw-display,
+div#upcoming-draw-display,
+body #upcoming-draw-display,
+html body #upcoming-draw-display {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+}

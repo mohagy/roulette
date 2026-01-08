@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⏱️ Timer Synchronization Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .display-card {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #FFD700;
+        }
+        .display-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #FFD700;
+        }
+        .timer-display {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            background: #000;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .status-indicator {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        .status-good { background: #28a745; }
+        .status-warning { background: #ffc107; color: black; }
+        .status-error { background: #dc3545; }
+        .sync-info {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .test-button {
+            background: #FFD700;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            width: 100%;
+        }
+        .test-button:hover {
+            background: #e6c200;
+        }
+        .iframe-container {
+            width: 100%;
+            height: 300px;
+            border: 2px solid #555;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transform: scale(0.5);
+            transform-origin: 0 0;
+            width: 200%;
+            height: 200%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⏱️ Timer Synchronization Test</h1>
+            <p>Real-time monitoring of countdown timer synchronization between master and client displays</p>
+            <div id="overall-sync-status" class="status-indicator status-warning">
+                Initializing timer sync test...
+            </div>
+        </div>
+
+        <div class="test-grid">
+            <!-- Master Display -->
+            <div class="display-card">
+                <div class="display-title">👑 MASTER DISPLAY</div>
+                <div class="timer-display" id="master-timer">--:--</div>
+                <div class="status-indicator" id="master-status">Loading...</div>
+                <div class="sync-info" id="master-info">
+                    URL: index.html<br>
+                    Role: Master<br>
+                    Status: Initializing...
+                </div>
+                <div class="iframe-container">
+                    <iframe id="master-frame" src="index.html"></iframe>
+                </div>
+                <button class="test-button" onclick="refreshMaster()">🔄 Refresh Master</button>
+            </div>
+
+            <!-- Client 1 Display -->
+            <div class="display-card">
+                <div class="display-title">📺 CLIENT 1 (Shop 1)</div>
+                <div class="timer-display" id="client1-timer">--:--</div>
+                <div class="status-indicator" id="client1-status">Loading...</div>
+                <div class="sync-info" id="client1-info">
+                    URL: shop1.html<br>
+                    Role: Client<br>
+                    Status: Initializing...
+                </div>
+                <div class="iframe-container">
+                    <iframe id="client1-frame" src="shop1.html"></iframe>
+                </div>
+                <button class="test-button" onclick="refreshClient1()">🔄 Refresh Client 1</button>
+            </div>
+
+            <!-- Client 2 Display -->
+            <div class="display-card">
+                <div class="display-title">📺 CLIENT 2 (Shop 2)</div>
+                <div class="timer-display" id="client2-timer">--:--</div>
+                <div class="status-indicator" id="client2-status">Loading...</div>
+                <div class="sync-info" id="client2-info">
+                    URL: shop2.html<br>
+                    Role: Client<br>
+                    Status: Initializing...
+                </div>
+                <div class="iframe-container">
+                    <iframe id="client2-frame" src="shop2.html"></iframe>
+                </div>
+                <button class="test-button" onclick="refreshClient2()">🔄 Refresh Client 2</button>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <button class="test-button" onclick="runSyncTest()" style="width: auto; padding: 15px 30px; font-size: 16px;">
+                🧪 Run Synchronization Test
+            </button>
+            <button class="test-button" onclick="refreshAll()" style="width: auto; padding: 15px 30px; font-size: 16px;">
+                🔄 Refresh All Displays
+            </button>
+        </div>
+
+        <div class="display-card">
+            <div class="display-title">📊 Synchronization Analysis</div>
+            <div id="sync-analysis" class="sync-info">
+                Waiting for timer data...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testInterval;
+        let timers = {
+            master: '--:--',
+            client1: '--:--',
+            client2: '--:--'
+        };
+
+        function getTimerFromFrame(frameId) {
+            try {
+                const frame = document.getElementById(frameId);
+                if (frame && frame.contentDocument) {
+                    const timerElement = frame.contentDocument.getElementById('countdown-timer');
+                    return timerElement ? timerElement.textContent : '--:--';
+                }
+            } catch (error) {
+                console.log(`Cannot access ${frameId} content:`, error.message);
+            }
+            return '--:--';
+        }
+
+        function updateTimerDisplays() {
+            // Get timer values from iframes
+            timers.master = getTimerFromFrame('master-frame');
+            timers.client1 = getTimerFromFrame('client1-frame');
+            timers.client2 = getTimerFromFrame('client2-frame');
+
+            // Update display
+            document.getElementById('master-timer').textContent = timers.master;
+            document.getElementById('client1-timer').textContent = timers.client1;
+            document.getElementById('client2-timer').textContent = timers.client2;
+
+            // Update status indicators
+            updateStatusIndicators();
+            updateSyncAnalysis();
+        }
+
+        function updateStatusIndicators() {
+            const masterStatus = document.getElementById('master-status');
+            const client1Status = document.getElementById('client1-status');
+            const client2Status = document.getElementById('client2-status');
+
+            // Check if timers are valid
+            const masterValid = timers.master !== '--:--' && timers.master.includes(':');
+            const client1Valid = timers.client1 !== '--:--' && timers.client1.includes(':');
+            const client2Valid = timers.client2 !== '--:--' && timers.client2.includes(':');
+
+            // Update master status
+            if (masterValid) {
+                masterStatus.className = 'status-indicator status-good';
+                masterStatus.textContent = '✅ Timer Active';
+            } else {
+                masterStatus.className = 'status-indicator status-error';
+                masterStatus.textContent = '❌ Timer Not Active';
+            }
+
+            // Update client statuses
+            if (client1Valid && timers.client1 === timers.master) {
+                client1Status.className = 'status-indicator status-good';
+                client1Status.textContent = '✅ Synchronized';
+            } else if (client1Valid) {
+                client1Status.className = 'status-indicator status-warning';
+                client1Status.textContent = '⚠️ Not Synchronized';
+            } else {
+                client1Status.className = 'status-indicator status-error';
+                client1Status.textContent = '❌ Timer Not Active';
+            }
+
+            if (client2Valid && timers.client2 === timers.master) {
+                client2Status.className = 'status-indicator status-good';
+                client2Status.textContent = '✅ Synchronized';
+            } else if (client2Valid) {
+                client2Status.className = 'status-indicator status-warning';
+                client2Status.textContent = '⚠️ Not Synchronized';
+            } else {
+                client2Status.className = 'status-indicator status-error';
+                client2Status.textContent = '❌ Timer Not Active';
+            }
+        }
+
+        function updateSyncAnalysis() {
+            const analysis = document.getElementById('sync-analysis');
+            const overallStatus = document.getElementById('overall-sync-status');
+            
+            const masterValid = timers.master !== '--:--' && timers.master.includes(':');
+            const client1Valid = timers.client1 !== '--:--' && timers.client1.includes(':');
+            const client2Valid = timers.client2 !== '--:--' && timers.client2.includes(':');
+            
+            const client1Synced = client1Valid && timers.client1 === timers.master;
+            const client2Synced = client2Valid && timers.client2 === timers.master;
+            
+            let analysisText = `Last Update: ${new Date().toLocaleTimeString()}\n\n`;
+            analysisText += `Master Timer: ${timers.master} (${masterValid ? 'Valid' : 'Invalid'})\n`;
+            analysisText += `Client 1 Timer: ${timers.client1} (${client1Valid ? 'Valid' : 'Invalid'}) - ${client1Synced ? 'SYNCED' : 'NOT SYNCED'}\n`;
+            analysisText += `Client 2 Timer: ${timers.client2} (${client2Valid ? 'Valid' : 'Invalid'}) - ${client2Synced ? 'SYNCED' : 'NOT SYNCED'}\n\n`;
+            
+            if (masterValid && client1Synced && client2Synced) {
+                analysisText += '✅ ALL TIMERS SYNCHRONIZED\n';
+                overallStatus.className = 'status-indicator status-good';
+                overallStatus.textContent = '✅ Perfect Synchronization';
+            } else if (masterValid && (client1Synced || client2Synced)) {
+                analysisText += '⚠️ PARTIAL SYNCHRONIZATION\n';
+                overallStatus.className = 'status-indicator status-warning';
+                overallStatus.textContent = '⚠️ Partial Synchronization';
+            } else {
+                analysisText += '❌ SYNCHRONIZATION FAILED\n';
+                overallStatus.className = 'status-indicator status-error';
+                overallStatus.textContent = '❌ Synchronization Failed';
+            }
+            
+            analysis.textContent = analysisText;
+        }
+
+        function runSyncTest() {
+            console.log('🧪 Running synchronization test...');
+            updateTimerDisplays();
+            
+            // Run test for 30 seconds
+            let testCount = 0;
+            const testDuration = 30;
+            
+            const testInterval = setInterval(() => {
+                testCount++;
+                updateTimerDisplays();
+                
+                if (testCount >= testDuration) {
+                    clearInterval(testInterval);
+                    console.log('🧪 Synchronization test completed');
+                }
+            }, 1000);
+        }
+
+        function refreshMaster() {
+            document.getElementById('master-frame').src = 'index.html?' + Date.now();
+        }
+
+        function refreshClient1() {
+            document.getElementById('client1-frame').src = 'shop1.html?' + Date.now();
+        }
+
+        function refreshClient2() {
+            document.getElementById('client2-frame').src = 'shop2.html?' + Date.now();
+        }
+
+        function refreshAll() {
+            refreshMaster();
+            refreshClient1();
+            refreshClient2();
+        }
+
+        // Start monitoring when page loads
+        window.addEventListener('load', function() {
+            console.log('⏱️ Timer sync test page loaded');
+            
+            // Wait for iframes to load
+            setTimeout(() => {
+                updateTimerDisplays();
+                
+                // Start continuous monitoring
+                testInterval = setInterval(updateTimerDisplays, 1000);
+            }, 3000);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (testInterval) {
+                clearInterval(testInterval);
+            }
+        });
+    </script>
+</body>
+</html>

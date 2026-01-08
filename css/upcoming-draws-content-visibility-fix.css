@@ -1,0 +1,360 @@
+/**
+ * Upcoming Draws Content Visibility Fix
+ * Ensures all upcoming draw content is fully visible and accessible
+ */
+
+/* Force visibility for the main panel */
+.upcoming-draws-panel {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  z-index: 1450 !important;
+  min-height: 100px !important;
+}
+
+/* Ensure content area is fully visible */
+.upcoming-draws-content {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  max-height: none !important;
+  height: auto !important;
+  min-height: 60px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+}
+
+/* Force visibility for draws list */
+.upcoming-draws-list {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  flex-direction: row !important;
+  gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-width: 100% !important;
+  width: 100% !important;
+  align-items: stretch !important;
+  flex-wrap: nowrap !important;
+}
+
+/* Ensure individual draw items are visible */
+.upcoming-draw-item {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  flex: 1 !important;
+  min-width: 140px !important;
+  max-width: 200px !important;
+  height: 60px !important;
+  margin: 0 !important;
+  padding: 8px 12px !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: transparent !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+.upcoming-draw-item:last-child {
+  border-right: none !important;
+}
+
+/* Force visibility for draw item content */
+.draw-item-header {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-bottom: 4px !important;
+  gap: 2px !important;
+  width: 100% !important;
+}
+
+.draw-number {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  color: var(--upcoming-gold, #ffcc00) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: visible !important;
+}
+
+.draw-time {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 11px !important;
+  color: #ccc !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: visible !important;
+}
+
+/* Force visibility for draw statistics */
+.draw-item-stats {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  overflow: visible !important;
+}
+
+.draw-stats-left {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  gap: 6px !important;
+  align-items: center !important;
+  overflow: visible !important;
+}
+
+.draw-stat {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  align-items: center !important;
+  gap: 2px !important;
+  font-size: 10px !important;
+  color: #bbb !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+}
+
+.draw-stat i {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 0.7 !important;
+  font-size: 9px !important;
+}
+
+.draw-stat-value {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-weight: bold !important;
+  color: white !important;
+}
+
+.draw-stat span {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.draw-stat span:last-child {
+  font-size: 9px !important;
+  opacity: 0.8 !important;
+}
+
+/* Force visibility for selection indicators */
+.selection-indicator {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 3px !important;
+  background: transparent !important;
+  transition: all 0.3s ease !important;
+}
+
+.upcoming-draw-item.selected .selection-indicator {
+  background: var(--upcoming-selected, #17a2b8) !important;
+  opacity: 1 !important;
+}
+
+.upcoming-draw-item.next-draw .selection-indicator {
+  background: var(--upcoming-green, #28a745) !important;
+  opacity: 1 !important;
+}
+
+/* Force visibility for selected draw indicator */
+.selected-draw-indicator {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 15px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #ccc !important;
+  font-size: 12px !important;
+  min-height: 35px !important;
+  overflow: visible !important;
+}
+
+.selected-draw-indicator i {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: var(--upcoming-gold, #ffcc00) !important;
+}
+
+.selected-draw-indicator span {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: white !important;
+}
+
+/* Force visibility for loading and error states */
+.upcoming-draws-loading,
+.upcoming-draws-error {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px !important;
+  color: #ccc !important;
+  gap: 10px !important;
+  min-height: 60px !important;
+  width: 100% !important;
+  overflow: visible !important;
+}
+
+.upcoming-draws-loading i,
+.upcoming-draws-error i {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 18px !important;
+  color: var(--upcoming-gold, #ffcc00) !important;
+}
+
+.upcoming-draws-loading div,
+.upcoming-draws-error div {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: white !important;
+  font-size: 14px !important;
+  text-align: center !important;
+}
+
+.refresh-button {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 6px 12px !important;
+  background: var(--upcoming-gold, #ffcc00) !important;
+  color: var(--upcoming-dark, #1a1a1a) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+/* Ensure hover states work */
+.upcoming-draw-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-2px) !important;
+}
+
+.upcoming-draw-item.selected {
+  background: linear-gradient(135deg, rgba(23, 162, 184, 0.4), rgba(23, 162, 184, 0.2)) !important;
+  border-bottom: 3px solid var(--upcoming-selected, #17a2b8) !important;
+  box-shadow: inset 0 0 15px rgba(23, 162, 184, 0.3) !important;
+}
+
+.upcoming-draw-item.next-draw {
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.3), rgba(40, 167, 69, 0.1)) !important;
+  border-bottom: 3px solid var(--upcoming-green, #28a745) !important;
+  box-shadow: inset 0 0 15px rgba(40, 167, 69, 0.2) !important;
+}
+
+/* Next draw badge */
+.upcoming-draw-item.next-draw::before {
+  content: 'NEXT' !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: absolute !important;
+  top: 2px !important;
+  right: 4px !important;
+  background: var(--upcoming-green, #28a745) !important;
+  color: white !important;
+  font-size: 8px !important;
+  font-weight: bold !important;
+  padding: 1px 4px !important;
+  border-radius: 2px !important;
+  letter-spacing: 0.3px !important;
+  z-index: 10 !important;
+}
+
+/* Responsive visibility fixes */
+@media (max-width: 768px) {
+  .upcoming-draw-item {
+    min-width: 120px !important;
+    max-width: 150px !important;
+    padding: 6px 8px !important;
+  }
+  
+  .draw-number {
+    font-size: 14px !important;
+  }
+  
+  .draw-time {
+    font-size: 10px !important;
+  }
+  
+  .draw-stat {
+    font-size: 9px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .upcoming-draw-item {
+    min-width: 100px !important;
+    max-width: 130px !important;
+    padding: 4px 6px !important;
+  }
+  
+  .draw-number {
+    font-size: 13px !important;
+  }
+  
+  .draw-time {
+    font-size: 9px !important;
+  }
+  
+  .draw-stat {
+    font-size: 8px !important;
+  }
+}

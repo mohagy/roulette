@@ -1,0 +1,541 @@
+/* Enhanced Cashier Panel Styling */
+/* Premium visual design for the cashier information panel */
+
+:root {
+  --cashier-gold: #FFD700;
+  --cashier-gold-light: #FFF8DC;
+  --cashier-gold-dark: #B8860B;
+  --cashier-black: #1a1a1a;
+  --cashier-dark-blue: #0f1419;
+  --cashier-accent: #FF6B35;
+  --cashier-success: #28a745;
+  --cashier-shadow: rgba(0, 0, 0, 0.4);
+  --cashier-glow: rgba(255, 215, 0, 0.3);
+}
+
+/* Main cashier panel container */
+.user-info {
+  position: absolute !important;
+  background: linear-gradient(145deg, 
+    rgba(26, 26, 26, 0.98) 0%, 
+    rgba(15, 20, 25, 0.98) 50%, 
+    rgba(26, 26, 26, 0.98) 100%) !important;
+  border: 2px solid var(--cashier-gold) !important;
+  border-radius: 16px !important;
+  box-shadow: 
+    0 20px 60px var(--cashier-shadow),
+    0 0 30px var(--cashier-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(20px) !important;
+  padding: 0 !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 320px !important;
+  font-family: 'Orbitron', 'Poppins', sans-serif !important;
+  overflow: hidden !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: default !important;
+}
+
+.user-info:hover {
+  box-shadow: 
+    0 25px 80px var(--cashier-shadow),
+    0 0 40px var(--cashier-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  transform: translateY(-2px) !important;
+}
+
+.user-info.dragging {
+  opacity: 0.9 !important;
+  transform: scale(1.02) !important;
+  box-shadow: 
+    0 30px 100px var(--cashier-shadow),
+    0 0 50px var(--cashier-glow) !important;
+}
+
+/* Enhanced drag handle */
+.user-info-drag-handle {
+  background: linear-gradient(90deg, 
+    var(--cashier-gold) 0%, 
+    #FFA500 50%, 
+    var(--cashier-gold) 100%) !important;
+  color: var(--cashier-black) !important;
+  padding: 12px 16px !important;
+  margin: 0 !important;
+  border-bottom: none !important;
+  cursor: move !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.user-info-drag-handle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  transition: left 0.6s ease;
+}
+
+.user-info-drag-handle:hover::before {
+  left: 100%;
+}
+
+.user-info-drag-handle:hover {
+  background: linear-gradient(90deg, 
+    #FFA500 0%, 
+    var(--cashier-gold) 50%, 
+    #FFA500 100%) !important;
+  transform: translateY(-1px) !important;
+}
+
+.user-info-drag-handle i {
+  color: var(--cashier-black) !important;
+  font-size: 14px !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3) !important;
+  transition: transform 0.3s ease !important;
+}
+
+.user-info-drag-handle:hover i {
+  transform: scale(1.1) !important;
+}
+
+.user-info-drag-handle span {
+  font-family: 'Orbitron', sans-serif !important;
+  font-weight: 800 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Content container */
+.user-info-content {
+  padding: 20px !important;
+  background: transparent !important;
+}
+
+/* User info header */
+.user-info-header {
+  display: flex !important;
+  align-items: center !important;
+  margin-bottom: 16px !important;
+  padding: 12px 16px !important;
+  background: linear-gradient(135deg, 
+    rgba(255, 215, 0, 0.1) 0%, 
+    rgba(255, 165, 0, 0.05) 100%) !important;
+  border: 1px solid rgba(255, 215, 0, 0.2) !important;
+  border-radius: 10px !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.user-info-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    var(--cashier-gold), 
+    transparent);
+  opacity: 0.6;
+}
+
+.user-info-header i {
+  color: var(--cashier-gold) !important;
+  font-size: 18px !important;
+  margin-right: 12px !important;
+  text-shadow: 0 0 10px var(--cashier-glow) !important;
+}
+
+.user-info-header span {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+.user-info-header .username {
+  color: var(--cashier-gold) !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 8px var(--cashier-glow) !important;
+  margin-left: 6px !important;
+}
+
+/* Enhanced navigation links */
+.transactions-link {
+  display: flex !important;
+  align-items: center !important;
+  padding: 10px 16px !important;
+  margin: 6px 0 !important;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.05) 0%, 
+    rgba(255, 255, 255, 0.02) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  color: #e0e0e0 !important;
+  text-decoration: none !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.transactions-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 215, 0, 0.1), 
+    transparent);
+  transition: left 0.4s ease;
+}
+
+.transactions-link:hover::before {
+  left: 100%;
+}
+
+.transactions-link:hover {
+  background: linear-gradient(135deg, 
+    rgba(255, 215, 0, 0.15) 0%, 
+    rgba(255, 165, 0, 0.1) 100%) !important;
+  border-color: rgba(255, 215, 0, 0.3) !important;
+  color: #ffffff !important;
+  transform: translateX(4px) !important;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2) !important;
+}
+
+.transactions-link i {
+  color: var(--cashier-gold) !important;
+  font-size: 14px !important;
+  margin-right: 10px !important;
+  text-shadow: 0 0 8px var(--cashier-glow) !important;
+  transition: transform 0.3s ease !important;
+}
+
+.transactions-link:hover i {
+  transform: scale(1.1) rotate(5deg) !important;
+  text-shadow: 0 0 12px var(--cashier-glow) !important;
+}
+
+/* Admin link special styling */
+.admin-link {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 53, 0.15) 0%, 
+    rgba(255, 107, 53, 0.05) 100%) !important;
+  border-color: rgba(255, 107, 53, 0.3) !important;
+}
+
+.admin-link:hover {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 53, 0.25) 0%, 
+    rgba(255, 107, 53, 0.15) 100%) !important;
+  border-color: rgba(255, 107, 53, 0.5) !important;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3) !important;
+}
+
+.admin-link i {
+  color: var(--cashier-accent) !important;
+  text-shadow: 0 0 8px rgba(255, 107, 53, 0.5) !important;
+}
+
+.admin-link:hover i {
+  text-shadow: 0 0 12px rgba(255, 107, 53, 0.7) !important;
+}
+
+/* Stake control section removed */
+
+/* Enhanced numeric keypad */
+.numeric-keypad {
+  position: absolute !important;
+  bottom: 100% !important;
+  left: 0 !important;
+  width: 100% !important;
+  background: linear-gradient(145deg,
+    rgba(26, 26, 26, 0.98) 0%,
+    rgba(15, 20, 25, 0.98) 100%) !important;
+  border: 2px solid var(--cashier-gold) !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 -10px 40px var(--cashier-shadow),
+    0 0 20px var(--cashier-glow) !important;
+  backdrop-filter: blur(20px) !important;
+  padding: 12px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 8px !important;
+  z-index: 10001 !important;
+  margin-bottom: 8px !important;
+  display: none !important;
+}
+
+.numeric-keypad.visible {
+  display: grid !important;
+  animation: keypadSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+@keyframes keypadSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.numeric-key {
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 6px !important;
+  color: #ffffff !important;
+  padding: 12px 8px !important;
+  text-align: center !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  font-family: 'Orbitron', monospace !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+.numeric-key::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+}
+
+.numeric-key:hover::before {
+  width: 100%;
+  height: 100%;
+}
+
+.numeric-key:hover {
+  background: linear-gradient(135deg,
+    rgba(255, 215, 0, 0.2) 0%,
+    rgba(255, 165, 0, 0.1) 100%) !important;
+  border-color: rgba(255, 215, 0, 0.4) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2) !important;
+}
+
+.numeric-key:active {
+  transform: translateY(0) scale(0.95) !important;
+}
+
+.numeric-key.key-enter {
+  background: linear-gradient(135deg,
+    var(--cashier-success) 0%,
+    #20c997 100%) !important;
+  border-color: var(--cashier-success) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7) !important;
+}
+
+.numeric-key.key-enter:hover {
+  background: linear-gradient(135deg,
+    #20c997 0%,
+    #17a2b8 100%) !important;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4) !important;
+}
+
+.numeric-key.key-clear {
+  background: linear-gradient(135deg,
+    #dc3545 0%,
+    #c82333 100%) !important;
+  border-color: #dc3545 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7) !important;
+}
+
+.numeric-key.key-clear:hover {
+  background: linear-gradient(135deg,
+    #c82333 0%,
+    #bd2130 100%) !important;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4) !important;
+}
+
+/* Enhanced scrollbar styling */
+.user-info::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.user-info::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-radius: 3px !important;
+}
+
+.user-info::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg,
+    var(--cashier-gold) 0%,
+    #FFA500 100%) !important;
+  border-radius: 3px !important;
+  transition: background 0.3s ease !important;
+}
+
+.user-info::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg,
+    #FFA500 0%,
+    var(--cashier-gold) 100%) !important;
+}
+
+/* Entrance animations */
+@keyframes panelSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.user-info.showing {
+  animation: panelSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Pulse animation for important elements */
+@keyframes goldPulse {
+  0%, 100% {
+    text-shadow: 0 0 8px var(--cashier-glow);
+  }
+  50% {
+    text-shadow: 0 0 16px var(--cashier-glow), 0 0 24px var(--cashier-glow);
+  }
+}
+
+.user-info-header .username {
+  animation: goldPulse 3s ease-in-out infinite !important;
+}
+
+/* Shimmer effect for drag handle */
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Responsive design enhancements */
+@media (max-width: 768px) {
+  .user-info {
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 280px !important;
+  }
+
+  .user-info-drag-handle {
+    padding: 10px 14px !important;
+    font-size: 12px !important;
+  }
+
+  .user-info-content {
+    padding: 16px !important;
+  }
+
+  .transactions-link {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+  }
+
+  /* Stake control responsive rules removed */
+}
+
+@media (max-width: 480px) {
+  .user-info {
+    width: 240px !important;
+    min-width: 240px !important;
+    max-width: 260px !important;
+  }
+
+  .user-info-drag-handle {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+  }
+
+  .user-info-drag-handle span {
+    display: none !important;
+  }
+
+  .user-info-content {
+    padding: 12px !important;
+  }
+
+  .user-info-header {
+    padding: 8px 12px !important;
+  }
+
+  .user-info-header span {
+    font-size: 12px !important;
+  }
+
+  .transactions-link {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+
+  /* Stake control responsive rules removed */
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .user-info {
+    border-width: 3px !important;
+  }
+
+  .transactions-link {
+    border-width: 2px !important;
+  }
+
+  /* Stake control high contrast rules removed */
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .user-info,
+  .user-info-drag-handle,
+  .transactions-link {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .user-info-drag-handle::before,
+  .transactions-link::before {
+    display: none !important;
+  }
+}

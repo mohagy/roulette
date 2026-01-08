@@ -1,0 +1,996 @@
+/* Analytics Panel Styles */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
+
+/* Keyframe Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translate(-50%, -60%); opacity: 0; }
+  to { transform: translate(-50%, -50%); opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInTop {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes glowBorder {
+  0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+  50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.8); }
+  100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+}
+
+@keyframes rotateNumber {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+@keyframes pulseScale {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 100% 0; }
+}
+
+/* Three-part Analytics Layout */
+
+/* Left Sidebar Analytics */
+.analytics-left-sidebar {
+  position: fixed;
+  top: 5rem;
+  left: 0;
+  width: 300px;
+  height: calc(100vh - 5rem);
+  background-color: rgba(0, 0, 0, 0.92);
+  background-image: linear-gradient(135deg, rgba(20, 20, 20, 0.9) 0%, rgba(0, 0, 0, 0.95) 100%);
+  border-right: 3px solid gold;
+  border-top: 3px solid gold;
+  border-bottom: 3px solid gold;
+  border-radius: 0 15px 15px 0;
+  z-index: 100;
+  display: none;
+  overflow-y: auto;
+  box-shadow: 5px 0 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 215, 0, 0.3);
+  animation: slideInLeft 0.5s ease-out, glowBorder 3s infinite;
+  backdrop-filter: blur(5px);
+}
+
+/* Header Bar Analytics */
+.analytics-header-bar {
+  position: fixed;
+  top: 5rem;
+  left: 300px;
+  right: 300px;
+  height: 120px;
+  background-color: rgba(0, 0, 0, 0.92);
+  background-image: linear-gradient(135deg, rgba(20, 20, 20, 0.9) 0%, rgba(0, 0, 0, 0.95) 100%);
+  border-top: 3px solid gold;
+  border-bottom: 3px solid gold;
+  z-index: 100;
+  display: none;
+  overflow: hidden;
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 215, 0, 0.3);
+  animation: slideInTop 0.5s ease-out, glowBorder 3s infinite;
+  backdrop-filter: blur(5px);
+}
+
+/* Right Sidebar Analytics */
+.analytics-right-sidebar {
+  position: fixed;
+  top: 5rem;
+  right: 0;
+  width: 300px;
+  height: calc(100vh - 5rem);
+  background-color: rgba(0, 0, 0, 0.92);
+  background-image: linear-gradient(135deg, rgba(20, 20, 20, 0.9) 0%, rgba(0, 0, 0, 0.95) 100%);
+  border-left: 3px solid gold;
+  border-top: 3px solid gold;
+  border-bottom: 3px solid gold;
+  border-radius: 15px 0 0 15px;
+  z-index: 100;
+  display: none;
+  overflow-y: auto;
+  box-shadow: -5px 0 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 215, 0, 0.3);
+  animation: slideInRight 0.5s ease-out, glowBorder 3s infinite;
+  backdrop-filter: blur(5px);
+}
+
+/* Sidebar Headers */
+.analytics-sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 2px solid gold;
+  background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(50,50,50,0.8) 50%, rgba(0,0,0,0.8) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Header Bar Content */
+.analytics-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 25px;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.analytics-sidebar-header::after,
+.analytics-header-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, gold, transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite linear;
+}
+
+.analytics-title {
+  color: gold;
+  font-size: 24px;
+  font-weight: 900;
+  font-family: 'Orbitron', sans-serif;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  letter-spacing: 1px;
+  animation: pulseScale 3s infinite ease-in-out;
+  transform-origin: center;
+}
+
+.analytics-close {
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(255, 215, 0, 0.2);
+}
+
+.analytics-close:hover {
+  color: black;
+  background-color: gold;
+  transform: rotate(90deg);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+}
+
+/* Sidebar Content */
+.analytics-sidebar-content {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  perspective: 1000px;
+  height: calc(100% - 80px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: gold rgba(0, 0, 0, 0.3);
+}
+
+.analytics-sidebar-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.analytics-sidebar-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.analytics-sidebar-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, gold, #FFA500);
+  border-radius: 10px;
+}
+
+/* Header Section for horizontal layout */
+.header-section {
+  flex-direction: row !important;
+  align-items: center;
+  min-height: auto !important;
+  padding: 10px 15px !important;
+  height: 100%;
+}
+
+.header-section .section-title {
+  margin-right: 20px;
+  margin-bottom: 0;
+  min-width: 150px;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.header-section .number-history-container {
+  grid-template-columns: repeat(8, 1fr);
+  max-height: none;
+  flex: 1;
+  padding: 0;
+  gap: 5px;
+}
+
+.header-section .history-item {
+  margin: 0;
+  padding: 3px;
+}
+
+.header-section .history-draw {
+  font-size: 9px;
+  margin-bottom: 2px;
+}
+
+.header-section .history-number {
+  width: 25px;
+  height: 25px;
+  font-size: 12px;
+}
+
+.analytics-section {
+  background: linear-gradient(145deg, rgba(40, 40, 40, 0.8), rgba(20, 20, 20, 0.9));
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  animation: fadeIn 0.5s ease-out forwards;
+  opacity: 0;
+  position: relative;
+  overflow: hidden;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sidebar sections - smaller min-height */
+.analytics-sidebar-content .analytics-section {
+  min-height: 100px;
+}
+
+/* Right sidebar specific font size adjustments */
+.analytics-right-sidebar .section-title {
+  font-size: 16px; /* Reduced from 20px */
+  margin-bottom: 8px; /* Reduced spacing */
+}
+
+.analytics-right-sidebar .dist-label {
+  font-size: 13px; /* Reduced from 16px */
+  margin-bottom: 5px; /* Reduced spacing */
+  letter-spacing: 0.5px; /* Reduced letter spacing */
+}
+
+.analytics-right-sidebar .dist-value {
+  font-size: 18px; /* Reduced from 24px */
+  margin-bottom: 2px; /* Reduced spacing */
+}
+
+.analytics-right-sidebar .dist-count {
+  font-size: 11px; /* Reduced from 12px */
+}
+
+/* Adjust distribution container spacing in right sidebar */
+.analytics-right-sidebar .distribution-container {
+  gap: 8px; /* Reduced from default */
+}
+
+.analytics-right-sidebar .distribution-item {
+  padding: 8px; /* Reduced padding */
+  margin-bottom: 5px; /* Reduced margin */
+}
+
+/* Reduce analytics section spacing in right sidebar */
+.analytics-right-sidebar .analytics-section {
+  padding: 12px; /* Reduced from 15px */
+  margin-bottom: 8px; /* Reduced from 10px */
+  min-height: 80px; /* Reduced from 100px */
+}
+
+/* Ensure text doesn't overflow in right sidebar */
+.analytics-right-sidebar .dist-label,
+.analytics-right-sidebar .dist-value,
+.analytics-right-sidebar .dist-count {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.analytics-section:nth-child(1) { animation-delay: 0.1s; }
+.analytics-section:nth-child(2) { animation-delay: 0.2s; }
+.analytics-section:nth-child(3) { animation-delay: 0.3s; }
+.analytics-section:nth-child(4) { animation-delay: 0.4s; }
+
+.analytics-section:hover {
+  transform: translateZ(10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.analytics-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.analytics-section:hover::before {
+  opacity: 1;
+}
+
+.section-title {
+  color: gold;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  border-bottom: 2px solid gold;
+  padding-bottom: 5px;
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, gold, transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite linear;
+}
+
+/* Left sidebar specific styling for Last 8 Spins */
+.analytics-left-sidebar .header-section {
+  flex-direction: column !important; /* Override horizontal layout */
+  align-items: stretch !important;
+  min-height: 120px !important;
+  padding: 15px !important;
+  height: auto !important;
+}
+
+.analytics-left-sidebar .header-section .section-title {
+  margin-right: 0 !important;
+  margin-bottom: 12px !important;
+  min-width: auto !important;
+  font-size: 20px !important;
+  white-space: normal !important;
+}
+
+.analytics-left-sidebar .number-history-container {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  justify-content: center !important;
+  padding: 5px 0 !important;
+  max-height: none !important;
+  grid-template-columns: none !important; /* Override grid layout */
+  overflow-y: visible !important;
+}
+
+.analytics-left-sidebar .history-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 55px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  margin: 0 !important;
+  padding: 5px !important;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  /* Removed all transitions and animations for completely static display */
+}
+
+.analytics-left-sidebar .history-item:hover {
+  /* Removed all hover animations for completely static display */
+  cursor: default;
+}
+
+.analytics-left-sidebar .history-draw {
+  font-size: 11px !important;
+  color: #f0f0f0;
+  margin-bottom: 4px !important;
+  text-align: center;
+  font-weight: 600;
+  opacity: 0.9;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  letter-spacing: 0.3px;
+}
+
+.analytics-left-sidebar .history-number {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px !important;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 1);
+  /* Removed transition for completely static display */
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.analytics-left-sidebar .history-item:hover .history-number {
+  /* Removed hover scaling for completely static display */
+}
+
+.analytics-left-sidebar .history-item:hover .history-draw {
+  /* Removed hover effects for completely static display */
+}
+
+/* Hot and Cold Numbers */
+.hot-numbers-container,
+.cold-numbers-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 5px 0;
+  flex: 1;
+}
+
+@keyframes numberAppear {
+  0% { transform: scale(0) rotateY(180deg); opacity: 0; }
+  70% { transform: scale(1.2) rotateY(0deg); }
+  100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+}
+
+/* Removed hotGlow and coldGlow animations - numbers are now completely static */
+
+.number-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  position: relative;
+  /* Removed all transitions and animations for completely static display */
+  opacity: 1;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Removed all animation delays - numbers are now completely static */
+
+.number-item:hover {
+  /* Removed all hover animations for completely static display */
+  cursor: default;
+}
+
+.number-item.red {
+  background: radial-gradient(circle at 30% 30%, #FF6B6B, #E53E3E);
+  box-shadow: 0 0 15px rgba(229, 49, 42, 0.8), 0 0 30px rgba(229, 49, 42, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  /* Removed animation for completely static display */
+}
+
+.number-item.black {
+  background: radial-gradient(circle at 30% 30%, #555, #111);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.4), 0 0 24px rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  /* Removed animation for completely static display */
+}
+
+.number-item.green {
+  background: radial-gradient(circle at 30% 30%, #38D9A9, #20C997);
+  box-shadow: 0 0 15px rgba(18, 156, 61, 0.8), 0 0 30px rgba(18, 156, 61, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  /* Removed animation for completely static display */
+}
+
+.hot-numbers-container .number-item {
+  /* Removed all animations for completely static display */
+}
+
+.cold-numbers-container .number-item {
+  /* Removed all animations for completely static display */
+}
+
+.number-count {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: black;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  z-index: 1;
+}
+
+/* Distribution container */
+@keyframes countUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes valueGlow {
+  0% { text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+  50% { text-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 0 5px rgba(255, 215, 0, 0.5); }
+  100% { text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+}
+
+.distribution-container {
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 0 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex: 1;
+}
+
+.distribution-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-width: 70px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 215, 0, 0.1);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s forwards;
+  opacity: 0;
+}
+
+.distribution-item:nth-child(1) { animation-delay: 0.1s; }
+.distribution-item:nth-child(2) { animation-delay: 0.2s; }
+.distribution-item:nth-child(3) { animation-delay: 0.3s; }
+.distribution-item:nth-child(4) { animation-delay: 0.4s; }
+.distribution-item:nth-child(5) { animation-delay: 0.5s; }
+.distribution-item:nth-child(6) { animation-delay: 0.6s; }
+.distribution-item:nth-child(7) { animation-delay: 0.7s; }
+.distribution-item:nth-child(8) { animation-delay: 0.8s; }
+.distribution-item:nth-child(9) { animation-delay: 0.9s; }
+
+.distribution-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(20, 20, 20, 0.5);
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+.dist-label {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.dist-value {
+  color: gold;
+  font-size: 24px;
+  font-weight: bold;
+  font-family: 'Orbitron', sans-serif;
+  margin-bottom: 3px;
+  animation: countUp 0.8s forwards, valueGlow 3s infinite;
+  opacity: 0;
+}
+
+.dist-count {
+  color: #ddd;
+  font-size: 12px;
+  font-style: italic;
+  animation: countUp 0.8s forwards;
+  opacity: 0;
+  animation-delay: 0.2s;
+}
+
+/* Number history - animations removed for completely static display */
+
+.number-history-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  justify-content: center;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 5px;
+  scrollbar-width: thin;
+  scrollbar-color: gold rgba(0, 0, 0, 0.3);
+  flex: 1;
+}
+
+.number-history-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.number-history-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.number-history-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, gold, #FFA500);
+  border-radius: 10px;
+}
+
+.history-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  padding: 5px 3px;
+  /* Removed all transitions and animations for completely static display */
+  opacity: 1;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Removed all animation delays - history items are now completely static */
+
+.history-item:hover {
+  /* Removed all hover animations for completely static display */
+  cursor: default;
+}
+
+.history-draw {
+  color: #bbb;
+  font-size: 10px;
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+
+.history-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  /* Removed all transitions for completely static display */
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.history-item:hover .history-number {
+  /* Removed hover scaling for completely static display */
+}
+
+.history-number.red {
+  background: radial-gradient(circle at 30% 30%, #FF6B6B, #E53E3E);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3), 0 0 12px rgba(229, 49, 42, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+.history-number.black {
+  background: radial-gradient(circle at 30% 30%, #555, #111);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3), 0 0 12px rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.history-number.green {
+  background: radial-gradient(circle at 30% 30%, #38D9A9, #20C997);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3), 0 0 12px rgba(18, 156, 61, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+/* No data message */
+.no-data {
+  color: #bbb;
+  font-style: italic;
+  text-align: center;
+  width: 100%;
+  padding: 20px;
+  font-size: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 215, 0, 0.3);
+  animation: fadeIn 1s forwards;
+}
+
+/* Particle effects for analytics panel */
+.analytics-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+  opacity: 0.3;
+}
+
+.particle {
+  position: absolute;
+  background-color: rgba(255, 215, 0, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Responsive styles for three-part layout */
+@media only screen and (max-width: 1200px) {
+  .analytics-left-sidebar,
+  .analytics-right-sidebar {
+    width: 250px;
+  }
+
+  .analytics-header-bar {
+    left: 250px;
+    right: 250px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .analytics-left-sidebar,
+  .analytics-right-sidebar {
+    width: 200px;
+  }
+
+  .analytics-header-bar {
+    left: 200px;
+    right: 200px;
+    height: 100px;
+  }
+
+  .analytics-title {
+    font-size: 18px;
+  }
+
+  .section-title {
+    font-size: 16px;
+  }
+
+  .number-item {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+
+  .dist-value {
+    font-size: 20px;
+  }
+
+  /* Right sidebar responsive adjustments for tablet */
+  .analytics-right-sidebar .section-title {
+    font-size: 14px;
+  }
+
+  .analytics-right-sidebar .dist-label {
+    font-size: 12px;
+  }
+
+  .analytics-right-sidebar .dist-value {
+    font-size: 16px;
+  }
+
+  .analytics-right-sidebar .dist-count {
+    font-size: 10px;
+  }
+
+  .header-section .number-history-container {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  /* Left sidebar Last 8 Spins responsive adjustments for tablet */
+  .analytics-left-sidebar .history-item {
+    width: 40px;
+    height: 50px;
+  }
+
+  .analytics-left-sidebar .history-number {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 12px !important;
+  }
+
+  .analytics-left-sidebar .history-draw {
+    font-size: 10px !important;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  /* On very small screens, hide sidebars and show only header bar */
+  .analytics-left-sidebar,
+  .analytics-right-sidebar {
+    display: none !important;
+  }
+
+  .analytics-header-bar {
+    left: 0;
+    right: 0;
+    height: 80px;
+  }
+
+  .analytics-title {
+    font-size: 16px;
+  }
+
+  .section-title {
+    font-size: 14px;
+  }
+
+  .footer-section .number-history-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Right sidebar responsive adjustments for mobile (if visible) */
+  .analytics-right-sidebar .section-title {
+    font-size: 13px;
+  }
+
+  .analytics-right-sidebar .dist-label {
+    font-size: 11px;
+  }
+
+  .analytics-right-sidebar .dist-value {
+    font-size: 14px;
+  }
+
+  .analytics-right-sidebar .dist-count {
+    font-size: 9px;
+  }
+
+  /* Left sidebar Last 8 Spins responsive adjustments for mobile */
+  .analytics-left-sidebar .history-item {
+    width: 35px;
+    height: 45px;
+  }
+
+  .analytics-left-sidebar .history-number {
+    width: 25px !important;
+    height: 25px !important;
+    font-size: 11px !important;
+  }
+
+  .analytics-left-sidebar .history-draw {
+    font-size: 9px !important;
+    font-weight: 600;
+    color: #f0f0f0;
+  }
+}
+
+/* Analytics Button */
+@keyframes pulseButton {
+  0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+}
+
+.analytics-button {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  background: linear-gradient(145deg, #111, #222);
+  border: 2px solid gold;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: gold;
+  cursor: pointer;
+  z-index: 10;
+  font-size: 22px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), 0 0 5px rgba(255, 215, 0, 0.3);
+  animation: pulseButton 2s infinite;
+}
+
+.analytics-button:hover {
+  background: linear-gradient(145deg, gold, #FFA500);
+  color: black;
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+}
+
+/* Visible states for three-part layout */
+.analytics-left-sidebar.visible {
+  animation: slideInLeft 0.5s forwards;
+}
+
+.analytics-header-bar.visible {
+  animation: slideInTop 0.5s forwards;
+}
+
+.analytics-right-sidebar.visible {
+  animation: slideInRight 0.5s forwards;
+}
+
+/* Ensure main game area remains accessible when analytics are shown */
+.roulette-table {
+  transition: all 0.3s ease;
+}
+
+/* Adjust main game area when analytics panels are visible */
+body:has(.analytics-left-sidebar.visible, .analytics-right-sidebar.visible) .roulette-table {
+  padding-left: 300px;
+  padding-right: 300px;
+}
+
+body:has(.analytics-header-bar.visible) .roulette-table {
+  padding-top: 120px;
+}
+
+/* Fallback for browsers that don't support :has() */
+.analytics-active .roulette-table {
+  padding-left: 300px;
+  padding-right: 300px;
+  padding-top: 120px;
+}
+
+@keyframes panelAppear {
+  0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* Additional animations for enhanced effects */
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-10px, 10px) rotate(2deg); }
+  50% { transform: translate(10px, -15px) rotate(-2deg); }
+  75% { transform: translate(-15px, -10px) rotate(1deg); }
+}
+
+@keyframes numberRotate {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+@keyframes numberPop {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes sectionGlow {
+  0% { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(255, 215, 0, 0.1); }
+  50% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 25px rgba(255, 215, 0, 0.3); }
+  100% { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), inset 0 0 15px rgba(255, 215, 0, 0.1); }
+}

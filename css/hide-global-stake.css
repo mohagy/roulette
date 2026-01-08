@@ -1,0 +1,26 @@
+/* Global Stake control styles */
+.global-stake-control {
+  display: block !important;
+}
+
+/* Stake input in the sidebar */
+.stake-control {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure stake input is visible and properly styled */
+#global-stake-input {
+  width: 80px;
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  color: white;
+  font-size: 14px;
+  text-align: right;
+}

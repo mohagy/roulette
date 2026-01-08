@@ -1,0 +1,32 @@
+/**
+ * Hide Menu Container Complete Button
+ * Removes the complete button in the menu container (next to sound button)
+ * Keeps the floating complete button visible and functional
+ */
+
+/* ===== HIDE MENU CONTAINER COMPLETE BUTTON ===== */
+.menu-container .button-complete {
+    display: none !important;
+    /* This hides the complete button next to the sound button in the menu container */
+}
+
+/* Ensure floating complete button remains visible and functional */
+.floating-complete-button {
+    display: block !important;
+    /* Keep the floating complete button visible */
+}
+
+/* Hide any button in menu container that contains "COMPLETE" text */
+.menu-container .button {
+    /* Check each button individually */
+}
+
+.menu-container .button .button-text {
+    /* Target the text specifically */
+}
+
+/* More specific selector to hide the complete button in menu */
+.menu-container .button:first-child {
+    display: none !important;
+    /* Hide the first button in menu container (which is typically the complete button) */
+}

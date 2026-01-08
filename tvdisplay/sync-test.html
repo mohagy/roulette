@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master-Client Sync Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success { background: #28a745; color: white; }
+        .error { background: #dc3545; color: white; }
+        .warning { background: #ffc107; color: black; }
+        .info { background: #17a2b8; color: white; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎰 Master-Client Synchronization Test</h1>
+        
+        <div class="test-section">
+            <h2>🔧 System Status</h2>
+            <div id="broadcast-support" class="status"></div>
+            <div id="sync-script-status" class="status"></div>
+            <div id="connection-status" class="status"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎮 Test Controls</h2>
+            <button onclick="testAsMaster()">Initialize as Master</button>
+            <button onclick="testAsClient()">Initialize as Client</button>
+            <button onclick="sendTestMessage()">Send Test Message</button>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 Game State</h2>
+            <div id="game-state-display"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📝 Console Log</h2>
+            <div id="console-log" class="log"></div>
+        </div>
+    </div>
+
+    <!-- Load the master-client sync script -->
+    <script src="js/master-client-sync.js"></script>
+    
+    <script>
+        let testChannel = null;
+        let logElement = null;
+        
+        // Override console.log to capture messages
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        const originalConsoleWarn = console.warn;
+        
+        function logToDisplay(message, type = 'log') {
+            if (!logElement) logElement = document.getElementById('console-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'warn' ? '⚠️' : '📝';
+            logElement.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            logToDisplay(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalConsoleError.apply(console, args);
+            logToDisplay(args.join(' '), 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalConsoleWarn.apply(console, args);
+            logToDisplay(args.join(' '), 'warn');
+        };
+        
+        // Check system status
+        function checkSystemStatus() {
+            // Check BroadcastChannel support
+            const broadcastElement = document.getElementById('broadcast-support');
+            if (typeof BroadcastChannel !== 'undefined') {
+                broadcastElement.textContent = '✅ BroadcastChannel API supported';
+                broadcastElement.className = 'status success';
+            } else {
+                broadcastElement.textContent = '❌ BroadcastChannel API not supported';
+                broadcastElement.className = 'status error';
+            }
+            
+            // Check sync script
+            const syncElement = document.getElementById('sync-script-status');
+            if (window.MasterClientSync) {
+                syncElement.textContent = '✅ Master-Client Sync script loaded';
+                syncElement.className = 'status success';
+            } else {
+                syncElement.textContent = '❌ Master-Client Sync script not loaded';
+                syncElement.className = 'status error';
+            }
+            
+            // Update connection status
+            updateConnectionStatus();
+        }
+        
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connection-status');
+            if (window.MasterClientSync) {
+                if (window.MasterClientSync.isMaster()) {
+                    statusElement.textContent = `👑 Master Mode - ${window.MasterClientSync.getConnectedClients()} clients connected`;
+                    statusElement.className = 'status info';
+                } else if (window.MasterClientSync.isClient()) {
+                    statusElement.textContent = '📺 Client Mode - Connected to master';
+                    statusElement.className = 'status info';
+                } else {
+                    statusElement.textContent = '⚪ Not initialized';
+                    statusElement.className = 'status warning';
+                }
+            } else {
+                statusElement.textContent = '❌ Sync system not available';
+                statusElement.className = 'status error';
+            }
+        }
+        
+        function updateGameStateDisplay() {
+            const displayElement = document.getElementById('game-state-display');
+            if (window.MasterClientSync) {
+                const gameState = window.MasterClientSync.getGameState();
+                displayElement.innerHTML = `
+                    <strong>Current Number:</strong> ${gameState.currentNumber || 'None'}<br>
+                    <strong>Time Remaining:</strong> ${Math.floor(gameState.timeRemaining / 1000)}s<br>
+                    <strong>Game Phase:</strong> ${gameState.gamePhase}<br>
+                    <strong>Is Spinning:</strong> ${gameState.isSpinning}<br>
+                    <strong>Previous Numbers:</strong> ${gameState.previousNumbers.length} stored<br>
+                    <strong>Session ID:</strong> ${gameState.sessionId}<br>
+                    <strong>Master ID:</strong> ${gameState.masterId || 'None'}
+                `;
+            } else {
+                displayElement.innerHTML = '<em>Sync system not available</em>';
+            }
+        }
+        
+        function testAsMaster() {
+            if (window.MasterClientSync) {
+                console.log('🧪 Testing as Master...');
+                window.MasterClientSync.initializeMaster();
+                updateConnectionStatus();
+                updateGameStateDisplay();
+            } else {
+                console.error('MasterClientSync not available');
+            }
+        }
+        
+        function testAsClient() {
+            if (window.MasterClientSync) {
+                console.log('🧪 Testing as Client...');
+                window.MasterClientSync.initializeClient();
+                updateConnectionStatus();
+                updateGameStateDisplay();
+            } else {
+                console.error('MasterClientSync not available');
+            }
+        }
+        
+        function sendTestMessage() {
+            if (typeof BroadcastChannel !== 'undefined') {
+                if (!testChannel) {
+                    testChannel = new BroadcastChannel('roulette-sync-channel');
+                    testChannel.onmessage = function(event) {
+                        console.log('📨 Received test message:', event.data);
+                    };
+                }
+                
+                const testMessage = {
+                    type: 'test_message',
+                    timestamp: Date.now(),
+                    message: 'Hello from sync test!'
+                };
+                
+                testChannel.postMessage(testMessage);
+                console.log('📤 Sent test message:', testMessage);
+            } else {
+                console.error('BroadcastChannel not supported');
+            }
+        }
+        
+        function clearLog() {
+            document.getElementById('console-log').textContent = '';
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSystemStatus();
+            
+            // Update status every 2 seconds
+            setInterval(() => {
+                updateConnectionStatus();
+                updateGameStateDisplay();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

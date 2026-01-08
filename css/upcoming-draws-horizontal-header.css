@@ -1,0 +1,299 @@
+/**
+ * Upcoming Draws - Horizontal Header Layout
+ * Converts the vertical upcoming draws panel into a horizontal header
+ */
+
+/* Override the main panel to be horizontal */
+.upcoming-draws-panel {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  max-width: none !important;
+  min-width: none !important;
+  z-index: 1400 !important;
+  background: linear-gradient(90deg, rgba(26, 26, 26, 0.95) 0%, rgba(42, 42, 42, 0.95) 100%) !important;
+  border: none !important;
+  border-bottom: 3px solid var(--upcoming-gold) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 204, 0, 0.2) !important;
+  backdrop-filter: blur(15px) !important;
+  transform: none !important;
+}
+
+.upcoming-draws-panel:hover {
+  transform: none !important;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 204, 0, 0.3) !important;
+}
+
+/* Header adjustments for horizontal layout */
+.upcoming-draws-header {
+  background: linear-gradient(90deg, var(--upcoming-gold), #e6b800) !important;
+  padding: 8px 15px !important;
+  border-radius: 0 !important;
+  font-size: 13px !important;
+  min-height: 40px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.upcoming-draws-title {
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+.upcoming-draws-title i {
+  font-size: 14px !important;
+}
+
+/* Content area - horizontal scrolling */
+.upcoming-draws-content {
+  padding: 0 !important;
+  max-height: none !important;
+  height: auto !important;
+  overflow-y: visible !important;
+  overflow-x: auto !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+}
+
+/* Draws list - horizontal layout */
+.upcoming-draws-list {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-width: 100% !important;
+  align-items: stretch !important;
+}
+
+/* Individual draw items - compact horizontal cards */
+.upcoming-draw-item {
+  flex: 1 !important;
+  min-width: 140px !important;
+  max-width: 180px !important;
+  margin: 0 !important;
+  padding: 8px 12px !important;
+  border-bottom: none !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: transparent !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  position: relative !important;
+  height: 60px !important;
+}
+
+.upcoming-draw-item:last-child {
+  border-right: none !important;
+}
+
+.upcoming-draw-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Selected and next draw states */
+.upcoming-draw-item.selected {
+  background: linear-gradient(135deg, rgba(23, 162, 184, 0.4), rgba(23, 162, 184, 0.2)) !important;
+  border-bottom: 3px solid var(--upcoming-selected) !important;
+  box-shadow: inset 0 0 15px rgba(23, 162, 184, 0.3) !important;
+}
+
+.upcoming-draw-item.next-draw {
+  background: linear-gradient(135deg, rgba(40, 167, 69, 0.3), rgba(40, 167, 69, 0.1)) !important;
+  border-bottom: 3px solid var(--upcoming-green) !important;
+  box-shadow: inset 0 0 15px rgba(40, 167, 69, 0.2) !important;
+}
+
+.upcoming-draw-item.next-draw::before {
+  content: 'NEXT' !important;
+  position: absolute !important;
+  top: 2px !important;
+  right: 4px !important;
+  background: var(--upcoming-green) !important;
+  color: white !important;
+  font-size: 8px !important;
+  font-weight: bold !important;
+  padding: 1px 4px !important;
+  border-radius: 2px !important;
+  letter-spacing: 0.3px !important;
+}
+
+/* Draw item header - compact layout */
+.draw-item-header {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-bottom: 4px !important;
+  gap: 2px !important;
+}
+
+.draw-number {
+  font-size: 16px !important;
+  font-weight: bold !important;
+  color: var(--upcoming-gold) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+  line-height: 1 !important;
+}
+
+.draw-time {
+  font-size: 11px !important;
+  color: #ccc !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+}
+
+/* Stats - compact horizontal layout */
+.draw-item-stats {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+.draw-stats-left {
+  display: flex !important;
+  gap: 6px !important;
+  align-items: center !important;
+}
+
+.draw-stat {
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  font-size: 10px !important;
+  color: #bbb !important;
+}
+
+.draw-stat i {
+  font-size: 9px !important;
+  opacity: 0.7 !important;
+}
+
+.draw-stat-value {
+  font-weight: bold !important;
+  color: white !important;
+}
+
+.draw-stat span:last-child {
+  font-size: 9px !important;
+  opacity: 0.8 !important;
+}
+
+/* Amount styling */
+.draw-stat.amount .draw-stat-value {
+  color: var(--upcoming-green) !important;
+}
+
+/* Selection indicator - horizontal version */
+.selection-indicator {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 3px !important;
+  background: transparent !important;
+  transition: all 0.3s ease !important;
+}
+
+.upcoming-draw-item.selected .selection-indicator {
+  background: var(--upcoming-selected) !important;
+}
+
+.upcoming-draw-item.next-draw .selection-indicator {
+  background: var(--upcoming-green) !important;
+}
+
+/* Controls adjustments */
+.upcoming-draws-controls {
+  gap: 4px !important;
+}
+
+.upcoming-draws-control {
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 10px !important;
+}
+
+/* Scrollbar for horizontal scrolling */
+.upcoming-draws-content::-webkit-scrollbar {
+  height: 4px !important;
+  width: auto !important;
+}
+
+.upcoming-draws-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.upcoming-draws-content::-webkit-scrollbar-thumb {
+  background: var(--upcoming-gold) !important;
+  border-radius: 2px !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .upcoming-draw-item {
+    min-width: 120px !important;
+    max-width: 150px !important;
+    padding: 6px 8px !important;
+  }
+  
+  .draw-number {
+    font-size: 14px !important;
+  }
+  
+  .draw-time {
+    font-size: 10px !important;
+  }
+  
+  .draw-stat {
+    font-size: 9px !important;
+  }
+}
+
+/* Animation for updates */
+.upcoming-draw-item.updated {
+  animation: horizontal-update-flash 0.6s ease !important;
+}
+
+@keyframes horizontal-update-flash {
+  0% { 
+    background: linear-gradient(135deg, var(--upcoming-gold), #e6b800) !important;
+    color: var(--upcoming-dark) !important;
+  }
+  50% { 
+    transform: translateY(-3px) scale(1.02) !important;
+  }
+  100% { 
+    transform: translateY(0) scale(1) !important;
+  }
+}
+
+/* Hide resize handles in horizontal mode */
+.upcoming-resize-handle {
+  display: none !important;
+}
+
+/* Ensure the panel stays at the top */
+body {
+  padding-top: 100px !important; /* Add space for the header */
+}
+
+/* Adjust main content to account for header */
+.roulette-table,
+.main-content,
+.betting-area {
+  margin-top: 20px !important;
+}

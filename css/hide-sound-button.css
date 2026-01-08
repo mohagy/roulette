@@ -1,0 +1,24 @@
+/**
+ * Hide Sound Button
+ * Removes the sound button from the menu container
+ */
+
+/* ===== HIDE SOUND BUTTON ===== */
+.menu-container .button-sound {
+    display: none !important;
+    /* This hides the sound button in the menu container */
+}
+
+/* Alternative selector in case the class is different */
+.menu-container .button:last-child {
+    display: none !important;
+    /* Hide the last button in menu container (which is typically the sound button) */
+}
+
+/* Hide any button in menu container that contains sound-related elements */
+.menu-container .button:has(.fa-volume-up),
+.menu-container .button:has(.fa-volume-off),
+.menu-container .button:has(.cross-line) {
+    display: none !important;
+    /* Hide buttons with sound icons */
+}

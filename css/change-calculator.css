@@ -1,0 +1,103 @@
+/* Change Calculator Styles */
+.change-calculator {
+  position: absolute;
+  bottom: 100px; /* Position above the footer buttons */
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 5;
+}
+
+.change-calculator-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--global-gold-color);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.change-calculator-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.change-calculator-label {
+  font-size: 12px;
+  color: #fff;
+}
+
+.change-calculator-input {
+  width: 80px;
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  color: white;
+  font-size: 14px;
+  text-align: right;
+}
+
+.change-calculator-result {
+  font-size: 14px;
+  font-weight: bold;
+  color: #4CAF50;
+  text-align: right;
+}
+
+.change-calculator-divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin: 8px 0;
+}
+
+/* Toggle button to show/hide the calculator */
+.change-calculator-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 12px;
+  color: var(--global-gold-color);
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.change-calculator-toggle i {
+  margin-left: 5px;
+  transition: transform 0.3s ease;
+}
+
+.change-calculator.collapsed {
+  bottom: 0;
+  height: 30px;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+}
+
+.change-calculator.collapsed .change-calculator-toggle {
+  position: absolute;
+  bottom: 100px;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.change-calculator.collapsed .change-calculator-toggle i {
+  transform: rotate(180deg);
+}
+
+.change-calculator.collapsed .change-calculator-content {
+  display: none;
+}

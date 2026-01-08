@@ -1,0 +1,272 @@
+/**
+ * Upcoming Draw Display - Floating and Movable
+ * This CSS file styles the floating upcoming draw display
+ */
+
+.upcoming-draw-container {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 250px; /* Increased width */
+    background-color: rgba(0, 0, 0, 0.9); /* Darker background */
+    border: 3px solid #ffb700; /* Thicker border */
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7); /* Stronger shadow */
+    color: white;
+    z-index: 9999;
+    font-family: 'Barlow', Arial, sans-serif;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+    user-select: none;
+    display: block !important; /* Force display */
+    visibility: visible !important; /* Force visibility */
+    opacity: 1 !important; /* Force opacity */
+}
+
+.upcoming-draw-container.dragging {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+    opacity: 0.9;
+}
+
+.upcoming-draw-header {
+    background-color: #ffb700;
+    color: #000;
+    padding: 10px 15px; /* Increased padding */
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: grab;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3); /* Thicker border */
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2); /* Text shadow for better visibility */
+}
+
+.upcoming-draw-header.dragging {
+    cursor: grabbing;
+}
+
+.upcoming-draw-title {
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.upcoming-draw-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.upcoming-draw-control {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease;
+}
+
+.upcoming-draw-control:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.upcoming-draw-content {
+    padding: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.upcoming-draw-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.upcoming-draw-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 12px; /* Increased padding */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* More visible border */
+    font-size: 15px; /* Larger font */
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    align-items: center; /* Center items vertically */
+}
+
+.upcoming-draw-item:last-child {
+    border-bottom: none;
+}
+
+.upcoming-draw-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.upcoming-draw-number {
+    font-weight: bold;
+    color: #ffb700;
+    display: flex;
+    align-items: center;
+    font-size: 16px; /* Larger font */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Text shadow for better visibility */
+}
+
+.upcoming-draw-time {
+    color: #fff; /* Brighter color */
+    font-size: 14px; /* Larger font */
+    font-weight: 500; /* Semi-bold */
+}
+
+.upcoming-draw-item.current {
+    background-color: rgba(255, 183, 0, 0.3); /* More visible background */
+    border-left: 3px solid #ffb700; /* Left border for current item */
+    box-shadow: inset 0 0 10px rgba(255, 183, 0, 0.2); /* Inner glow */
+}
+
+.upcoming-draw-item.current .upcoming-draw-number {
+    font-size: 17px; /* Slightly larger font for current draw */
+}
+
+.upcoming-draw-item.selected {
+    background-color: rgba(46, 204, 113, 0.4); /* More visible background */
+    border-left: 4px solid #2ecc71; /* Thicker left border */
+    box-shadow: inset 0 0 10px rgba(46, 204, 113, 0.3); /* Inner glow */
+}
+
+.upcoming-draw-item.selected:hover {
+    background-color: rgba(46, 204, 113, 0.5); /* Brighter hover state */
+}
+
+.upcoming-draw-item.selected .upcoming-draw-number {
+    color: #2ecc71;
+    font-size: 17px; /* Slightly larger font for selected draw */
+}
+
+.bet-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 11px;
+    margin-left: 8px;
+    padding: 0 5px;
+}
+
+.bet-count-badge.has-bets {
+    background-color: #e74c3c;
+}
+
+/* Scrollbar styling */
+.upcoming-draw-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.upcoming-draw-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.upcoming-draw-content::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 183, 0, 0.5);
+    border-radius: 3px;
+}
+
+.upcoming-draw-content::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 183, 0, 0.7);
+}
+
+/* Minimize state */
+.upcoming-draw-container.minimized .upcoming-draw-content {
+    display: none;
+}
+
+.upcoming-draw-container.minimized {
+    width: auto;
+}
+
+/* Animation for updates */
+@keyframes highlight-update {
+    0% { background-color: rgba(255, 183, 0, 0.5); }
+    100% { background-color: transparent; }
+}
+
+.upcoming-draw-item.updated {
+    animation: highlight-update 2s ease;
+}
+
+/* Reset button */
+.reset-draw-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 10px;
+    margin: 8px auto;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: 90%;
+}
+
+.reset-draw-button:hover {
+    background-color: #c0392b;
+}
+
+.reset-draw-button:active {
+    transform: scale(0.98);
+}
+
+.reset-draw-button i {
+    margin-right: 5px;
+}
+
+/* Selection indicator in main interface */
+.draw-selection-indicator {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(46, 204, 113, 0.9);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 9999;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.draw-selection-indicator.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.draw-selection-indicator i {
+    margin-right: 8px;
+}
+
+.draw-selection-indicator .close-btn {
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.7;
+}
+
+.draw-selection-indicator .close-btn:hover {
+    opacity: 1;
+}

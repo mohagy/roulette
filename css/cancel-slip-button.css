@@ -1,0 +1,166 @@
+/**
+ * Cancel Slip Button Styles
+ */
+
+/* Floating button */
+.cancel-slip-button {
+    position: absolute;
+    top: 530px;
+    right: 100px;
+    width: 150px;
+    height: 50px;
+    background-color: #ff3333;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    border: 2px solid #fff;
+}
+
+.cancel-slip-button:hover {
+    background-color: #ff0000;
+    transform: scale(1.05);
+}
+
+.cancel-slip-button:active {
+    transform: scale(0.95);
+}
+
+.cancel-slip-button .button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cancel-slip-button i {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+/* Modal styles */
+.cancel-slip-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.cancel-slip-modal .modal-content {
+    background-color: #1a1a1a;
+    margin: 10% auto;
+    padding: 20px;
+    border: 2px solid #4CAF50;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 80%;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.cancel-slip-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #4CAF50;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.cancel-slip-modal .modal-header h2 {
+    margin: 0;
+    color: #4CAF50;
+    font-size: 24px;
+}
+
+.cancel-slip-modal .modal-close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cancel-slip-modal .modal-close:hover,
+.cancel-slip-modal .modal-close:focus {
+    color: #fff;
+    text-decoration: none;
+}
+
+.cancel-slip-modal .modal-body {
+    margin-bottom: 20px;
+}
+
+.cancel-slip-modal .input-group {
+    margin: 15px 0;
+}
+
+.cancel-slip-modal input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #4CAF50;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.cancel-slip-modal .error-message {
+    color: #ff3333;
+    margin-top: 10px;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+.cancel-slip-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid #4CAF50;
+    padding-top: 15px;
+}
+
+.cancel-slip-modal button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.cancel-slip-modal .btn-primary {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.cancel-slip-modal .btn-primary:hover {
+    background-color: #45a049;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .cancel-slip-button {
+        width: 120px;
+        height: 40px;
+        font-size: 14px;
+        right: 80px;
+    }
+    
+    .cancel-slip-modal .modal-content {
+        width: 90%;
+        margin: 20% auto;
+    }
+}

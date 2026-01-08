@@ -1,0 +1,35 @@
+/**
+ * Simple Roulette Board Positioning Fix
+ * 
+ * A minimal adjustment to shift the roulette betting board slightly to the right
+ * to clear the "Your Bets" sidebar without affecting board size or functionality.
+ */
+
+/* Simple horizontal shift for the betting area */
+.betting-area {
+  margin-left: 270px !important; /* Just 20px more than the existing 250px */
+}
+
+/* Also shift the chip selection area to match */
+.selections-container {
+  margin-left: 270px !important;
+}
+
+/* Reset margin when sidebar is collapsed */
+.bet-display-container.bet-display-collapsed ~ .roulette-table .betting-area,
+.bet-display-container.bet-display-collapsed ~ * .betting-area {
+  margin-left: 20px !important;
+}
+
+.bet-display-container.bet-display-collapsed ~ .roulette-table .selections-container,
+.bet-display-container.bet-display-collapsed ~ * .selections-container {
+  margin-left: 20px !important;
+}
+
+/* Mobile responsive - reset margins on small screens */
+@media (max-width: 768px) {
+  .betting-area,
+  .selections-container {
+    margin-left: 0 !important;
+  }
+}

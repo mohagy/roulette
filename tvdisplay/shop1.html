@@ -1,0 +1,2370 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="Description" content="Roulette Client Display - Shop 1" />
+    <meta name="theme-color" content="#202020" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Roulette Shop 1" />
+    <meta name="application-name" content="Roulette Client Display - Shop 1" />
+    <meta name="msapplication-TileColor" content="#202020" />
+    <meta name="msapplication-navbutton-color" content="#202020" />
+
+    <!-- 🚫 COMPREHENSIVE CACHE PREVENTION -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0, private" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta http-equiv="Last-Modified" content="0" />
+    <meta http-equiv="If-Modified-Since" content="0" />
+    <meta http-equiv="If-None-Match" content="*" />
+    <meta http-equiv="ETag" content="" />
+
+    <title>Roulette Client Display - Shop 1</title>
+    <link rel="manifest" href="../manifest.json" />
+    <link rel="shortcut icon" href="../images/icons/android/android-launchericon-48-48.png" type="image/png" />
+    <link rel="apple-touch-icon" href="../images/icons/ios/180.png" />
+
+    <!-- 🔄 CACHE-BUSTING CSS FILES -->
+    <script>
+      // Generate cache-busting timestamp
+      const cacheBuster = Date.now();
+      document.write('<link rel="stylesheet" href="css/style.css?v=' + cacheBuster + '" />');
+      document.write('<link rel="stylesheet" href="css/ads-player.css?v=' + cacheBuster + '" />');
+      document.write('<link rel="stylesheet" href="css/live-stream-player.css?v=' + cacheBuster + '" />');
+      document.write('<link rel="stylesheet" href="force-hide-loading.css?v=' + cacheBuster + '" />');
+      document.write('<link rel="stylesheet" href="css/analytics-panel.css?v=' + cacheBuster + '" />');
+    </script>
+    <style>
+      /* Debug panel styles */
+      #debug-panel {
+        position: fixed;
+        left: 10px;
+        bottom: 10px;
+        z-index: 9999;
+        background: rgba(0,0,0,0.5);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        display: none !important; /* Always hide debug panel on client displays */
+      }
+      #debug-panel.active {
+        display: none !important; /* Always hide debug panel on client displays */
+      }
+      .debug-button {
+        cursor: pointer;
+        background: #444;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        margin: 2px;
+      }
+      .debug-button:hover {
+        background: #666;
+      }
+      /* Save notification styles removed - notifications are now hidden from players */
+
+      /* Notification message styles removed */
+
+      /* Additional notification styles removed */
+
+      /* Final notification styles removed */
+
+      /* Forced number indicator styles */
+      #forced-number-indicator {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background-color: #fd7e14;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-weight: bold;
+        z-index: 9999;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        font-family: Arial, sans-serif;
+        transition: opacity 0.3s;
+        display: none !important; /* Always hide the forced number indicator */
+      }
+
+      #forced-number-indicator.red {
+        background-color: #dc3545;
+      }
+
+      #forced-number-indicator.black {
+        background-color: #212529;
+      }
+
+      #forced-number-indicator.green {
+        background-color: #198754;
+      }
+
+      /* Removed duplicate forced number indicator styles */
+
+      /* Client mode styles */
+      .client-mode .betting-chip,
+      .client-mode .part,
+      .client-mode .button {
+        pointer-events: none !important;
+        opacity: 0.7 !important;
+        cursor: not-allowed !important;
+      }
+
+      .client-mode .betting-area::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.1);
+        pointer-events: none;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body class="index client-mode">
+
+    <!-- 🧹 COMPREHENSIVE CACHE CLEARING & DEBUG SYSTEM -->
+    <script>
+      (function() {
+        console.log('🚫 CACHE CLEARING: Starting comprehensive cache prevention system');
+
+        // 1. Clear all browser storage immediately
+        function clearAllStorage() {
+          try {
+            // Clear localStorage
+            if (typeof(Storage) !== 'undefined' && localStorage) {
+              const localStorageKeys = Object.keys(localStorage);
+              console.log('🗑️ CLEARING localStorage keys:', localStorageKeys);
+              localStorage.clear();
+              console.log('✅ localStorage cleared');
+            }
+
+            // Clear sessionStorage
+            if (typeof(Storage) !== 'undefined' && sessionStorage) {
+              const sessionStorageKeys = Object.keys(sessionStorage);
+              console.log('🗑️ CLEARING sessionStorage keys:', sessionStorageKeys);
+              sessionStorage.clear();
+              console.log('✅ sessionStorage cleared');
+            }
+
+            // Clear any IndexedDB data
+            if ('indexedDB' in window) {
+              console.log('🗑️ CLEARING IndexedDB data');
+              // Note: Full IndexedDB clearing would require more complex code
+            }
+
+            // Clear any WebSQL data (deprecated but still might exist)
+            if ('openDatabase' in window) {
+              console.log('🗑️ CLEARING WebSQL data');
+            }
+
+          } catch (error) {
+            console.error('❌ Error clearing storage:', error);
+          }
+        }
+
+        // 2. Override fetch and XMLHttpRequest to add cache-busting
+        function setupCacheBusting() {
+          const originalFetch = window.fetch;
+          const originalXHROpen = XMLHttpRequest.prototype.open;
+
+          // Override fetch
+          window.fetch = function(url, options = {}) {
+            // Add cache-busting parameter
+            const cacheBuster = Date.now() + Math.random();
+            const separator = url.includes('?') ? '&' : '?';
+            const newUrl = url + separator + '_cb=' + cacheBuster;
+
+            // Add no-cache headers
+            options.headers = options.headers || {};
+            options.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+            options.headers['Pragma'] = 'no-cache';
+            options.headers['Expires'] = '0';
+
+            console.log('🔄 CACHE-BUSTED FETCH:', newUrl);
+            return originalFetch.call(this, newUrl, options);
+          };
+
+          // Override XMLHttpRequest
+          XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
+            // Add cache-busting parameter
+            const cacheBuster = Date.now() + Math.random();
+            const separator = url.includes('?') ? '&' : '?';
+            const newUrl = url + separator + '_cb=' + cacheBuster;
+
+            console.log('🔄 CACHE-BUSTED XHR:', newUrl);
+            return originalXHROpen.call(this, method, newUrl, async, user, password);
+          };
+
+          console.log('✅ Cache-busting setup complete');
+        }
+
+        // 3. Debug draw number sources
+        function setupDrawNumberDebugging() {
+          window.drawNumberDebug = {
+            sources: [],
+            logSource: function(source, value, location) {
+              const entry = {
+                timestamp: new Date().toISOString(),
+                source: source,
+                value: value,
+                location: location,
+                stackTrace: new Error().stack
+              };
+              this.sources.push(entry);
+              console.log('🎯 DRAW NUMBER SOURCE:', entry);
+
+              // Keep only last 50 entries
+              if (this.sources.length > 50) {
+                this.sources = this.sources.slice(-50);
+              }
+            },
+            getSources: function() {
+              return this.sources;
+            },
+            clearSources: function() {
+              this.sources = [];
+            }
+          };
+
+          console.log('✅ Draw number debugging setup complete');
+        }
+
+        // 4. Monitor and prevent caching
+        function setupCacheMonitoring() {
+          // Monitor for any attempts to store data
+          const originalSetItem = Storage.prototype.setItem;
+          Storage.prototype.setItem = function(key, value) {
+            console.warn('⚠️ STORAGE ATTEMPT:', key, value);
+            window.drawNumberDebug.logSource('localStorage.setItem', value, key);
+            return originalSetItem.call(this, key, value);
+          };
+
+          console.log('✅ Cache monitoring setup complete');
+        }
+
+        // Execute all cache prevention measures
+        clearAllStorage();
+        setupCacheBusting();
+        setupDrawNumberDebugging();
+        setupCacheMonitoring();
+
+        // Set up periodic cache clearing
+        setInterval(function() {
+          console.log('🔄 PERIODIC CACHE CHECK');
+          // Don't clear everything periodically, just monitor
+          if (localStorage.length > 0) {
+            console.warn('⚠️ localStorage has data:', Object.keys(localStorage));
+          }
+          if (sessionStorage.length > 0) {
+            console.warn('⚠️ sessionStorage has data:', Object.keys(sessionStorage));
+          }
+        }, 10000); // Check every 10 seconds
+
+        console.log('🎉 CACHE PREVENTION SYSTEM INITIALIZED');
+      })();
+    </script>
+
+    <div class="website-wrapper" id="website-wrapper">
+      <div class="roulette-table">
+        <div class="top-bar">
+          <div class="roulette-rolls-container">
+            <div class="roll roll5"></div>
+            <div class="roll roll4"></div>
+            <div class="roll roll3"></div>
+            <div class="roll roll2"></div>
+            <div class="roll roll1"></div>
+            <div class="roll roll-last"></div>
+          </div>
+          <div class="game-name">ROULETTE - SHOP 1</div>
+          <div class="min-max-bet">
+            <div class="min-bet bet-size"><span class="text-color">MIN:</span> $100.00</div>
+            <div class="max-bet bet-size"><span class="text-color">MAX:</span> $1600.00</div>
+          </div>
+        </div>
+        <div class="roulette-wheel-container">
+          <div class="roulette-wheel">
+            <div class="roulette-wheel-main roulette-image"></div>
+            <div class="roulette-center roulette-image"></div>
+            <div class="roulette-cross-shadow roulette-image"></div>
+            <div class="roulette-cross roulette-image">
+              <div class="number-glow-container"></div>
+            </div>
+            <div class="ball-container"></div>
+          </div>
+        </div>
+
+        <div class="betting-area">
+          <div class="top-area">
+            <div class="number number0 regular regular0 part"></div>
+            <div class="number number3 black"></div>
+            <div class="number number2 red"></div>
+            <div class="number number1 black"></div>
+            <div class="number number6 red"></div>
+            <div class="number number5 black"></div>
+            <div class="number number4 red"></div>
+            <div class="number number9 black"></div>
+            <div class="number number8 red"></div>
+            <div class="number number7 black"></div>
+            <div class="number number12 red"></div>
+            <div class="number number11 black"></div>
+            <div class="number number10 red"></div>
+            <div class="number number15 black"></div>
+            <div class="number number14 red"></div>
+            <div class="number number13 black"></div>
+            <div class="number number18 red"></div>
+            <div class="number number17 black"></div>
+            <div class="number number16 red"></div>
+            <div class="number number21 black"></div>
+            <div class="number number20 red"></div>
+            <div class="number number19 black"></div>
+            <div class="number number24 red"></div>
+            <div class="number number23 black"></div>
+            <div class="number number22 red"></div>
+            <div class="number number27 black"></div>
+            <div class="number number26 red"></div>
+            <div class="number number25 black"></div>
+            <div class="number number30 red"></div>
+            <div class="number number29 black"></div>
+            <div class="number number28 red"></div>
+            <div class="number number33 black"></div>
+            <div class="number number32 red"></div>
+            <div class="number number31 black"></div>
+            <div class="number number36 red"></div>
+            <div class="number number35 black"></div>
+            <div class="number number34 red"></div>
+            <div class="number bet2to1-1 part"></div>
+            <div class="number bet2to1-2 part"></div>
+            <div class="number bet2to1-3 part"></div>
+            <div class="top-area-overlay">
+              <div class="part line line3 top-row"></div>
+              <div class="part regular regular3 top-row"></div>
+              <div class="part line line6 top-row"></div>
+              <div class="part regular regular6 top-row"></div>
+              <div class="part line line9 top-row"></div>
+              <div class="part regular regular9 top-row"></div>
+              <div class="part line line12 top-row"></div>
+              <div class="part regular regular12 top-row"></div>
+              <div class="part line line15 top-row"></div>
+              <div class="part regular regular15 top-row"></div>
+              <div class="part line line18 top-row"></div>
+              <div class="part regular regular18 top-row"></div>
+              <div class="part line line21 top-row"></div>
+              <div class="part regular regular21 top-row"></div>
+              <div class="part line line24 top-row"></div>
+              <div class="part regular regular24 top-row"></div>
+              <div class="part line line27 top-row"></div>
+              <div class="part regular regular27 top-row"></div>
+              <div class="part line line30 top-row"></div>
+              <div class="part regular regular30 top-row"></div>
+              <div class="part line line33 top-row"></div>
+              <div class="part regular regular33 top-row"></div>
+              <div class="part line line36 top-row"></div>
+              <div class="part regular regular36 last top-row"></div>
+              <div class="part corner corner3 line between"></div>
+              <div class="part between between3"></div>
+              <div class="part corner corner6 line between"></div>
+              <div class="part between between6"></div>
+              <div class="part corner corner9 line between"></div>
+              <div class="part between between9"></div>
+              <div class="part corner corner12 line between"></div>
+              <div class="part between between12"></div>
+              <div class="part corner corner15 line between"></div>
+              <div class="part between between15"></div>
+              <div class="part corner corner18 line between"></div>
+              <div class="part between between18"></div>
+              <div class="part corner corner21 line between"></div>
+              <div class="part between between21"></div>
+              <div class="part corner corner24 line between"></div>
+              <div class="part between between24"></div>
+              <div class="part corner corner27 line between"></div>
+              <div class="part between between27"></div>
+              <div class="part corner corner30 line between"></div>
+              <div class="part between between30"></div>
+              <div class="part corner corner33 line between"></div>
+              <div class="part between between33"></div>
+              <div class="part corner corner36 line between"></div>
+              <div class="part last between between36"></div>
+              <div class="part line line2 center"></div>
+              <div class="part regular regular2 center"></div>
+              <div class="part line line5 center"></div>
+              <div class="part regular regular5 center"></div>
+              <div class="part line line8 center"></div>
+              <div class="part regular regular8 center"></div>
+              <div class="part line line11 center"></div>
+              <div class="part regular regular11 center"></div>
+              <div class="part line line14 center"></div>
+              <div class="part regular regular14 center"></div>
+              <div class="part line line17 center"></div>
+              <div class="part regular regular17 center"></div>
+              <div class="part line line20 center"></div>
+              <div class="part regular regular20 center"></div>
+              <div class="part line line23 center"></div>
+              <div class="part regular regular23 center"></div>
+              <div class="part line line26 center"></div>
+              <div class="part regular regular26 center"></div>
+              <div class="part line line29 center"></div>
+              <div class="part regular regular29 center"></div>
+              <div class="part line line32 center"></div>
+              <div class="part regular regular32 center"></div>
+              <div class="part line line35 center"></div>
+              <div class="part regular regular35 last center"></div>
+              <div class="part corner corner2 line between"></div>
+              <div class="part between between2"></div>
+              <div class="part corner corner5 line between"></div>
+              <div class="part between between5"></div>
+              <div class="part corner corner8 line between"></div>
+              <div class="part between between8"></div>
+              <div class="part corner corner11 line between"></div>
+              <div class="part between between11"></div>
+              <div class="part corner corner14 line between"></div>
+              <div class="part between between14"></div>
+              <div class="part corner corner17 line between"></div>
+              <div class="part between between17"></div>
+              <div class="part corner corner20 line between"></div>
+              <div class="part between between20"></div>
+              <div class="part corner corner23 line between"></div>
+              <div class="part between between23"></div>
+              <div class="part corner corner26 line between"></div>
+              <div class="part between between26"></div>
+              <div class="part corner corner29 line between"></div>
+              <div class="part between between29"></div>
+              <div class="part corner corner32 line between"></div>
+              <div class="part between between32"></div>
+              <div class="part corner corner35 line between"></div>
+              <div class="part last between between35"></div>
+              <div class="part center line line1"></div>
+              <div class="part center regular regular1"></div>
+              <div class="part center line line4"></div>
+              <div class="part center regular regular4"></div>
+              <div class="part center line line7"></div>
+              <div class="part center regular regular7"></div>
+              <div class="part center line line10"></div>
+              <div class="part center regular regular10"></div>
+              <div class="part center line line13"></div>
+              <div class="part center regular regular13"></div>
+              <div class="part center line line16"></div>
+              <div class="part center regular regular16"></div>
+              <div class="part center line line19"></div>
+              <div class="part center regular regular19"></div>
+              <div class="part center line line22"></div>
+              <div class="part center regular regular22"></div>
+              <div class="part center line line25"></div>
+              <div class="part center regular regular25"></div>
+              <div class="part center line line28"></div>
+              <div class="part center regular regular28"></div>
+              <div class="part center line line31"></div>
+              <div class="part center regular regular31"></div>
+              <div class="part center line line34"></div>
+              <div class="part center regular regular34 last"></div>
+              <div class="part corner corner1 line between"></div>
+              <div class="part between between1"></div>
+              <div class="part corner corner4 line between"></div>
+              <div class="part between between4"></div>
+              <div class="part corner corner7 line between"></div>
+              <div class="part between between7"></div>
+              <div class="part corner corner10 line between"></div>
+              <div class="part between between10"></div>
+              <div class="part corner corner13 line between"></div>
+              <div class="part between between13"></div>
+              <div class="part corner corner16 line between"></div>
+              <div class="part between between16"></div>
+              <div class="part corner corner19 line between"></div>
+              <div class="part between between19"></div>
+              <div class="part corner corner22 line between"></div>
+              <div class="part between between22"></div>
+              <div class="part corner corner25 line between"></div>
+              <div class="part between between25"></div>
+              <div class="part corner corner28 line between"></div>
+              <div class="part between between28"></div>
+              <div class="part corner corner31 line between"></div>
+              <div class="part between between31"></div>
+              <div class="part corner corner34 line between"></div>
+              <div class="part last between between34"></div>
+            </div>
+          </div>
+          <div class="bottom-area">
+            <div class="bottom-column bottom-column1 column-1st12 part"></div>
+            <div class="bottom-column bottom-column2 column-2nd12 part"></div>
+            <div class="bottom-column bottom-column3 column-3rd12 part"></div>
+            <div class="bottom-column bottom-column4 column-1to18 part"></div>
+
+            <div class="bottom-column bottom-column5 column-even part"></div>
+            <div class="bottom-column bottom-column6 column-red part"></div>
+            <div class="bottom-column bottom-column7 column-black part"></div>
+            <div class="bottom-column bottom-column8 column-odd part"></div>
+            <div class="bottom-column bottom-column9 column-19to36 part"></div>
+          </div>
+        </div>
+        <div class="selections-container">
+          <div class="betting-chips-container">
+            <div class="betting-chip betting-chip-menu betting-chip-menu5 betting-chip5" id="chip5">5</div>
+            <div class="betting-chip betting-chip-menu betting-chip-menu10 betting-chip10" id="chip10">10</div>
+            <div class="betting-chip betting-chip-menu betting-chip-menu20 betting-chip20" id="chip20">20</div>
+            <div class="betting-chip betting-chip-menu betting-chip-menu50 betting-chip50" id="chip50">50</div>
+            <div class="betting-chip betting-chip-menu betting-chip-menu100 betting-chip100" id="chip100">100</div>
+            <div class="betting-chip betting-chip-menu betting-chip-menu200 betting-chip200" id="chip200">200</div>
+          </div>
+          <div class="menu-container">
+            <div class="button button-spin">
+              <div class="circle">
+                <i class="fas fa-play icon"></i>
+              </div>
+              <div class="circle-overlay"></div>
+              <div class="button-text">SPIN</div>
+            </div>
+            <div class="button button-reset">
+              <div class="circle">
+                <i class="fas fa-plus icon"></i>
+              </div>
+              <div class="circle-overlay"></div>
+
+              <div class="button-text">RESET</div>
+            </div>
+            <div class="button button-sound">
+              <div class="circle">
+                <i class="fas fa-volume-up icon icon1"></i>
+                <div class="cross-line"></div>
+              </div>
+              <div class="circle-overlay"></div>
+
+              <div class="button-text">SOUNDS</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="money-container">
+          <div class="cash-area area">
+            <div class="text"><span>CASH</span> $</div>
+            <div class="cash-total"></div>
+          </div>
+          <div class="bet-area area">
+            <div class="text"><span>BET</span> $</div>
+            <div class="bet-total">0.00</div>
+          </div>
+        </div>
+
+        <!-- Timer Container moved to its own section at the bottom -->
+        <div class="timer-container">
+          <div class="timer-label">NEXT SPIN IN</div>
+          <div class="timer-display" id="countdown-timer">02:00</div>
+        </div>
+
+
+
+        <!-- Alert messages start ---------------------------------------------------------------->
+        <div class="alert-message-container alert-bets">
+          <div class="alert-message">SPINNING AUTOMATICALLY</div>
+        </div>
+
+        <div class="alert-message-container alert-money">
+          <div class="alert-message">NOT ENOUGH MONEY</div>
+        </div>
+
+        <div class="alert-message-container alert-max-bet">
+          <div class="alert-message">YOU SHOULD NOT EXCEED MAXIMUM BET OF $1000</div>
+        </div>
+
+        <div class="alert-message-container alert-spin-result">
+          <div class="results">
+            <div class="odd-even text">ODD</div>
+            <div class="high-low text">HIGH</div>
+            <div class="roll-number text">26</div>
+            <div class="win-lose text">WIN</div>
+            <div class="win-amount text">100</div>
+          </div>
+        </div>
+
+        <div class="alert-message-container alert-game-over">
+          <div class="alert-message">
+            <div class="text text1">
+              YOU ARE OUT OF MONEY.
+            </div>
+            <div class="text text2">
+              WOULD YOU LIKE TO PLAY AGAIN?
+            </div>
+            <div class="answers">
+              <div class="answer answer-no">NO</div>
+              <div class="answer answer-yes">YES</div>
+            </div>
+          </div>
+        </div>
+        <!-- Alert messages end ---------------------------------------------------------------->
+
+        <!-- Analytics Panels start - Three-part layout -->
+
+        <!-- Left Sidebar Analytics -->
+        <div class="analytics-left-sidebar">
+          <div class="analytics-particles"></div>
+          <div class="analytics-sidebar-header">
+            <div class="analytics-title">ANALYTICS</div>
+            <div class="analytics-close left-close"><i class="fas fa-times"></i></div>
+          </div>
+          <div class="analytics-sidebar-content">
+            <div class="analytics-section">
+              <div class="section-title">HOT NUMBERS</div>
+              <div class="hot-numbers-container" id="hot-numbers"></div>
+            </div>
+
+            <div class="analytics-section">
+              <div class="section-title">COLD NUMBERS</div>
+              <div class="cold-numbers-container" id="cold-numbers"></div>
+            </div>
+
+            <div class="analytics-section header-section">
+              <div class="section-title">LAST 8 SPINS</div>
+              <div class="number-history-container" id="number-history"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Header Bar Analytics -->
+        <div class="analytics-header-bar">
+          <div class="analytics-particles"></div>
+          <div class="analytics-header-content">
+            <div class="analytics-close header-close"><i class="fas fa-times"></i></div>
+          </div>
+        </div>
+
+        <!-- Right Sidebar Analytics -->
+        <div class="analytics-right-sidebar">
+          <div class="analytics-particles"></div>
+          <div class="analytics-sidebar-header">
+            <div class="analytics-title">DISTRIBUTIONS</div>
+            <div class="analytics-close right-close"><i class="fas fa-times"></i></div>
+          </div>
+          <div class="analytics-sidebar-content">
+            <div class="analytics-section">
+              <div class="section-title">COLOR</div>
+              <div class="distribution-container">
+                <div class="distribution-item">
+                  <div class="dist-label">RED</div>
+                  <div class="dist-value" id="red-percentage">0%</div>
+                  <div class="dist-count" id="red-count">(0)</div>
+                </div>
+                <div class="distribution-item">
+                  <div class="dist-label">BLACK</div>
+                  <div class="dist-value" id="black-percentage">0%</div>
+                  <div class="dist-count" id="black-count">(0)</div>
+                </div>
+                <div class="distribution-item">
+                  <div class="dist-label">GREEN</div>
+                  <div class="dist-value" id="green-percentage">0%</div>
+                  <div class="dist-count" id="green-count">(0)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="analytics-section">
+              <div class="section-title">ODD/EVEN</div>
+              <div class="distribution-container">
+                <div class="distribution-item">
+                  <div class="dist-label">ODD</div>
+                  <div class="dist-value" id="odd-percentage">0%</div>
+                  <div class="dist-count" id="odd-count">(0)</div>
+                </div>
+                <div class="distribution-item">
+                  <div class="dist-label">EVEN</div>
+                  <div class="dist-value" id="even-percentage">0%</div>
+                  <div class="dist-count" id="even-count">(0)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="analytics-section">
+              <div class="section-title">HIGH/LOW</div>
+              <div class="distribution-container">
+                <div class="distribution-item">
+                  <div class="dist-label">1-18</div>
+                  <div class="dist-value" id="low-percentage">0%</div>
+                  <div class="dist-count" id="low-count">(0)</div>
+                </div>
+                <div class="distribution-item">
+                  <div class="dist-label">19-36</div>
+                  <div class="dist-value" id="high-percentage">0%</div>
+                  <div class="dist-count" id="high-count">(0)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="analytics-section">
+              <div class="section-title">DOZENS</div>
+              <div class="distribution-container">
+                <div class="distribution-item">
+                  <div class="dist-label">1-12</div>
+                  <div class="dist-value" id="first-dozen-percentage">0%</div>
+                  <div class="dist-count" id="first-dozen-count">(0)</div>
+                </div>
+                <div class="distribution-item">
+                  <div class="dist-label">13-24</div>
+                  <div class="dist-value" id="second-dozen-percentage">0%</div>
+                  <div class="dist-count" id="second-dozen-count">(0)</div>
+                </div>
+                <div class="distribution-item">
+                  <div class="dist-label">25-36</div>
+                  <div class="dist-value" id="third-dozen-percentage">0%</div>
+                  <div class="dist-count" id="third-dozen-count">(0)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="analytics-section">
+              <div class="section-title">COLUMNS</div>
+              <div class="distribution-container">
+                <div class="distribution-item">
+                  <div class="dist-label">1st</div>
+                  <div class="dist-value" id="first-column-percentage">0%</div>
+                  <div class="dist-count" id="first-column-count">(0)</div>
+                </div>
+                <div class="distribution-item">
+                  <div class="dist-label">2nd</div>
+                  <div class="dist-value" id="second-column-percentage">0%</div>
+                  <div class="dist-count" id="second-column-count">(0)</div>
+                </div>
+                <div class="distribution-item">
+                  <div class="dist-label">3rd</div>
+                  <div class="dist-value" id="third-column-percentage">0%</div>
+                  <div class="dist-count" id="third-column-count">(0)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Panels end -->
+
+        <!-- Analytics Button -->
+        <div class="analytics-button" id="analytics-button">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+
+        <!-- Live Stream Toggle Button -->
+        <div class="live-stream-toggle-button" id="live-stream-toggle-button">
+          <i class="fas fa-video"></i>
+        </div>
+
+        <!-- Fullscreen Toggle Button -->
+        <div class="fullscreen-toggle-button" id="fullscreen-toggle-button">
+          <i class="fas fa-expand"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add debug panel -->
+    <div id="debug-panel">
+      <h3>Debug Panel</h3>
+      <button class="debug-button" id="checkDB">Check Database</button>
+      <button class="debug-button" id="resetDB">Reset Database</button>
+      <button class="debug-button" id="saveState">Save State</button>
+      <button class="debug-button" id="loadState">Load State</button>
+      <div id="debug-output"></div>
+    </div>
+
+
+
+    <!-- 🔄 CACHE-BUSTED SCRIPT SOURCES -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" data-auto-replace-svg="nest"></script>
+
+    <!-- 🚀 OLD EMERGENCY SYSTEM DISABLED - Using new complete analytics API -->
+    <script>
+      // OLD EMERGENCY SYSTEM DISABLED - Using new complete analytics API
+      (function() {
+        console.log('🚀 OLD EMERGENCY SYSTEM: DISABLED - Using new complete analytics API');
+        return; // Disabled
+
+        // Function to force load recent numbers from database
+        async function emergencyLoadRecentNumbers() {
+          try {
+            console.log('🚨 EMERGENCY LOAD: Fetching recent numbers from database');
+
+            const cacheBuster = Date.now() + Math.random();
+            const response = await fetch(`../load_analytics.php?emergency=${cacheBuster}&force=1`, {
+              method: "GET",
+              headers: {
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0"
+              },
+              cache: "no-store"
+            });
+
+            const data = await response.json();
+            console.log('🚨 EMERGENCY LOAD: Database response:', data);
+
+            if (data.status === 'success') {
+              const allSpins = JSON.parse(data.all_spins || '[]');
+              const recentNumbers = allSpins.slice(0, 5);
+
+              console.log('🚨 EMERGENCY LOAD: Recent numbers from DB:', recentNumbers);
+
+              // Force update global variables
+              window.allSpins = allSpins;
+              window.rolledNumbersArray = recentNumbers;
+
+              // Generate colors
+              const rouletteNumbersRed = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+              window.rolledNumbersColorArray = recentNumbers.map(number => {
+                const num = parseInt(number);
+                if (num === 0) return 'green';
+                return rouletteNumbersRed.includes(num) ? 'red' : 'black';
+              });
+
+              console.log('🚨 EMERGENCY LOAD: Generated arrays:', window.rolledNumbersArray, window.rolledNumbersColorArray);
+
+              // Force immediate DOM update
+              emergencyUpdateDOM(recentNumbers, window.rolledNumbersColorArray);
+
+              return true;
+            } else {
+              console.error('🚨 EMERGENCY LOAD: Database error:', data.message);
+              return false;
+            }
+          } catch (error) {
+            console.error('🚨 EMERGENCY LOAD: Failed:', error);
+            return false;
+          }
+        }
+
+        // Function to force update DOM immediately
+        function emergencyUpdateDOM(numbers, colors) {
+          console.log('🚨 EMERGENCY DOM: Updating display elements');
+
+          for (let i = 0; i < 5; i++) {
+            const element = document.querySelector(`.roll${i + 1}`);
+            if (element && i < numbers.length) {
+              const number = numbers[i];
+              const color = colors[i] || 'black';
+
+              // Clear and set
+              element.innerHTML = '';
+              element.className = element.className.replace(/roll-(red|black|green)/g, '');
+              element.innerHTML = number;
+              element.classList.add(`roll-${color}`);
+
+              console.log(`🚨 EMERGENCY DOM: Set .roll${i + 1} to ${number} (${color})`);
+            }
+          }
+
+          console.log('🚨 EMERGENCY DOM: Update completed');
+        }
+
+        // Run emergency load immediately
+        emergencyLoadRecentNumbers();
+
+        // Also run after a short delay
+        setTimeout(emergencyLoadRecentNumbers, 100);
+        setTimeout(emergencyLoadRecentNumbers, 500);
+        setTimeout(emergencyLoadRecentNumbers, 1000);
+
+        console.log('🚀 IMMEDIATE INIT: Emergency initialization completed');
+      })();
+    </script>
+
+    <!-- 🎯 NEW: Complete Analytics from detailed_draw_results Table -->
+    <script>
+      // NEW SYSTEM: Real-time Complete Analytics from detailed_draw_results MySQL table
+      (function() {
+        console.log('🎯 COMPLETE ANALYTICS: Initializing MySQL-based analytics system');
+
+        // Configuration - RESTORED database updates with static visuals
+        const ANALYTICS_CONFIG = {
+          apiUrl: '../api_complete_analytics.php',
+          updateInterval: 5000, // RESTORED - Update every 5 seconds with static visuals
+          maxRetries: 3,
+          retryDelay: 1000
+        };
+
+        let updateInterval;
+        let retryCount = 0;
+
+        // Initialize the system
+        function initCompleteAnalyticsSystem() {
+          // CLIENT MODE: Disable analytics system - master will provide data via sync
+          if (document.body.classList.contains('client-mode')) {
+            console.log('📺 CLIENT MODE: Analytics system disabled - receiving data from master');
+            return;
+          }
+
+          console.log('🎯 COMPLETE ANALYTICS: Starting real-time system');
+
+          // Initial load
+          updateCompleteAnalyticsFromDatabase();
+
+          // RESTORED periodic updates - data updates with static visuals
+          updateInterval = setInterval(updateCompleteAnalyticsFromDatabase, ANALYTICS_CONFIG.updateInterval);
+
+          console.log('🎯 COMPLETE ANALYTICS: Real-time system initialized');
+        }
+
+        // Fetch and update complete analytics from database
+        async function updateCompleteAnalyticsFromDatabase() {
+          try {
+            const cacheBuster = Date.now() + '_' + Math.random();
+            const response = await fetch(`${ANALYTICS_CONFIG.apiUrl}?cb=${cacheBuster}`, {
+              method: 'GET',
+              headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+              },
+              cache: 'no-store'
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.status === 'success' && data.analytics) {
+              console.log('🎯 COMPLETE ANALYTICS: Fresh data received from database:', data.analytics);
+
+              // Update all analytics displays with fresh database data
+              updateAllAnalyticsDisplays(data.analytics);
+
+              // Reset retry count on success
+              retryCount = 0;
+
+            } else {
+              throw new Error(data.message || 'Failed to fetch complete analytics');
+            }
+
+          } catch (error) {
+            console.error('🎯 COMPLETE ANALYTICS: Error fetching data:', error);
+
+            // Retry logic
+            if (retryCount < ANALYTICS_CONFIG.maxRetries) {
+              retryCount++;
+              console.log(`🎯 COMPLETE ANALYTICS: Retrying in ${ANALYTICS_CONFIG.retryDelay}ms (attempt ${retryCount})`);
+              setTimeout(updateCompleteAnalyticsFromDatabase, ANALYTICS_CONFIG.retryDelay);
+            } else {
+              console.error('🎯 COMPLETE ANALYTICS: Max retries exceeded');
+              retryCount = 0; // Reset for next cycle
+            }
+          }
+        }
+
+        // Update all analytics displays with database data
+        function updateAllAnalyticsDisplays(analytics) {
+          // 1. Update Last 8 Spins
+          updateLast8SpinsDisplay(analytics.last_8_spins);
+
+          // 2. Update Hot Numbers
+          updateHotNumbersDisplay(analytics.hot_numbers, analytics.hot_numbers_message);
+
+          // 3. Update Cold Numbers
+          updateColdNumbersDisplay(analytics.cold_numbers, analytics.cold_numbers_message);
+
+          // 4. Update Color Distribution
+          updateColorDistributionDisplay(analytics.color_distribution);
+
+          // 5. Update Odd/Even Distribution
+          updateOddEvenDistributionDisplay(analytics.odd_even_distribution);
+
+          // 6. Update High/Low Distribution
+          updateHighLowDistributionDisplay(analytics.high_low_distribution);
+
+          // 7. Update Dozens Distribution
+          updateDozensDistributionDisplay(analytics.dozens_distribution);
+
+          // 8. Update Columns Distribution
+          updateColumnsDistributionDisplay(analytics.columns_distribution);
+
+          console.log('🎯 COMPLETE ANALYTICS: All displays updated with fresh database data');
+        }
+
+        // Update the last 8 spins display with database data
+        function updateLast8SpinsDisplay(spinsData) {
+          const historyContainer = document.getElementById('number-history');
+
+          if (!historyContainer) {
+            console.warn('🎯 LAST 8 SPINS: History container not found');
+            return;
+          }
+
+          // Clear existing content
+          historyContainer.innerHTML = '';
+
+          if (!spinsData || spinsData.length === 0) {
+            historyContainer.innerHTML = '<div class="no-data">No spin data available</div>';
+            return;
+          }
+
+          console.log('🎯 LAST 8 SPINS: Updating display with', spinsData.length, 'spins');
+
+          // Create display elements for each spin
+          spinsData.forEach((spin, index) => {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+
+            // Create draw number element
+            const drawElement = document.createElement('div');
+            drawElement.className = 'history-draw';
+            drawElement.textContent = `Draw #${spin.draw_number}`;
+
+            // Create number element with color
+            const numberElement = document.createElement('div');
+            numberElement.className = `history-number ${spin.color}`;
+            numberElement.textContent = spin.winning_number;
+
+            // Append elements
+            historyItem.appendChild(drawElement);
+            historyItem.appendChild(numberElement);
+            historyContainer.appendChild(historyItem);
+          });
+
+          console.log('🎯 LAST 8 SPINS: Display updated successfully');
+        }
+
+        // Update hot numbers display
+        function updateHotNumbersDisplay(hotNumbers, hotNumbersMessage) {
+          const hotContainer = document.getElementById('hot-numbers');
+          if (!hotContainer) {
+            console.warn('🎯 HOT NUMBERS: Container not found');
+            return;
+          }
+
+          hotContainer.innerHTML = '';
+
+          // Check if there's a message (insufficient data)
+          if (hotNumbersMessage) {
+            hotContainer.innerHTML = `<div class="no-data">${hotNumbersMessage}</div>`;
+            console.log(`🎯 HOT NUMBERS: ${hotNumbersMessage}`);
+            return;
+          }
+
+          if (!hotNumbers || hotNumbers.length === 0) {
+            hotContainer.innerHTML = '<div class="no-data">No hot numbers data</div>';
+            return;
+          }
+
+          hotNumbers.forEach((numberData, index) => {
+            const numberElement = document.createElement('div');
+            numberElement.className = `number-item ${numberData.color}`;
+            // Use the correct structure that matches the existing CSS
+            numberElement.innerHTML = `
+              ${numberData.number}
+              <span class="number-count">${numberData.frequency}</span>
+            `;
+            // Removed animation delay for static display
+            hotContainer.appendChild(numberElement);
+          });
+
+          console.log(`🎯 HOT NUMBERS: Display updated with ${hotNumbers.length} numbers`);
+        }
+
+        // Update cold numbers display
+        function updateColdNumbersDisplay(coldNumbers, coldNumbersMessage) {
+          const coldContainer = document.getElementById('cold-numbers');
+          if (!coldContainer) {
+            console.warn('🎯 COLD NUMBERS: Container not found');
+            return;
+          }
+
+          coldContainer.innerHTML = '';
+
+          // Check if there's a message (insufficient data)
+          if (coldNumbersMessage) {
+            coldContainer.innerHTML = `<div class="no-data">${coldNumbersMessage}</div>`;
+            console.log(`🎯 COLD NUMBERS: ${coldNumbersMessage}`);
+            return;
+          }
+
+          if (!coldNumbers || coldNumbers.length === 0) {
+            coldContainer.innerHTML = '<div class="no-data">No cold numbers data</div>';
+            return;
+          }
+
+          coldNumbers.forEach((numberData, index) => {
+            const numberElement = document.createElement('div');
+            numberElement.className = `number-item ${numberData.color}`;
+            // Use the correct structure that matches the existing CSS
+            numberElement.innerHTML = `
+              ${numberData.number}
+              <span class="number-count">${numberData.frequency}</span>
+            `;
+            // Removed animation delay for static display
+            coldContainer.appendChild(numberElement);
+          });
+
+          console.log(`🎯 COLD NUMBERS: Display updated with ${coldNumbers.length} numbers`);
+        }
+
+        // Update color distribution display
+        function updateColorDistributionDisplay(colorDistribution) {
+          if (!colorDistribution) {
+            console.warn('🎯 COLOR DISTRIBUTION: No data provided');
+            return;
+          }
+
+          // Update using specific element IDs from the HTML structure
+          const redPercentageEl = document.getElementById('red-percentage');
+          const blackPercentageEl = document.getElementById('black-percentage');
+          const greenPercentageEl = document.getElementById('green-percentage');
+          const redCountEl = document.getElementById('red-count');
+          const blackCountEl = document.getElementById('black-count');
+          const greenCountEl = document.getElementById('green-count');
+
+          if (redPercentageEl) redPercentageEl.textContent = `${colorDistribution.red.percentage}%`;
+          if (blackPercentageEl) blackPercentageEl.textContent = `${colorDistribution.black.percentage}%`;
+          if (greenPercentageEl) greenPercentageEl.textContent = `${colorDistribution.green.percentage}%`;
+
+          if (redCountEl) redCountEl.textContent = `(${colorDistribution.red.count})`;
+          if (blackCountEl) blackCountEl.textContent = `(${colorDistribution.black.count})`;
+          if (greenCountEl) greenCountEl.textContent = `(${colorDistribution.green.count})`;
+
+          console.log('🎯 COLOR DISTRIBUTION: Display updated with specific IDs');
+        }
+
+        // Update odd/even distribution display
+        function updateOddEvenDistributionDisplay(oddEvenDistribution) {
+          if (!oddEvenDistribution) {
+            console.warn('🎯 ODD/EVEN DISTRIBUTION: No data provided');
+            return;
+          }
+
+          // Update using specific element IDs from the HTML structure
+          const oddPercentageEl = document.getElementById('odd-percentage');
+          const evenPercentageEl = document.getElementById('even-percentage');
+          const oddCountEl = document.getElementById('odd-count');
+          const evenCountEl = document.getElementById('even-count');
+
+          if (oddPercentageEl) oddPercentageEl.textContent = `${oddEvenDistribution.odd.percentage}%`;
+          if (evenPercentageEl) evenPercentageEl.textContent = `${oddEvenDistribution.even.percentage}%`;
+
+          if (oddCountEl) oddCountEl.textContent = `(${oddEvenDistribution.odd.count})`;
+          if (evenCountEl) evenCountEl.textContent = `(${oddEvenDistribution.even.count})`;
+
+          console.log('🎯 ODD/EVEN DISTRIBUTION: Display updated with specific IDs');
+        }
+
+        // Update high/low distribution display
+        function updateHighLowDistributionDisplay(highLowDistribution) {
+          if (!highLowDistribution) {
+            console.warn('🎯 HIGH/LOW DISTRIBUTION: No data provided');
+            return;
+          }
+
+          // Update using specific element IDs from the HTML structure
+          const lowPercentageEl = document.getElementById('low-percentage');
+          const highPercentageEl = document.getElementById('high-percentage');
+          const lowCountEl = document.getElementById('low-count');
+          const highCountEl = document.getElementById('high-count');
+
+          if (lowPercentageEl) lowPercentageEl.textContent = `${highLowDistribution.low.percentage}%`;
+          if (highPercentageEl) highPercentageEl.textContent = `${highLowDistribution.high.percentage}%`;
+
+          if (lowCountEl) lowCountEl.textContent = `(${highLowDistribution.low.count})`;
+          if (highCountEl) highCountEl.textContent = `(${highLowDistribution.high.count})`;
+
+          console.log('🎯 HIGH/LOW DISTRIBUTION: Display updated with specific IDs');
+        }
+
+        // Update dozens distribution display
+        function updateDozensDistributionDisplay(dozensDistribution) {
+          if (!dozensDistribution) {
+            console.warn('🎯 DOZENS DISTRIBUTION: No data provided');
+            return;
+          }
+
+          // Update using specific element IDs from the HTML structure
+          const firstDozenPercentageEl = document.getElementById('first-dozen-percentage');
+          const secondDozenPercentageEl = document.getElementById('second-dozen-percentage');
+          const thirdDozenPercentageEl = document.getElementById('third-dozen-percentage');
+          const firstDozenCountEl = document.getElementById('first-dozen-count');
+          const secondDozenCountEl = document.getElementById('second-dozen-count');
+          const thirdDozenCountEl = document.getElementById('third-dozen-count');
+
+          if (firstDozenPercentageEl) firstDozenPercentageEl.textContent = `${dozensDistribution.first.percentage}%`;
+          if (secondDozenPercentageEl) secondDozenPercentageEl.textContent = `${dozensDistribution.second.percentage}%`;
+          if (thirdDozenPercentageEl) thirdDozenPercentageEl.textContent = `${dozensDistribution.third.percentage}%`;
+
+          if (firstDozenCountEl) firstDozenCountEl.textContent = `(${dozensDistribution.first.count})`;
+          if (secondDozenCountEl) secondDozenCountEl.textContent = `(${dozensDistribution.second.count})`;
+          if (thirdDozenCountEl) thirdDozenCountEl.textContent = `(${dozensDistribution.third.count})`;
+
+          console.log('🎯 DOZENS DISTRIBUTION: Display updated with specific IDs');
+        }
+
+        // Update columns distribution display
+        function updateColumnsDistributionDisplay(columnsDistribution) {
+          if (!columnsDistribution) {
+            console.warn('🎯 COLUMNS DISTRIBUTION: No data provided');
+            return;
+          }
+
+          // Update using specific element IDs from the HTML structure
+          const firstColumnPercentageEl = document.getElementById('first-column-percentage');
+          const secondColumnPercentageEl = document.getElementById('second-column-percentage');
+          const thirdColumnPercentageEl = document.getElementById('third-column-percentage');
+          const firstColumnCountEl = document.getElementById('first-column-count');
+          const secondColumnCountEl = document.getElementById('second-column-count');
+          const thirdColumnCountEl = document.getElementById('third-column-count');
+
+          if (firstColumnPercentageEl) firstColumnPercentageEl.textContent = `${columnsDistribution.first.percentage}%`;
+          if (secondColumnPercentageEl) secondColumnPercentageEl.textContent = `${columnsDistribution.second.percentage}%`;
+          if (thirdColumnPercentageEl) thirdColumnPercentageEl.textContent = `${columnsDistribution.third.percentage}%`;
+
+          if (firstColumnCountEl) firstColumnCountEl.textContent = `(${columnsDistribution.first.count})`;
+          if (secondColumnCountEl) secondColumnCountEl.textContent = `(${columnsDistribution.second.count})`;
+          if (thirdColumnCountEl) thirdColumnCountEl.textContent = `(${columnsDistribution.third.count})`;
+
+          console.log('🎯 COLUMNS DISTRIBUTION: Display updated with specific IDs');
+        }
+
+        // Override ALL old analytics functions to prevent conflicts
+        const originalUpdateAnalytics = window.updateAnalytics;
+        window.updateAnalytics = function() {
+          console.log('🎯 COMPLETE ANALYTICS: updateAnalytics called - using new MySQL system');
+          // Force update with fresh database data instead of calling old functions
+          updateCompleteAnalyticsFromDatabase();
+        };
+
+        // Disable old analytics systems
+        window.directUpdateAnalyticsDOM = function() {
+          console.log('🎯 COMPLETE ANALYTICS: directUpdateAnalyticsDOM disabled - using new MySQL system');
+          updateCompleteAnalyticsFromDatabase();
+        };
+
+        // Disable old AJAX analytics updates
+        window.fetchAndUpdate = function() {
+          console.log('🎯 COMPLETE ANALYTICS: fetchAndUpdate disabled - using new MySQL system');
+          updateCompleteAnalyticsFromDatabase();
+        };
+
+        // Disable enhanced analytics overrides
+        window.originalUpdateAnalytics = function() {
+          console.log('🎯 COMPLETE ANALYTICS: originalUpdateAnalytics disabled - using new MySQL system');
+          updateCompleteAnalyticsFromDatabase();
+        };
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initCompleteAnalyticsSystem);
+        } else {
+          initCompleteAnalyticsSystem();
+        }
+
+        // Also initialize after a delay to ensure all scripts are loaded
+        setTimeout(initCompleteAnalyticsSystem, 1000);
+
+        console.log('🎯 COMPLETE ANALYTICS: MySQL-based system setup complete');
+      })();
+    </script>
+    <!-- Add HLS.js for M3U8 streaming -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <!-- Load analytics blocker FIRST -->
+    <script src="../js/analytics_blocker.js"></script>
+
+    <!-- CLIENT MODE INITIALIZATION -->
+    <script>
+      // CRITICAL: Set client mode flag IMMEDIATELY to prevent game logic
+      window.CLIENT_MODE = true;
+      document.body.classList.add('client-mode');
+      console.log('📺 CLIENT MODE: Initialized - game logic will be disabled');
+
+      // Override critical functions immediately to prevent countdown/game logic
+      window.startCountdown = function() {
+        console.log('📺 CLIENT: Countdown disabled - synced from master');
+        return false;
+      };
+
+      window.updateCountdownDisplay = function() {
+        console.log('📺 CLIENT: Countdown display disabled - synced from master');
+        return false;
+      };
+
+      // Clear any existing countdown data
+      localStorage.removeItem('countdownEndTime');
+    </script>
+
+    <!-- Load CLIENT-SPECIFIC JavaScript files with cache-busting -->
+    <script>
+      (function() {
+        const cacheBuster = Date.now() + Math.random();
+        // CLIENT MODE: Only load scripts necessary for display and synchronization
+        const clientScripts = [
+          'js/tab-visibility-manager.js', // Load tab visibility manager FIRST
+          'js/master-client-sync.js',     // Master-client synchronization (ESSENTIAL)
+          'js/fullscreen-manager.js',     // Fullscreen functionality
+          'force-true-fullscreen.js',     // Emergency fullscreen script
+          'stream-config.js',             // Load stream configuration BEFORE live stream player
+          'js/live-stream-player.js',     // Live stream functionality
+          'js/multi-stream-manager.js',   // Multi-player system
+          'js/show-live-stream.js'        // Live stream display
+          // DISABLED FOR CLIENT MODE:
+          // 'js/scripts.js',              // Contains game logic - DISABLED for clients
+          // 'js/ads-player.js',           // Not needed for clients
+          // 'fix-loading-indicator.js',   // Not needed for clients
+          // 'js/save-detailed-draw.js',   // Only master should save draws
+          // '../js/draw-sync.js',         // Only master should sync draws
+          // 'js/forced-number-sync.js',   // Only master should handle forced numbers
+          // 'js/wheel-control.js',        // Only master should control wheel
+          // 'js/bet-data-sync.js',        // Only master should handle betting
+          // 'js/draw-control-connection.js', // Only master should connect to draw control
+          // 'js/forced-number-handler.js' // Only master should handle forced numbers
+        ];
+
+        clientScripts.forEach(function(src) {
+          const script = document.createElement('script');
+          script.src = src + '?v=' + cacheBuster;
+          script.async = false; // Maintain load order
+          document.head.appendChild(script);
+          console.log('📺 CLIENT SCRIPT LOADED:', script.src);
+        });
+
+        console.log('📺 CLIENT MODE: Loaded', clientScripts.length, 'scripts (game logic disabled)');
+      })();
+    </script>
+
+    <!-- Debug Panel Script -->
+    <script>
+      $(document).ready(function() {
+        // Toggle debug panel
+        $("#debug-toggle").click(function() {
+          $("#debug-panel").toggleClass("active");
+        });
+
+        // Check database button
+        $("#checkDB").click(function() {
+          fetch('/slipp/test_db.php')
+            .then(response => response.text())
+            .then(data => {
+              window.open('/slipp/test_db.php', '_blank');
+            })
+            .catch(error => {
+              console.error('Error checking database:', error);
+              $("#debug-output").html("Error: " + error.message);
+            });
+        });
+
+        // Reset database button
+        $("#resetDB").click(function() {
+          fetch('/slipp/reset_database.php')
+            .then(response => response.text())
+            .then(data => {
+              window.open('/slipp/reset_database.php', '_blank');
+            })
+            .catch(error => {
+              console.error('Error resetting database:', error);
+              $("#debug-output").html("Error: " + error.message);
+            });
+        });
+
+        // Save state button
+        $("#saveState").click(function() {
+          saveRollHistory();
+          $("#debug-output").html("Manually saved state to database");
+        });
+
+        // Load state button
+        $("#loadState").click(function() {
+          loadRollHistory().then(() => {
+            $("#debug-output").html("Manually loaded state from database");
+          });
+        });
+      });
+    </script>
+
+    <!-- Scripts are now loaded with cache-busting above -->
+
+    <!-- Add winning number detection and saving -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize roulette table functionality
+        resizeWindow();
+        // ... existing initialization code ...
+
+        // Initialize winning number detection and saving
+        SaveDetailedDraw.init();
+
+        // Event listener for successful saves
+        document.addEventListener('winning_number_saved', function(event) {
+          const data = event.detail;
+          console.log('Winning number saved successfully:', data);
+
+          // We still log the event but no longer show the notification to players
+          // The underlying functionality of saving draw results to the database is maintained
+          // but the visual notification is hidden from players viewing the TV display
+        });
+
+        // CLIENT MODE: Skip Draw Control Connection - only master should connect
+        console.log('📺 CLIENT MODE: Skipping Draw Control Connection (master handles this)');
+
+        // Initialize as client display for synchronization
+        if (window.MasterClientSync) {
+          window.MasterClientSync.initializeClient();
+          console.log('📺 Initialized as CLIENT display - Shop 1');
+        } else {
+          console.error('📺 MasterClientSync not available');
+        }
+
+        // Listen for data restoration completion to ensure recent numbers are displayed
+        document.addEventListener('dataRestorationComplete', function(event) {
+          console.log('🎯 TV DISPLAY: Data restoration completed, ensuring recent numbers are displayed');
+          console.log('🎯 TV DISPLAY: Restoration details:', event.detail);
+
+          // Wait a moment and then force update the recent numbers display
+          setTimeout(() => {
+            if (typeof window.displayRollHistory === 'function') {
+              console.log('🎯 TV DISPLAY: Calling displayRollHistory after data restoration');
+              window.displayRollHistory();
+            }
+            if (typeof window.updateRecentNumbers === 'function') {
+              console.log('🎯 TV DISPLAY: Calling updateRecentNumbers after data restoration');
+              window.updateRecentNumbers();
+            }
+          }, 100);
+        });
+
+        // Client-specific initialization
+        console.log('📺 CLIENT DISPLAY: Shop 1 initializing...');
+
+        // Disable all interactive elements for client mode
+        setTimeout(() => {
+          const interactiveElements = document.querySelectorAll('.betting-chip, .part, .button');
+          interactiveElements.forEach(element => {
+            element.style.pointerEvents = 'none';
+            element.style.opacity = '0.7';
+            element.style.cursor = 'not-allowed';
+          });
+          console.log('📺 CLIENT: Shop 1 display ready - syncing with master');
+        }, 1000);
+      });
+
+      // Manual trigger function for testing
+      window.forceUpdateRecentNumbers = function() {
+        console.log('🔴 MANUAL TRIGGER: Force updating recent numbers');
+
+        // Try all available methods
+        if (typeof window.DataPersistence !== 'undefined' && typeof window.DataPersistence.forceUpdateRecentNumbersDOM === 'function') {
+          console.log('🔴 MANUAL TRIGGER: Using DataPersistence.forceUpdateRecentNumbersDOM');
+          window.DataPersistence.forceUpdateRecentNumbersDOM();
+        }
+
+        if (typeof window.displayRollHistory === 'function') {
+          console.log('🔴 MANUAL TRIGGER: Using displayRollHistory');
+          window.displayRollHistory();
+        }
+
+        if (typeof window.updateRecentNumbers === 'function') {
+          console.log('🔴 MANUAL TRIGGER: Using updateRecentNumbers');
+          window.updateRecentNumbers();
+        }
+
+        // Also try to reload data
+        if (typeof window.DataPersistence !== 'undefined' && typeof window.DataPersistence.loadDataFromDatabase === 'function') {
+          console.log('🔴 MANUAL TRIGGER: Reloading data from database');
+          window.DataPersistence.loadDataFromDatabase();
+        }
+
+        // Update draw number display
+        if (typeof updateDrawNumberDisplay === 'function') {
+          updateDrawNumberDisplay();
+          console.log('🔴 MANUAL TRIGGER: Updated draw number display');
+        }
+      };
+
+      // TV Display Diagnostic Function
+      window.runTVDiagnostic = async function() {
+        console.log('🔍 TV DISPLAY DIAGNOSTIC: Starting...');
+
+        // Check current state
+        console.log('📊 CURRENT STATE:');
+        console.log('  window.allSpins:', window.allSpins);
+        console.log('  window.rolledNumbersArray:', window.rolledNumbersArray);
+        console.log('  window.rolledNumbersColorArray:', window.rolledNumbersColorArray);
+
+        // Check DOM elements
+        console.log('🖥️ CURRENT DOM:');
+        for (let i = 1; i <= 5; i++) {
+          const element = document.querySelector(`.roll${i}`);
+          if (element) {
+            console.log(`  .roll${i}: "${element.textContent}" (${element.className})`);
+          } else {
+            console.log(`  .roll${i}: NOT FOUND`);
+          }
+        }
+
+        // Load fresh data from database
+        console.log('🔄 LOADING DATABASE DATA:');
+        try {
+          const response = await fetch('/slipp/load_analytics.php');
+          const data = await response.json();
+
+          if (data.status === 'success') {
+            const allSpins = JSON.parse(data.all_spins || '[]');
+            const recentNumbers = allSpins.slice(0, 5);
+            console.log('  Database recent 5:', recentNumbers);
+
+            // Force update the arrays
+            window.allSpins = allSpins;
+            window.rolledNumbersArray = recentNumbers;
+
+            // Generate colors
+            const rouletteNumbersRed = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+            window.rolledNumbersColorArray = recentNumbers.map(number => {
+              const num = parseInt(number);
+              if (num === 0) return 'green';
+              return rouletteNumbersRed.includes(num) ? 'red' : 'black';
+            });
+
+            console.log('  Updated rolledNumbersArray:', window.rolledNumbersArray);
+            console.log('  Updated rolledNumbersColorArray:', window.rolledNumbersColorArray);
+
+            // Force DOM update
+            console.log('🔧 FORCING DOM UPDATE:');
+            for (let i = 0; i < recentNumbers.length && i < 5; i++) {
+              const element = document.querySelector(`.roll${i + 1}`);
+              if (element) {
+                const number = recentNumbers[i];
+                const color = window.rolledNumbersColorArray[i];
+
+                element.innerHTML = number;
+                element.classList.remove("roll-red", "roll-black", "roll-green");
+                element.classList.add(`roll-${color}`);
+
+                console.log(`  Set .roll${i + 1} to ${number} (${color})`);
+              }
+            }
+
+            console.log('✅ DIAGNOSTIC COMPLETE - Check the display now!');
+
+            // Also trigger super aggressive update if available
+            if (typeof window.DataPersistence !== 'undefined' && typeof window.DataPersistence.superAggressiveUpdate === 'function') {
+              console.log('🚀 DIAGNOSTIC: Triggering super aggressive update');
+              window.DataPersistence.superAggressiveUpdate();
+            }
+
+          } else {
+            console.error('❌ Database error:', data.message);
+          }
+        } catch (error) {
+          console.error('❌ Database fetch error:', error);
+        }
+      };
+
+      // Initialize connection with Draw Control
+      function initializeDrawControlConnection() {
+        // Only proceed if DrawControlConnection is loaded
+        if (typeof DrawControlConnection === 'undefined') {
+          console.error('Draw Control Connection not loaded');
+          return;
+        }
+
+        console.log('Initializing Draw Control Connection');
+
+        // Initialize the connection
+        DrawControlConnection.initialize({
+          checkInterval: 3000, // Check every 3 seconds
+          debug: true
+        });
+
+        // Handle manual number detection
+        DrawControlConnection.onManualNumberDetected(function(data) {
+          console.warn('MANUAL NUMBER DETECTED:', data);
+
+          // Update the forced number indicator (but keep it hidden)
+          const forcedNumberIndicator = document.getElementById('forced-number-indicator');
+          const forcedNumberValue = document.getElementById('forced-number-value');
+
+          if (forcedNumberIndicator && forcedNumberValue) {
+            // Update the value but keep it hidden
+            forcedNumberValue.textContent = data.number;
+
+            // Update the color (even though it's hidden)
+            forcedNumberIndicator.classList.remove('red', 'black', 'green');
+            if (data.color) {
+              forcedNumberIndicator.classList.add(data.color);
+            }
+
+            // Ensure the indicator remains hidden
+            forcedNumberIndicator.style.display = 'none !important';
+          }
+
+          // Store in window scope so the roulette wheel can access it
+          window.manualWinningNumber = data.number;
+        });
+
+        // Handle revert to automatic mode
+        DrawControlConnection.onRevertToAutomatic(function() {
+          console.warn('SYSTEM REVERTED TO AUTOMATIC MODE');
+
+          // Hide the forced number indicator
+          const forcedNumberIndicator = document.getElementById('forced-number-indicator');
+          if (forcedNumberIndicator) {
+            forcedNumberIndicator.style.display = 'none';
+          }
+
+          // Clear the manual winning number
+          window.manualWinningNumber = null;
+        });
+
+        // Handle errors
+        DrawControlConnection.onError(function(error) {
+          console.error('Draw Control Connection error:', error);
+        });
+      }
+    </script>
+
+    <!-- Direct DOM Manipulation Functions (using EXACT same method as working recent numbers) -->
+    <script>
+      // DIRECT DOM MANIPULATION FUNCTIONS (using the EXACT same method as working recent numbers)
+
+      function directUpdateAnalyticsDOM(allSpins, numberFrequency, currentDrawNumber) {
+        console.log('🎯 DIRECT DOM: Updating analytics using EXACT same method as recent numbers');
+
+        try {
+          if (!Array.isArray(allSpins) || allSpins.length === 0) {
+            console.warn('🎯 DIRECT DOM: No spin data available');
+            return;
+          }
+
+          const rouletteNumbersRed = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+
+          // 1. UPDATE HOT NUMBERS (direct DOM manipulation like recent numbers)
+          const hotContainer = document.getElementById('hot-numbers');
+          if (hotContainer) {
+            hotContainer.innerHTML = ''; // Clear like recent numbers
+
+            // Calculate hot numbers
+            const sortedNumbers = Object.entries(numberFrequency)
+              .map(([num, count]) => ({ number: parseInt(num), count: parseInt(count) }))
+              .filter(item => item.count > 0)
+              .sort((a, b) => b.count - a.count)
+              .slice(0, 5);
+
+            sortedNumbers.forEach(item => {
+              const colorClass = item.number === 0 ? 'green' :
+                               rouletteNumbersRed.includes(item.number) ? 'red' : 'black';
+
+              const numberDiv = document.createElement('div');
+              numberDiv.className = `number-item ${colorClass}`;
+              numberDiv.innerHTML = `${item.number}<span class="number-count">${item.count}</span>`;
+              hotContainer.appendChild(numberDiv);
+            });
+
+            console.log('🎯 DIRECT DOM: Hot numbers updated');
+          }
+
+          // 2. UPDATE COLD NUMBERS (direct DOM manipulation like recent numbers)
+          const coldContainer = document.getElementById('cold-numbers');
+          if (coldContainer) {
+            coldContainer.innerHTML = ''; // Clear like recent numbers
+
+            // Calculate cold numbers
+            const nonZeroAppearances = Object.entries(numberFrequency)
+              .map(([num, count]) => ({ number: parseInt(num), count: parseInt(count) }))
+              .filter(item => item.count > 0)
+              .sort((a, b) => a.count - b.count)
+              .slice(0, 5);
+
+            nonZeroAppearances.forEach(item => {
+              const colorClass = item.number === 0 ? 'green' :
+                               rouletteNumbersRed.includes(item.number) ? 'red' : 'black';
+
+              const numberDiv = document.createElement('div');
+              numberDiv.className = `number-item ${colorClass}`;
+              numberDiv.innerHTML = `${item.number}<span class="number-count">${item.count}</span>`;
+              coldContainer.appendChild(numberDiv);
+            });
+
+            console.log('🎯 DIRECT DOM: Cold numbers updated');
+          }
+
+          // 3. UPDATE COLOR DISTRIBUTION (direct DOM manipulation like recent numbers)
+          const totalSpins = allSpins.length;
+          if (totalSpins > 0) {
+            const redCount = allSpins.filter(n => n !== 0 && rouletteNumbersRed.includes(n)).length;
+            const blackCount = allSpins.filter(n => n !== 0 && !rouletteNumbersRed.includes(n)).length;
+            const greenCount = allSpins.filter(n => n === 0).length;
+
+            // Update percentages directly like recent numbers
+            const redPercent = Math.round((redCount / totalSpins) * 100);
+            const blackPercent = Math.round((blackCount / totalSpins) * 100);
+            const greenPercent = Math.round((greenCount / totalSpins) * 100);
+
+            // Direct DOM updates (find elements by text content like recent numbers)
+            const distributionElements = document.querySelectorAll('.analytics-section');
+            distributionElements.forEach(section => {
+              if (section.textContent.includes('COLOR DISTRIBUTION')) {
+                const percentElements = section.querySelectorAll('.percentage');
+                if (percentElements.length >= 3) {
+                  percentElements[0].innerHTML = `${redPercent}%`; // Red
+                  percentElements[1].innerHTML = `${blackPercent}%`; // Black
+                  percentElements[2].innerHTML = `${greenPercent}%`; // Green
+                }
+              }
+            });
+
+            console.log('🎯 DIRECT DOM: Color distribution updated');
+          }
+
+          // 4. UPDATE NUMBER HISTORY (direct DOM manipulation like recent numbers)
+          const historyContainer = document.getElementById('number-history');
+          if (historyContainer) {
+            historyContainer.innerHTML = ''; // Clear like recent numbers
+
+            const historyToShow = allSpins.slice(0, 8);
+            historyToShow.forEach((number, index) => {
+              const colorClass = number === 0 ? 'green' :
+                               rouletteNumbersRed.includes(number) ? 'red' : 'black';
+
+              // Calculate draw number with proper sequential logic
+              // If currentDrawNumber is too low, adjust the base to ensure proper sequence
+              let baseDrawNumber = currentDrawNumber || 1;
+
+              // If the base is too low to show 8 sequential draws, adjust it
+              if (baseDrawNumber <= historyToShow.length) {
+                baseDrawNumber = historyToShow.length + 1;
+              }
+
+              // Calculate the draw number for this spin (newest first)
+              const drawNum = baseDrawNumber - (index + 1);
+
+              const historyDiv = document.createElement('div');
+              historyDiv.className = 'history-item';
+              historyDiv.innerHTML = `
+                <div class="history-draw">Draw #${drawNum}</div>
+                <div class="history-number ${colorClass}">${number}</div>
+              `;
+              historyContainer.appendChild(historyDiv);
+            });
+
+            console.log('🎯 DIRECT DOM: Number history updated');
+          }
+
+          console.log('✅ DIRECT DOM: All analytics elements updated successfully using working method');
+
+        } catch (error) {
+          console.error('❌ DIRECT DOM: Error updating analytics:', error);
+        }
+      }
+
+      function directUpdateDrawNumbers(currentDrawNumber) {
+        console.log('🎯 DIRECT DOM: Draw number display removed from TV interface for cleaner presentation');
+        console.log('🎯 DIRECT DOM: Draw number tracking maintained internally - Current draw:', currentDrawNumber);
+
+        // Draw number display elements have been removed from TV display
+        // This function now only maintains internal tracking
+      }
+    </script>
+
+    <!-- OLD AJAX SYSTEM DISABLED - Using new complete analytics API -->
+    <script>
+      // OLD AJAX SYSTEM DISABLED - Using new complete analytics API
+      let ajaxUpdateInterval;
+
+      function startAjaxUpdates() {
+        console.log('🔄 OLD AJAX SYSTEM: DISABLED - Using new complete analytics API');
+        return; // Disabled
+
+        // Clear any existing interval
+        if (ajaxUpdateInterval) {
+          clearInterval(ajaxUpdateInterval);
+        }
+
+        // Function to fetch and update data
+        async function fetchAndUpdate() {
+          try {
+            const response = await fetch('../load_analytics.php?t=' + Date.now(), {
+              method: 'GET',
+              headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+              }
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+              // Update global variables
+              const allSpins = JSON.parse(data.all_spins || '[]');
+              const numberFrequency = JSON.parse(data.number_frequency || '{}');
+              const currentDrawNumber = parseInt(data.current_draw_number || 0);
+
+              // Only update if data has changed
+              const hasChanged =
+                JSON.stringify(window.allSpins) !== JSON.stringify(allSpins) ||
+                window.currentDrawNumber !== currentDrawNumber;
+
+              if (hasChanged) {
+                console.log('🔄 AJAX: Data changed, updating displays...');
+
+                // Update global variables
+                window.allSpins = allSpins;
+                window.numberFrequency = numberFrequency;
+                window.currentDrawNumber = currentDrawNumber;
+
+                // Update recent numbers
+                const recentNumbers = allSpins.slice(0, 5);
+                window.rolledNumbersArray = recentNumbers;
+
+                // Generate colors
+                const rouletteNumbersRed = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+                window.rolledNumbersColorArray = recentNumbers.map(number => {
+                  const num = parseInt(number);
+                  if (num === 0) return 'green';
+                  return rouletteNumbersRed.includes(num) ? 'red' : 'black';
+                });
+
+                // Update recent numbers DOM (WORKING METHOD)
+                for (let i = 0; i < 5; i++) {
+                  const element = document.querySelector(`.roll${i + 1}`);
+                  if (element && i < recentNumbers.length) {
+                    const number = recentNumbers[i];
+                    const color = window.rolledNumbersColorArray[i] || 'black';
+
+                    element.innerHTML = number;
+                    element.classList.remove('roll-red', 'roll-black', 'roll-green');
+                    element.classList.add(`roll-${color}`);
+                  }
+                }
+
+                // Apply SAME DIRECT DOM METHOD to analytics elements
+                directUpdateAnalyticsDOM(allSpins, numberFrequency, currentDrawNumber);
+
+                // Update draw number display using DIRECT DOM method
+                directUpdateDrawNumbers(currentDrawNumber);
+
+                console.log('✅ AJAX: Updated all displays');
+              }
+            }
+          } catch (error) {
+            console.error('❌ AJAX: Update failed:', error);
+          }
+        }
+
+        // Start polling every 3 seconds
+        ajaxUpdateInterval = setInterval(fetchAndUpdate, 3000);
+
+        // Also fetch immediately
+        fetchAndUpdate();
+      }
+
+      // Start AJAX updates when page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(startAjaxUpdates, 5000); // Start after 5 seconds
+      });
+
+      // ✅ FIXED: Visibility changes now handled by TabVisibilityManager
+      // Old problematic code removed to prevent race conditions
+      console.log('🔄 AJAX: Visibility handling delegated to TabVisibilityManager');
+    </script>
+
+    <!-- Script to modify the roulette wheel to respect manual winning numbers -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Setting up NUCLEAR roulette wheel override');
+
+        // DIRECT DEEP CORE MODIFICATIONS: Replace both rouletteWheelAnimation and the foundational ball animation system
+        function nukeAndReplaceWheelSystem() {
+          console.warn('🚨 NUCLEAR OPTION: Complete roulette wheel system replacement');
+
+          // The most critical operation - completely take over the wheel animation
+          const originalWheelAnimation = window.rouletteWheelAnimation;
+          window.rouletteWheelAnimation = function() {
+            // Store the arguments to pass to the original function
+            const args = arguments;
+
+            // If we have a manual winning number, force it as absolute truth
+            if (window.manualWinningNumber !== undefined && window.manualWinningNumber !== null) {
+              const forcedNumber = parseInt(window.manualWinningNumber);
+              console.warn(`⚛️ NUCLEAR OVERRIDE: Force landing on ${forcedNumber}`);
+
+              // This is the guaranteed way - we set the number BOTH before and after animation
+              window.rouletteNumber = forcedNumber;
+
+              // We need to intercept all further operations that might change this number
+              // We'll do this by hooking into the prototype chain of key objects
+
+              // 1. Force the landing number calculation in a way that can't be overridden
+              window.rouletteNumbersAmount = 37; // Ensure this is set correctly
+
+              // 2. Calculate the exact ball landing position needed for our number
+              // Find where in the array our number is
+              let targetIndex = -1;
+
+              // Special handling for number 0
+              if (forcedNumber === 0) {
+                console.warn(`🔍 ZERO HANDLING: Searching for index of 0 in rouletteNumbersArray`);
+
+                // Explicitly check the first element which should be 0
+                if (window.rouletteNumbersArray[0] === 0) {
+                  targetIndex = 0;
+                  console.warn(`🎯 ZERO FOUND: Found 0 at index 0 in rouletteNumbersArray`);
+                } else {
+                  // If 0 is not at index 0, search the entire array
+                  console.warn(`⚠️ ZERO WARNING: rouletteNumbersArray[0] = ${window.rouletteNumbersArray[0]}, not 0 as expected`);
+
+                  for (let i = 0; i < window.rouletteNumbersArray.length; i++) {
+                    if (window.rouletteNumbersArray[i] === 0) {
+                      targetIndex = i;
+                      console.warn(`🎯 ZERO FOUND: Found 0 at index ${i} in rouletteNumbersArray`);
+                      break;
+                    }
+                  }
+
+                  // If we still didn't find 0, force it to index 0
+                  if (targetIndex === -1) {
+                    console.error(`🚨 ZERO ERROR: Could not find 0 in array, forcing to index 0`);
+                    targetIndex = 0;
+                  }
+                }
+              } else {
+                // For non-zero numbers, search normally
+                for (let i = 0; i < window.rouletteNumbersArray.length; i++) {
+                  if (window.rouletteNumbersArray[i] == forcedNumber) {
+                    targetIndex = i;
+                    console.warn(`🎯 Found ${forcedNumber} at index ${i} in rouletteNumbersArray`);
+                    break;
+                  }
+                }
+              }
+
+              console.log(`Target index for ${forcedNumber} is ${targetIndex}`);
+
+              // 3. Create a completely new ball container with our exact rotation
+              let ballLandingNumber = targetIndex;
+
+              // Call the original with our enforced number
+              originalWheelAnimation.apply(this, args);
+
+              // After the original animation starts, we need to override the ball animation
+              // by replacing it with our own version
+              setTimeout(() => {
+                // Find and remove any existing animation style
+                const existingStyles = document.querySelectorAll('style');
+                existingStyles.forEach(style => {
+                  if (style.textContent.includes('@-webkit-keyframes ball-container-animation') ||
+                      style.textContent.includes('@keyframes ball-container-animation')) {
+                    console.log('Removing existing ball animation style');
+                    style.remove();
+                  }
+                });
+
+                // Create our own animation style that lands EXACTLY on our target number
+                const ballContainer = document.querySelector(".ball-spinner");
+                if (!ballContainer) {
+                  console.error('Ball container not found');
+                  return;
+                }
+
+                // Calculate the exact degree for our forced number
+                // Note: This animation math is the KEY to making this work
+                const degree = (360 / window.rouletteNumbersAmount) * ballLandingNumber;
+
+                // Enhanced logging for debugging
+                console.warn(`🎲 WHEEL ANIMATION: Setting ball to land at exactly ${degree} degrees for number ${forcedNumber}`);
+                console.warn(`🎲 WHEEL ANIMATION: Using ballLandingNumber=${ballLandingNumber}, rouletteNumbersAmount=${window.rouletteNumbersAmount}`);
+
+                // Special logging for number 0
+                if (forcedNumber === 0) {
+                  console.warn(`🎲 ZERO ANIMATION: Ensuring zero lands correctly at ${degree} degrees`);
+                }
+
+                // Create and inject our custom keyframe animation
+                const sheet = document.createElement("style");
+                sheet.textContent = `
+                @-webkit-keyframes ball-container-animation {
+                  0% {
+                    transform: rotate(1440deg);
+                  }
+                  100% {
+                    transform: rotate(${degree}deg);
+                  }
+                }
+                @keyframes ball-container-animation {
+                  0% {
+                    transform: rotate(1440deg);
+                  }
+                  100% {
+                    transform: rotate(${degree}deg);
+                  }
+                }`;
+
+                document.head.appendChild(sheet);
+                console.log('Injected forced ball landing animation');
+
+                // Make double sure the number is correct after animation
+                window.rouletteNumber = forcedNumber;
+
+                // Watch for any attempts to change it again and block them
+                const continuousEnforcer = setInterval(() => {
+                  // Special handling for number 0 to ensure strict equality check
+                  if (forcedNumber === 0) {
+                    if (window.rouletteNumber !== 0) {
+                      console.warn(`🔒 ZERO ENFORCER: Detected change in rouletteNumber to ${window.rouletteNumber}, resetting to 0`);
+                      window.rouletteNumber = 0;
+                    }
+                  } else if (window.rouletteNumber != forcedNumber) {
+                    console.warn(`🔒 ENFORCER: Detected change in rouletteNumber to ${window.rouletteNumber}, resetting to ${forcedNumber}`);
+                    window.rouletteNumber = forcedNumber;
+                  }
+                }, 50);
+
+                // Clear the enforcer after the spin is complete (10 seconds is enough)
+                setTimeout(() => {
+                  clearInterval(continuousEnforcer);
+                }, 10000);
+              }, 10);
+
+              return;
+            }
+
+            // If we're in automatic mode, just call the original
+            return originalWheelAnimation.apply(this, args);
+          };
+
+          // Completely replace the key functions with our guaranteed versions
+          replaceResultsDisplay();
+        }
+
+        // Replace the results display function to ensure it shows our forced number
+        function replaceResultsDisplay() {
+          if (typeof window.originalResultsDisplay !== 'function') {
+            // Backup the original function
+            window.originalResultsDisplay = window.resultsDisplay;
+
+            // Replace with our controlled version
+            window.resultsDisplay = function() {
+              // Force our number before results are calculated
+              if (window.manualWinningNumber !== undefined && window.manualWinningNumber !== null) {
+                const forcedNumber = parseInt(window.manualWinningNumber);
+                window.rouletteNumber = forcedNumber;
+                console.warn(`🎯 RESULTS DISPLAY: Forcing result to ${forcedNumber}`);
+              }
+
+              // Call the original
+              const result = window.originalResultsDisplay.apply(this, arguments);
+
+              // Ensure the display is correct
+              setTimeout(() => {
+                if (window.manualWinningNumber !== undefined && window.manualWinningNumber !== null) {
+                  const forcedNumber = parseInt(window.manualWinningNumber);
+                  // Force the displayed number
+                  document.querySelector(".roll-number").innerHTML = forcedNumber;
+
+                  // Set ODD/EVEN correctly - special handling for 0
+                  if (forcedNumber === 0) {
+                    // Zero is neither odd nor even
+                    document.querySelector(".odd-even").innerHTML = "";
+                  } else if (forcedNumber % 2 == 1) {
+                    document.querySelector(".odd-even").innerHTML = "ODD";
+                  } else {
+                    document.querySelector(".odd-even").innerHTML = "EVEN";
+                  }
+
+                  // Set HIGH/LOW correctly - special handling for 0
+                  if (forcedNumber === 0) {
+                    // Zero is neither high nor low
+                    document.querySelector(".high-low").innerHTML = "";
+                  } else if (forcedNumber < 19) {
+                    document.querySelector(".high-low").innerHTML = "LOW";
+                  } else {
+                    document.querySelector(".high-low").innerHTML = "HIGH";
+                  }
+                }
+              }, 5000); // Match the timing in the original function
+
+              return result;
+            };
+          }
+        }
+
+        // Monitor for roulette initialization and apply our patches
+        function waitForRouletteInit() {
+          // Check if key roulette variables and functions have been initialized
+          if (typeof window.rouletteNumber !== 'undefined' &&
+              typeof window.rouletteWheelAnimation === 'function' &&
+              typeof window.resultsDisplay === 'function' &&
+              typeof window.rouletteNumbersArray !== 'undefined') {
+
+            console.log('Roulette system detected, applying nuclear override');
+            nukeAndReplaceWheelSystem();
+          } else {
+            console.log('Waiting for roulette system to initialize...');
+            setTimeout(waitForRouletteInit, 100);
+          }
+        }
+
+        // Start monitoring for the right moment to apply our patches
+        waitForRouletteInit();
+
+        // Direct property definition to block any attempts to change rouletteNumber
+        function applyPropertyLock() {
+          if (window.manualWinningNumber !== undefined && window.manualWinningNumber !== null) {
+            const forcedNumber = parseInt(window.manualWinningNumber);
+
+            // Only apply if not already applied
+            if (!window._rouletteNumberLocked) {
+              window._rouletteNumberLocked = true;
+              window._rouletteNumber = forcedNumber;
+
+              Object.defineProperty(window, 'rouletteNumber', {
+                get: function() {
+                  // Always return forced number in manual mode
+                  if (window.manualWinningNumber !== null) {
+                    const forcedNum = parseInt(window.manualWinningNumber);
+                    // Special logging for number 0
+                    if (forcedNum === 0) {
+                      console.log(`🔍 PROPERTY GET: Returning forced number 0`);
+                    }
+                    return forcedNum;
+                  }
+                  return this._rouletteNumber;
+                },
+                set: function(val) {
+                  // Let the forced number through for diagnostics, but store our forced number
+                  console.log(`Attempt to set rouletteNumber to ${val}`);
+                  if (window.manualWinningNumber !== null) {
+                    const forcedNum = parseInt(window.manualWinningNumber);
+
+                    // Special handling for number 0
+                    if (forcedNum === 0) {
+                      // Use strict equality for number 0
+                      if (parseInt(val) !== 0) {
+                        console.warn(`🛡️ ZERO GUARDIAN: Blocked attempt to set ${val}, keeping 0`);
+                      }
+                      this._rouletteNumber = 0;
+                    } else {
+                      // Only enforce if values differ, to avoid infinite loops
+                      if (parseInt(val) !== forcedNum) {
+                        console.warn(`🛡️ PROPERTY GUARDIAN: Blocked attempt to set ${val}, keeping ${forcedNum}`);
+                      }
+                      this._rouletteNumber = forcedNum;
+                    }
+                  } else {
+                    this._rouletteNumber = val;
+                  }
+                },
+                configurable: true
+              });
+
+              console.warn(`🔐 ULTIMATE LOCK: rouletteNumber property permanently locked to ${forcedNumber}`);
+            }
+          }
+        }
+
+        // Watch for manual mode changes
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (mutation.attributeName === 'style' &&
+                mutation.target.id === 'manual-mode') {
+
+              // If manual mode is activated, apply our nuclear option
+              if (mutation.target.style.display === 'flex') {
+                waitForRouletteInit();
+                applyPropertyLock();
+              }
+
+              // Always update the display
+              updateWinningNumberDisplay();
+            }
+          });
+        });
+
+        // Update the winning number display (but keep indicator hidden)
+        function updateWinningNumberDisplay() {
+          const indicator = document.getElementById('forced-number-indicator');
+          const valueSpan = document.getElementById('forced-number-value');
+
+          if (indicator && valueSpan) {
+            if (window.manualWinningNumber) {
+              const number = parseInt(window.manualWinningNumber);
+
+              // Update the number
+              valueSpan.textContent = number;
+
+              // Remove existing color classes
+              indicator.classList.remove('red', 'black', 'green');
+
+              // Add appropriate color class
+              if (number === 0) {
+                indicator.classList.add('green');
+              } else if ([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36].includes(number)) {
+                indicator.classList.add('red');
+              } else {
+                indicator.classList.add('black');
+              }
+
+              // Keep the indicator hidden even when there's a manual number
+              indicator.style.display = 'none !important';
+            } else {
+              // Keep the indicator hidden when no manual number
+              indicator.style.display = 'none !important';
+            }
+          }
+        }
+
+        // We no longer need to observe the manual mode element
+        // since we're using a single notification system
+
+        // Apply our patches immediately if manual mode is already active
+        setTimeout(() => {
+          if (window.manualWinningNumber) {
+            applyPropertyLock();
+            waitForRouletteInit();
+          }
+        }, 500);
+      });
+    </script>
+
+    <!-- Single Forced Number Indicator (hidden from players) -->
+    <div id="forced-number-indicator" style="display: none !important; position: fixed; top: 10px; right: 10px; background-color: #fd7e14; color: white; padding: 8px 12px; border-radius: 4px; font-weight: bold; z-index: 9999; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+      FORCED NUMBER: <span id="forced-number-value">34</span>
+    </div>
+
+    <!-- PWA Installer -->
+    <script>
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('../service-worker.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+
+        // Store the install prompt event
+        let deferredPrompt;
+
+        // Create install button
+        function createInstallButton() {
+            const installButton = document.createElement('div');
+            installButton.id = 'pwa-install-button';
+            installButton.innerHTML = '<i class="fas fa-download"></i> Install App';
+            installButton.style.position = 'fixed';
+            installButton.style.bottom = '20px';
+            installButton.style.right = '20px';
+            installButton.style.backgroundColor = 'rgb(247, 176, 46)';
+            installButton.style.color = '#000';
+            installButton.style.padding = '12px 20px';
+            installButton.style.borderRadius = '50px';
+            installButton.style.fontWeight = 'bold';
+            installButton.style.cursor = 'pointer';
+            installButton.style.zIndex = '9999';
+            installButton.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.3)';
+            installButton.style.display = 'flex';
+            installButton.style.alignItems = 'center';
+            installButton.style.gap = '8px';
+            installButton.style.fontFamily = 'Arial, sans-serif';
+
+            installButton.addEventListener('click', async () => {
+                // Hide the install button
+                installButton.style.display = 'none';
+
+                // Show the install prompt
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+
+                    // Wait for the user to respond to the prompt
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response to the install prompt: ${outcome}`);
+
+                    // Clear the deferred prompt variable
+                    deferredPrompt = null;
+                }
+            });
+
+            document.body.appendChild(installButton);
+            return installButton;
+        }
+
+        // Listen for the beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the default browser install prompt
+            e.preventDefault();
+
+            // Store the event for later use
+            deferredPrompt = e;
+
+            // Create and show the install button
+            const installButton = document.getElementById('pwa-install-button') || createInstallButton();
+            installButton.style.display = 'flex';
+        });
+
+        // Check if the user is online or offline
+        function updateOnlineStatus() {
+            const statusElement = document.createElement('div');
+            statusElement.id = 'online-status';
+            statusElement.style.position = 'fixed';
+            statusElement.style.bottom = '10px';
+            statusElement.style.left = '10px';
+            statusElement.style.padding = '8px 12px';
+            statusElement.style.borderRadius = '4px';
+            statusElement.style.fontSize = '14px';
+            statusElement.style.fontWeight = 'bold';
+            statusElement.style.zIndex = '9999';
+            statusElement.style.transition = 'all 0.3s ease';
+
+            if (navigator.onLine) {
+                // Online
+                if (document.getElementById('online-status')) {
+                    document.getElementById('online-status').remove();
+                }
+            } else {
+                // Offline
+                statusElement.textContent = '🔴 Offline Mode';
+                statusElement.style.backgroundColor = 'rgba(220, 53, 69, 0.9)';
+                statusElement.style.color = 'white';
+
+                if (!document.getElementById('online-status')) {
+                    document.body.appendChild(statusElement);
+                }
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // Initial check
+        document.addEventListener('DOMContentLoaded', updateOnlineStatus);
+    </script>
+
+    <!-- Dual Storage Integration -->
+    <script src="js/dual-storage.js"></script>
+
+    <!-- Enhanced Spin Recording -->
+    <script src="js/enhanced-spin-recording.js"></script>
+
+    <!-- High-Performance Storage (PRIORITY) -->
+    <script src="js/high-performance-storage.js"></script>
+
+    <!-- Triple Storage Integration -->
+    <script src="js/triple-storage.js"></script>
+
+    <!-- Direct Triple Storage Integration (MUST BE LAST) -->
+    <script src="js/direct-triple-storage-integration.js"></script>
+
+    <!-- 🎰 MASTER-CLIENT SYNCHRONIZATION SYSTEM -->
+    <script src="js/master-client-sync.js"></script>
+    <script>
+        // Initialize as CLIENT display
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📺 Initializing CLIENT display (Shop 1)...');
+
+            // Wait for all scripts to load
+            setTimeout(() => {
+                if (window.MasterClientSync) {
+                    window.MasterClientSync.initializeClient();
+                    console.log('📺 CLIENT display (Shop 1) initialized successfully');
+                } else {
+                    console.error('❌ MasterClientSync not available');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

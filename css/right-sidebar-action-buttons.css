@@ -1,0 +1,164 @@
+/**
+ * Right-Side Sidebar for Action Buttons
+ * Organizes floating action buttons in a vertical layout on the right side
+ * Maintains all existing functionality while providing clean organization
+ */
+
+/* ===== RIGHT SIDEBAR CONTAINER ===== */
+.right-action-sidebar {
+    position: fixed !important;
+    top: 50% !important;
+    right: 20px !important;
+    transform: translateY(-50%) !important;
+    z-index: 1500 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+    padding: 20px 0 !important;
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-radius: 15px !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    min-width: 100px !important;
+    align-items: center !important;
+}
+
+/* ===== BUTTON POSITIONING IN SIDEBAR ===== */
+
+/* 1. Complete Button (Top) */
+.floating-complete-button,
+#independent-floating-complete-btn {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    /* Preserve all other existing styling */
+}
+
+/* 2. Reprint Button (Second) */
+.reprint-slip-button {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    /* Preserve all other existing styling */
+}
+
+/* 3. Cancel Slip Button (Third) */
+.cancel-slip-button {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    /* Preserve all other existing styling */
+}
+
+/* 4. Cashout Button (Bottom) */
+.cashout-button {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    /* Preserve all other existing styling */
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1200px) {
+    .right-action-sidebar {
+        right: 15px !important;
+        gap: 12px !important;
+        padding: 15px 0 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .right-action-sidebar {
+        right: 10px !important;
+        gap: 10px !important;
+        padding: 12px 0 !important;
+        min-width: 80px !important;
+    }
+    
+    /* Adjust button sizes for mobile */
+    .right-action-sidebar .floating-complete-button,
+    .right-action-sidebar #independent-floating-complete-btn,
+    .right-action-sidebar .reprint-slip-button,
+    .right-action-sidebar .cancel-slip-button,
+    .right-action-sidebar .cashout-button {
+        width: 70px !important;
+        height: 70px !important;
+        font-size: 12px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .right-action-sidebar {
+        right: 5px !important;
+        gap: 8px !important;
+        padding: 10px 0 !important;
+        min-width: 70px !important;
+    }
+    
+    /* Further size adjustments for very small screens */
+    .right-action-sidebar .floating-complete-button,
+    .right-action-sidebar #independent-floating-complete-btn,
+    .right-action-sidebar .reprint-slip-button,
+    .right-action-sidebar .cancel-slip-button,
+    .right-action-sidebar .cashout-button {
+        width: 60px !important;
+        height: 60px !important;
+        font-size: 10px !important;
+    }
+}
+
+/* ===== ENSURE SIDEBAR DOESN'T INTERFERE WITH MAIN INTERFACE ===== */
+.roulette-table {
+    margin-right: 0 !important;
+    /* Ensure main interface isn't affected */
+}
+
+.bet-display-container {
+    /* Ensure bet display window doesn't overlap with sidebar */
+    max-width: calc(100vw - 140px) !important;
+}
+
+/* ===== PRESERVE ALL EXISTING FUNCTIONALITY ===== */
+/* All existing hover effects, animations, and click handlers are preserved */
+/* Only positioning is changed - all other styling remains intact */
+
+/* ===== SIDEBAR HOVER EFFECT ===== */
+.right-action-sidebar:hover {
+    background: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+    transition: all 0.3s ease !important;
+}
+
+/* ===== ENSURE BUTTONS MAINTAIN THEIR VISUAL IDENTITY ===== */
+.right-action-sidebar .floating-complete-button,
+.right-action-sidebar #independent-floating-complete-btn,
+.right-action-sidebar .reprint-slip-button,
+.right-action-sidebar .cancel-slip-button,
+.right-action-sidebar .cashout-button {
+    /* Ensure buttons maintain their original appearance */
+    flex-shrink: 0 !important;
+    transition: all 0.3s ease !important;
+}
+
+.right-action-sidebar .floating-complete-button:hover,
+.right-action-sidebar #independent-floating-complete-btn:hover,
+.right-action-sidebar .reprint-slip-button:hover,
+.right-action-sidebar .cancel-slip-button:hover,
+.right-action-sidebar .cashout-button:hover {
+    transform: scale(1.05) !important;
+}

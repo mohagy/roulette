@@ -1,0 +1,274 @@
+/**
+ * Upcoming Draws Header Visibility Fix
+ * Resolves visibility issues with the upcoming draws header section
+ */
+
+/* Ensure the upcoming draws panel is always visible and properly positioned */
+.upcoming-draws-panel {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 1500 !important; /* Higher than toggle controls */
+    position: fixed !important;
+    pointer-events: auto !important;
+}
+
+/* Fix header visibility and ensure all content is accessible */
+.upcoming-draws-header {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 1501 !important;
+    min-height: 45px !important;
+    background: linear-gradient(90deg, #FFD700, #e6b800) !important;
+    color: #1a1a1a !important;
+    padding: 10px 15px !important;
+    border-radius: 0 !important;
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    cursor: move !important;
+    border-bottom: 3px solid rgba(255, 215, 0, 0.3) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Ensure title section is fully visible */
+.upcoming-draws-title {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    font-weight: 900 !important;
+    color: #1a1a1a !important;
+    font-size: 14px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 1502 !important;
+}
+
+.upcoming-draws-title i {
+    font-size: 16px !important;
+    color: #1a1a1a !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3) !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Fix control buttons visibility and functionality */
+.upcoming-draws-controls {
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 1502 !important;
+    position: relative !important;
+}
+
+.upcoming-draws-control {
+    background: rgba(26, 26, 26, 0.8) !important;
+    border: 2px solid #FFD700 !important;
+    border-radius: 6px !important;
+    color: #FFD700 !important;
+    padding: 6px 8px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    font-size: 12px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 1503 !important;
+    position: relative !important;
+    pointer-events: auto !important;
+}
+
+.upcoming-draws-control:hover {
+    background: #FFD700 !important;
+    color: #1a1a1a !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4) !important;
+}
+
+.upcoming-draws-control:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 6px rgba(255, 215, 0, 0.3) !important;
+}
+
+.upcoming-draws-control i {
+    font-size: 12px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Refresh button specific styling */
+.refresh-btn {
+    background: rgba(40, 167, 69, 0.8) !important;
+    border-color: #28a745 !important;
+    color: #28a745 !important;
+}
+
+.refresh-btn:hover {
+    background: #28a745 !important;
+    color: white !important;
+}
+
+/* Toggle button specific styling */
+.toggle-btn {
+    background: rgba(255, 107, 53, 0.8) !important;
+    border-color: #FF6B35 !important;
+    color: #FF6B35 !important;
+}
+
+.toggle-btn:hover {
+    background: #FF6B35 !important;
+    color: white !important;
+}
+
+/* Ensure content area is visible */
+.upcoming-draws-content {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 1500 !important;
+}
+
+/* Fix for horizontal layout mode */
+.upcoming-draws-panel.horizontal-mode {
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    max-width: none !important;
+    min-width: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    border-bottom: 3px solid #FFD700 !important;
+}
+
+.upcoming-draws-panel.horizontal-mode .upcoming-draws-header {
+    border-radius: 0 !important;
+    padding: 8px 15px !important;
+    min-height: 40px !important;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+    .upcoming-draws-header {
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+        min-height: 38px !important;
+    }
+    
+    .upcoming-draws-title {
+        font-size: 12px !important;
+        gap: 8px !important;
+    }
+    
+    .upcoming-draws-title i {
+        font-size: 14px !important;
+    }
+    
+    .upcoming-draws-controls {
+        gap: 6px !important;
+    }
+    
+    .upcoming-draws-control {
+        padding: 5px 6px !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+        font-size: 11px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .upcoming-draws-header {
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+        min-height: 36px !important;
+    }
+    
+    .upcoming-draws-title {
+        font-size: 11px !important;
+        gap: 6px !important;
+    }
+    
+    .upcoming-draws-title i {
+        font-size: 12px !important;
+    }
+    
+    .upcoming-draws-controls {
+        gap: 4px !important;
+    }
+    
+    .upcoming-draws-control {
+        padding: 4px 5px !important;
+        min-width: 26px !important;
+        min-height: 26px !important;
+        font-size: 10px !important;
+    }
+}
+
+/* Ensure no conflicts with toggle controls */
+.left-side-toggle-control,
+.right-side-toggle-control {
+    z-index: 10002 !important;
+}
+
+.upcoming-draws-panel {
+    z-index: 1500 !important;
+}
+
+/* Fix any potential overflow issues */
+body {
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+}
+
+/* Ensure the panel doesn't get clipped */
+.upcoming-draws-panel {
+    clip: none !important;
+    clip-path: none !important;
+    mask: none !important;
+}
+
+/* Animation for visibility restoration */
+@keyframes headerVisibilityRestore {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.upcoming-draws-header.restored {
+    animation: headerVisibilityRestore 0.5s ease-out !important;
+}
+
+/* Force visibility for debugging */
+.upcoming-draws-header * {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Ensure proper stacking context */
+.upcoming-draws-panel {
+    isolation: isolate !important;
+}
+
+.upcoming-draws-header {
+    isolation: isolate !important;
+}

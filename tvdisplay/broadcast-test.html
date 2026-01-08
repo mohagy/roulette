@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📡 BroadcastChannel Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+        }
+        .test-section {
+            background: #2a2a2a;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #FFD700;
+        }
+        .console-output {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .test-button {
+            background: #FFD700;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #e6c200;
+        }
+        .status-indicator {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        .status-good { background: #28a745; }
+        .status-warning { background: #ffc107; color: black; }
+        .status-error { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📡 BroadcastChannel Communication Test</h1>
+            <p>Testing the roulette-sync-channel communication used by master-client sync</p>
+            <div id="channel-status" class="status-indicator status-warning">
+                Initializing BroadcastChannel test...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 Channel Operations</h2>
+            <button class="test-button" onclick="createChannel()">📡 Create Channel</button>
+            <button class="test-button" onclick="sendTestMessage()">📤 Send Test Message</button>
+            <button class="test-button" onclick="sendTimerUpdate()">⏱️ Send Timer Update</button>
+            <button class="test-button" onclick="closeChannel()">❌ Close Channel</button>
+            <button class="test-button" onclick="clearConsole()">🗑️ Clear Console</button>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 Message Statistics</h2>
+            <div id="message-stats">
+                Messages Sent: 0<br>
+                Messages Received: 0<br>
+                Timer Updates: 0<br>
+                Errors: 0
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🖥️ Console Output</h2>
+            <div class="console-output" id="console-output">
+                BroadcastChannel test initializing...<br>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let channel = null;
+        let stats = {
+            sent: 0,
+            received: 0,
+            timerUpdates: 0,
+            errors: 0
+        };
+
+        const consoleOutput = document.getElementById('console-output');
+        const channelStatus = document.getElementById('channel-status');
+        const messageStats = document.getElementById('message-stats');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff6b6b' : type === 'warn' ? '#ffd93d' : '#00ff00';
+            consoleOutput.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span><br>`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStats() {
+            messageStats.innerHTML = `
+                Messages Sent: ${stats.sent}<br>
+                Messages Received: ${stats.received}<br>
+                Timer Updates: ${stats.timerUpdates}<br>
+                Errors: ${stats.errors}
+            `;
+        }
+
+        function updateStatus(status, message) {
+            channelStatus.className = `status-indicator status-${status}`;
+            channelStatus.textContent = message;
+        }
+
+        function createChannel() {
+            try {
+                if (channel) {
+                    log('Closing existing channel...', 'warn');
+                    channel.close();
+                }
+
+                channel = new BroadcastChannel('roulette-sync-channel');
+                
+                channel.onmessage = function(event) {
+                    stats.received++;
+                    const message = event.data;
+                    
+                    log(`📨 Received: ${JSON.stringify(message)}`);
+                    
+                    if (message.type === 'timer_update') {
+                        stats.timerUpdates++;
+                        log(`⏱️ Timer Update: ${message.timerText || 'No text'} (${message.timeRemaining}ms)`, 'info');
+                    }
+                    
+                    updateStats();
+                };
+
+                channel.onerror = function(error) {
+                    stats.errors++;
+                    log(`❌ Channel Error: ${error}`, 'error');
+                    updateStats();
+                };
+
+                log('✅ BroadcastChannel created successfully');
+                updateStatus('good', '✅ Channel Active');
+                
+            } catch (error) {
+                stats.errors++;
+                log(`❌ Failed to create BroadcastChannel: ${error.message}`, 'error');
+                updateStatus('error', '❌ Channel Creation Failed');
+                updateStats();
+            }
+        }
+
+        function sendTestMessage() {
+            if (!channel) {
+                log('❌ No channel available. Create channel first.', 'error');
+                return;
+            }
+
+            try {
+                const testMessage = {
+                    type: 'debug_test',
+                    timestamp: Date.now(),
+                    message: 'Test message from broadcast-test.html',
+                    testId: Math.random().toString(36).substr(2, 9)
+                };
+
+                channel.postMessage(testMessage);
+                stats.sent++;
+                
+                log(`📤 Sent test message: ${JSON.stringify(testMessage)}`);
+                updateStats();
+                
+            } catch (error) {
+                stats.errors++;
+                log(`❌ Failed to send test message: ${error.message}`, 'error');
+                updateStats();
+            }
+        }
+
+        function sendTimerUpdate() {
+            if (!channel) {
+                log('❌ No channel available. Create channel first.', 'error');
+                return;
+            }
+
+            try {
+                // Generate a fake timer update
+                const minutes = Math.floor(Math.random() * 3);
+                const seconds = Math.floor(Math.random() * 60);
+                const timerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                const timeRemaining = (minutes * 60 + seconds) * 1000;
+
+                const timerMessage = {
+                    type: 'timer_update',
+                    timeRemaining: timeRemaining,
+                    timerText: timerText,
+                    timestamp: Date.now()
+                };
+
+                channel.postMessage(timerMessage);
+                stats.sent++;
+                
+                log(`📤 Sent timer update: ${timerText} (${timeRemaining}ms)`);
+                updateStats();
+                
+            } catch (error) {
+                stats.errors++;
+                log(`❌ Failed to send timer update: ${error.message}`, 'error');
+                updateStats();
+            }
+        }
+
+        function closeChannel() {
+            if (channel) {
+                channel.close();
+                channel = null;
+                log('❌ BroadcastChannel closed');
+                updateStatus('warning', '⚠️ Channel Closed');
+            } else {
+                log('⚠️ No channel to close', 'warn');
+            }
+        }
+
+        function clearConsole() {
+            consoleOutput.innerHTML = 'Console cleared.<br>';
+        }
+
+        // Test BroadcastChannel support
+        function testBroadcastSupport() {
+            if (typeof BroadcastChannel !== 'undefined') {
+                log('✅ BroadcastChannel is supported in this browser');
+                updateStatus('good', '✅ BroadcastChannel Supported');
+                return true;
+            } else {
+                log('❌ BroadcastChannel is NOT supported in this browser', 'error');
+                updateStatus('error', '❌ BroadcastChannel Not Supported');
+                return false;
+            }
+        }
+
+        // Auto-initialize
+        window.addEventListener('load', function() {
+            log('📡 BroadcastChannel test page loaded');
+            
+            if (testBroadcastSupport()) {
+                // Auto-create channel
+                setTimeout(createChannel, 1000);
+                
+                // Listen for messages from other tabs/windows
+                log('🔍 Listening for messages from master-client sync system...');
+            }
+            
+            updateStats();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (channel) {
+                channel.close();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎰 Complete Synchronization Test Suite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .display-card {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #FFD700;
+        }
+        .display-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #FFD700;
+        }
+        .iframe-container {
+            width: 100%;
+            height: 450px;
+            border: 2px solid #555;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transform: scale(0.8);
+            transform-origin: 0 0;
+            width: 125%;
+            height: 125%;
+        }
+        .sync-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            margin: 10px 0;
+        }
+        .metric {
+            background: #444;
+            padding: 8px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .metric .label {
+            font-size: 10px;
+            color: #ccc;
+        }
+        .metric .value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        .status-panel {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 11px;
+        }
+        .status-good { border-left: 5px solid #28a745; }
+        .status-warning { border-left: 5px solid #ffc107; }
+        .status-error { border-left: 5px solid #dc3545; }
+        .test-button {
+            background: #FFD700;
+            color: black;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 3px;
+            font-size: 12px;
+        }
+        .test-button:hover {
+            background: #e6c200;
+        }
+        .control-panel {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+            margin: 20px 0;
+        }
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .indicator-good { background: #28a745; }
+        .indicator-warning { background: #ffc107; }
+        .indicator-error { background: #dc3545; }
+        .indicator-idle { background: #6c757d; }
+        .console-output {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .test-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: #333;
+            border-radius: 8px;
+            border-left: 4px solid #FFD700;
+        }
+        .test-section h3 {
+            margin: 0 0 10px 0;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎰 Complete Synchronization Test Suite</h1>
+            <p>Comprehensive testing of timer, wheel animation, results, and analytics synchronization</p>
+            <div id="overall-status" class="status-panel status-warning">
+                <strong>Status:</strong> Initializing complete synchronization test...
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h2>🎮 Complete Test Controls</h2>
+            <div class="control-grid">
+                <button class="test-button" onclick="testTimerSync()">⏱️ Test Timer Sync</button>
+                <button class="test-button" onclick="testWheelSync()">🎡 Test Wheel Sync</button>
+                <button class="test-button" onclick="testResultSync()">🎯 Test Result Sync</button>
+                <button class="test-button" onclick="testAnalyticsSync()">📊 Test Analytics Sync</button>
+                <button class="test-button" onclick="testCompleteSpinCycle()">🎰 Test Complete Spin Cycle</button>
+                <button class="test-button" onclick="runFullTestSuite()">🧪 Run Full Test Suite</button>
+                <button class="test-button" onclick="refreshAllDisplays()">🔄 Refresh All</button>
+                <button class="test-button" onclick="clearLogs()">🗑️ Clear Logs</button>
+            </div>
+        </div>
+
+        <div class="test-grid">
+            <!-- Master Display -->
+            <div class="display-card">
+                <div class="display-title">👑 MASTER DISPLAY</div>
+                <div class="iframe-container">
+                    <iframe id="master-frame" src="index.html"></iframe>
+                </div>
+                <div class="sync-metrics">
+                    <div class="metric">
+                        <div class="label">Timer</div>
+                        <div class="value" id="master-timer">
+                            <span class="indicator indicator-idle"></span>--:--
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="label">Wheel</div>
+                        <div class="value" id="master-wheel">
+                            <span class="indicator indicator-idle"></span>Idle
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="label">Result</div>
+                        <div class="value" id="master-result">
+                            <span class="indicator indicator-idle"></span>--
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="label">Analytics</div>
+                        <div class="value" id="master-analytics">
+                            <span class="indicator indicator-idle"></span>Hidden
+                        </div>
+                    </div>
+                </div>
+                <div class="status-panel" id="master-status">Master status...</div>
+                <button class="test-button" onclick="refreshMaster()">🔄 Refresh</button>
+            </div>
+
+            <!-- Client 1 Display -->
+            <div class="display-card">
+                <div class="display-title">📺 CLIENT 1 (Shop 1)</div>
+                <div class="iframe-container">
+                    <iframe id="client1-frame" src="shop1.html"></iframe>
+                </div>
+                <div class="sync-metrics">
+                    <div class="metric">
+                        <div class="label">Timer Sync</div>
+                        <div class="value" id="client1-timer">
+                            <span class="indicator indicator-idle"></span>Waiting
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="label">Wheel Sync</div>
+                        <div class="value" id="client1-wheel">
+                            <span class="indicator indicator-idle"></span>Waiting
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="label">Result Sync</div>
+                        <div class="value" id="client1-result">
+                            <span class="indicator indicator-idle"></span>Waiting
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="label">Analytics Sync</div>
+                        <div class="value" id="client1-analytics">
+                            <span class="indicator indicator-idle"></span>Waiting
+                        </div>
+                    </div>
+                </div>
+                <div class="status-panel" id="client1-status">Client 1 status...</div>
+                <button class="test-button" onclick="refreshClient1()">🔄 Refresh</button>
+            </div>
+
+            <!-- Client 2 Display -->
+            <div class="display-card">
+                <div class="display-title">📺 CLIENT 2 (Shop 2)</div>
+                <div class="iframe-container">
+                    <iframe id="client2-frame" src="shop2.html"></iframe>
+                </div>
+                <div class="sync-metrics">
+                    <div class="metric">
+                        <div class="label">Timer Sync</div>
+                        <div class="value" id="client2-timer">
+                            <span class="indicator indicator-idle"></span>Waiting
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="label">Wheel Sync</div>
+                        <div class="value" id="client2-wheel">
+                            <span class="indicator indicator-idle"></span>Waiting
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="label">Result Sync</div>
+                        <div class="value" id="client2-result">
+                            <span class="indicator indicator-idle"></span>Waiting
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="label">Analytics Sync</div>
+                        <div class="value" id="client2-analytics">
+                            <span class="indicator indicator-idle"></span>Waiting
+                        </div>
+                    </div>
+                </div>
+                <div class="status-panel" id="client2-status">Client 2 status...</div>
+                <button class="test-button" onclick="refreshClient2()">🔄 Refresh</button>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h2>📊 Comprehensive Synchronization Analysis</h2>
+            
+            <div class="test-section">
+                <h3>⏱️ Timer Synchronization</h3>
+                <div id="timer-analysis" class="status-panel status-warning">
+                    Waiting for timer synchronization data...
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h3>🎡 Wheel & Results Synchronization</h3>
+                <div id="wheel-analysis" class="status-panel status-warning">
+                    Waiting for wheel and results synchronization data...
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h3>📊 Analytics Synchronization</h3>
+                <div id="analytics-analysis" class="status-panel status-warning">
+                    Waiting for analytics synchronization data...
+                </div>
+            </div>
+
+            <div class="test-section">
+                <h3>🎯 Overall Synchronization Score</h3>
+                <div id="overall-analysis" class="status-panel status-warning">
+                    Calculating overall synchronization score...
+                </div>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h2>🖥️ Test Console Output</h2>
+            <div class="console-output" id="console-output">
+                Complete synchronization test initializing...<br>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testInterval;
+        let syncData = {
+            master: { timer: '--:--', wheel: 'idle', result: '--', analytics: 'hidden' },
+            client1: { timer: 'waiting', wheel: 'waiting', result: 'waiting', analytics: 'waiting' },
+            client2: { timer: 'waiting', wheel: 'waiting', result: 'waiting', analytics: 'waiting' }
+        };
+
+        // Debug console
+        const consoleOutput = document.getElementById('console-output');
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff6b6b' : type === 'warn' ? '#ffd93d' : '#00ff00';
+            consoleOutput.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span><br>`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function getCompleteFrameData(frameId) {
+            try {
+                const frame = document.getElementById(frameId);
+                if (frame && frame.contentDocument) {
+                    // Timer data
+                    const timerElement = frame.contentDocument.getElementById('countdown-timer');
+                    const timer = timerElement ? timerElement.textContent : '--:--';
+
+                    // Wheel data
+                    const wheelContainer = frame.contentDocument.querySelector('.roulette-wheel-container');
+                    const wheelVisible = wheelContainer && wheelContainer.classList.contains('roulette-wheel-visible');
+                    const wheel = wheelVisible ? 'spinning' : 'idle';
+
+                    // Result data
+                    const resultElement = frame.contentDocument.querySelector('.roll-number');
+                    const result = resultElement ? resultElement.textContent : '--';
+
+                    // Analytics data
+                    const leftSidebar = frame.contentDocument.querySelector('.analytics-left-sidebar');
+                    const rightSidebar = frame.contentDocument.querySelector('.analytics-right-sidebar');
+                    const analyticsVisible = (leftSidebar && leftSidebar.classList.contains('visible')) ||
+                                           (rightSidebar && rightSidebar.classList.contains('visible'));
+                    const analytics = analyticsVisible ? 'visible' : 'hidden';
+
+                    return { timer, wheel, result, analytics };
+                }
+            } catch (error) {
+                log(`Cannot access ${frameId} content: ${error.message}`, 'warn');
+            }
+            return null;
+        }
+
+        function updateCompleteMetrics() {
+            const masterData = getCompleteFrameData('master-frame');
+            const client1Data = getCompleteFrameData('client1-frame');
+            const client2Data = getCompleteFrameData('client2-frame');
+
+            if (masterData) {
+                updateMasterMetrics(masterData);
+                syncData.master = masterData;
+            }
+
+            if (client1Data && masterData) {
+                updateClientMetrics('client1', client1Data, masterData);
+                syncData.client1 = calculateSyncStatus(client1Data, masterData);
+            }
+
+            if (client2Data && masterData) {
+                updateClientMetrics('client2', client2Data, masterData);
+                syncData.client2 = calculateSyncStatus(client2Data, masterData);
+            }
+
+            updateComprehensiveAnalysis();
+        }
+
+        function updateMasterMetrics(data) {
+            updateMetric('master-timer', data.timer, 'good');
+            updateMetric('master-wheel', data.wheel, data.wheel === 'spinning' ? 'warning' : 'good');
+            updateMetric('master-result', data.result, 'good');
+            updateMetric('master-analytics', data.analytics, data.analytics === 'visible' ? 'good' : 'idle');
+        }
+
+        function updateClientMetrics(clientId, clientData, masterData) {
+            const timerSync = clientData.timer === masterData.timer ? 'synced' : 'out-of-sync';
+            const wheelSync = clientData.wheel === masterData.wheel ? 'synced' : 'out-of-sync';
+            const resultSync = clientData.result === masterData.result ? 'synced' : 'out-of-sync';
+            const analyticsSync = clientData.analytics === masterData.analytics ? 'synced' : 'out-of-sync';
+
+            updateMetric(`${clientId}-timer`, timerSync, timerSync === 'synced' ? 'good' : 'error');
+            updateMetric(`${clientId}-wheel`, wheelSync, wheelSync === 'synced' ? 'good' : 'error');
+            updateMetric(`${clientId}-result`, resultSync, resultSync === 'synced' ? 'good' : 'error');
+            updateMetric(`${clientId}-analytics`, analyticsSync, analyticsSync === 'synced' ? 'good' : 'error');
+        }
+
+        function updateMetric(elementId, value, status) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                const indicator = element.querySelector('.indicator');
+                indicator.className = `indicator indicator-${status}`;
+                element.innerHTML = element.innerHTML.replace(/>[^<]+$/, `>${value}`);
+            }
+        }
+
+        function calculateSyncStatus(clientData, masterData) {
+            return {
+                timer: clientData.timer === masterData.timer ? 'synced' : 'out-of-sync',
+                wheel: clientData.wheel === masterData.wheel ? 'synced' : 'out-of-sync',
+                result: clientData.result === masterData.result ? 'synced' : 'out-of-sync',
+                analytics: clientData.analytics === masterData.analytics ? 'synced' : 'out-of-sync'
+            };
+        }
+
+        function updateComprehensiveAnalysis() {
+            updateTimerAnalysis();
+            updateWheelAnalysis();
+            updateAnalyticsAnalysis();
+            updateOverallAnalysis();
+        }
+
+        function updateTimerAnalysis() {
+            const analysis = document.getElementById('timer-analysis');
+            const client1TimerSync = syncData.client1.timer === 'synced';
+            const client2TimerSync = syncData.client2.timer === 'synced';
+            
+            let text = `Master Timer: ${syncData.master.timer}\n`;
+            text += `Client 1: ${client1TimerSync ? '✅ Synced' : '❌ Out of Sync'}\n`;
+            text += `Client 2: ${client2TimerSync ? '✅ Synced' : '❌ Out of Sync'}\n`;
+            
+            if (client1TimerSync && client2TimerSync) {
+                text += '\n✅ TIMER SYNCHRONIZATION: PERFECT';
+                analysis.className = 'status-panel status-good';
+            } else {
+                text += '\n❌ TIMER SYNCHRONIZATION: FAILED';
+                analysis.className = 'status-panel status-error';
+            }
+            
+            analysis.textContent = text;
+        }
+
+        function updateWheelAnalysis() {
+            const analysis = document.getElementById('wheel-analysis');
+            const client1WheelSync = syncData.client1.wheel === 'synced';
+            const client2WheelSync = syncData.client2.wheel === 'synced';
+            const client1ResultSync = syncData.client1.result === 'synced';
+            const client2ResultSync = syncData.client2.result === 'synced';
+            
+            let text = `Master Wheel: ${syncData.master.wheel} | Result: ${syncData.master.result}\n`;
+            text += `Client 1: Wheel ${client1WheelSync ? '✅' : '❌'} | Result ${client1ResultSync ? '✅' : '❌'}\n`;
+            text += `Client 2: Wheel ${client2WheelSync ? '✅' : '❌'} | Result ${client2ResultSync ? '✅' : '❌'}\n`;
+            
+            if (client1WheelSync && client2WheelSync && client1ResultSync && client2ResultSync) {
+                text += '\n✅ WHEEL & RESULTS SYNCHRONIZATION: PERFECT';
+                analysis.className = 'status-panel status-good';
+            } else {
+                text += '\n❌ WHEEL & RESULTS SYNCHRONIZATION: FAILED';
+                analysis.className = 'status-panel status-error';
+            }
+            
+            analysis.textContent = text;
+        }
+
+        function updateAnalyticsAnalysis() {
+            const analysis = document.getElementById('analytics-analysis');
+            const client1AnalyticsSync = syncData.client1.analytics === 'synced';
+            const client2AnalyticsSync = syncData.client2.analytics === 'synced';
+            
+            let text = `Master Analytics: ${syncData.master.analytics}\n`;
+            text += `Client 1: ${client1AnalyticsSync ? '✅ Synced' : '❌ Out of Sync'}\n`;
+            text += `Client 2: ${client2AnalyticsSync ? '✅ Synced' : '❌ Out of Sync'}\n`;
+            
+            if (client1AnalyticsSync && client2AnalyticsSync) {
+                text += '\n✅ ANALYTICS SYNCHRONIZATION: PERFECT';
+                analysis.className = 'status-panel status-good';
+            } else {
+                text += '\n❌ ANALYTICS SYNCHRONIZATION: FAILED';
+                analysis.className = 'status-panel status-error';
+            }
+            
+            analysis.textContent = text;
+        }
+
+        function updateOverallAnalysis() {
+            const analysis = document.getElementById('overall-analysis');
+            const overallStatus = document.getElementById('overall-status');
+            
+            const client1Perfect = Object.values(syncData.client1).every(status => status === 'synced');
+            const client2Perfect = Object.values(syncData.client2).every(status => status === 'synced');
+            
+            const totalSyncPoints = 8; // 4 sync points per client
+            const client1SyncPoints = Object.values(syncData.client1).filter(status => status === 'synced').length;
+            const client2SyncPoints = Object.values(syncData.client2).filter(status => status === 'synced').length;
+            const totalSynced = client1SyncPoints + client2SyncPoints;
+            const syncPercentage = Math.round((totalSynced / totalSyncPoints) * 100);
+            
+            let text = `Synchronization Score: ${syncPercentage}% (${totalSynced}/${totalSyncPoints})\n\n`;
+            text += `Client 1: ${client1SyncPoints}/4 sync points\n`;
+            text += `Client 2: ${client2SyncPoints}/4 sync points\n\n`;
+            
+            if (client1Perfect && client2Perfect) {
+                text += '🎉 PERFECT SYNCHRONIZATION ACHIEVED!\n';
+                text += 'All systems are perfectly synchronized across all displays.';
+                analysis.className = 'status-panel status-good';
+                overallStatus.className = 'status-panel status-good';
+                overallStatus.innerHTML = '<strong>Status:</strong> 🎉 Perfect Synchronization Achieved!';
+            } else if (syncPercentage >= 75) {
+                text += '⚠️ GOOD SYNCHRONIZATION\n';
+                text += 'Most systems are synchronized with minor issues.';
+                analysis.className = 'status-panel status-warning';
+                overallStatus.className = 'status-panel status-warning';
+                overallStatus.innerHTML = '<strong>Status:</strong> ⚠️ Good Synchronization';
+            } else {
+                text += '❌ SYNCHRONIZATION ISSUES\n';
+                text += 'Multiple synchronization problems detected.';
+                analysis.className = 'status-panel status-error';
+                overallStatus.className = 'status-panel status-error';
+                overallStatus.innerHTML = '<strong>Status:</strong> ❌ Synchronization Issues';
+            }
+            
+            analysis.textContent = text;
+        }
+
+        // Test functions
+        function testTimerSync() {
+            log('⏱️ Testing timer synchronization...');
+            updateCompleteMetrics();
+        }
+
+        function testWheelSync() {
+            log('🎡 Testing wheel animation synchronization...');
+            updateCompleteMetrics();
+        }
+
+        function testResultSync() {
+            log('🎯 Testing result synchronization...');
+            updateCompleteMetrics();
+        }
+
+        function testAnalyticsSync() {
+            log('📊 Testing analytics synchronization...');
+            updateCompleteMetrics();
+        }
+
+        function testCompleteSpinCycle() {
+            log('🎰 Testing complete spin cycle synchronization...');
+            updateCompleteMetrics();
+        }
+
+        function runFullTestSuite() {
+            log('🧪 Running full synchronization test suite...');
+            let testCount = 0;
+            const testInterval = setInterval(() => {
+                testCount++;
+                updateCompleteMetrics();
+                log(`🧪 Test cycle ${testCount}/10 completed`);
+                
+                if (testCount >= 10) {
+                    clearInterval(testInterval);
+                    log('🧪 Full test suite completed');
+                }
+            }, 2000);
+        }
+
+        function refreshMaster() {
+            document.getElementById('master-frame').src = 'index.html?' + Date.now();
+            log('🔄 Master display refreshed');
+        }
+
+        function refreshClient1() {
+            document.getElementById('client1-frame').src = 'shop1.html?' + Date.now();
+            log('🔄 Client 1 display refreshed');
+        }
+
+        function refreshClient2() {
+            document.getElementById('client2-frame').src = 'shop2.html?' + Date.now();
+            log('🔄 Client 2 display refreshed');
+        }
+
+        function refreshAllDisplays() {
+            refreshMaster();
+            refreshClient1();
+            refreshClient2();
+            log('🔄 All displays refreshed');
+        }
+
+        function clearLogs() {
+            consoleOutput.innerHTML = 'Console cleared.<br>';
+        }
+
+        // Auto-monitoring
+        window.addEventListener('load', function() {
+            log('🎰 Complete synchronization test suite loaded');
+            
+            setTimeout(() => {
+                updateCompleteMetrics();
+                testInterval = setInterval(updateCompleteMetrics, 3000);
+                log('📊 Started automatic comprehensive monitoring (3s intervals)');
+            }, 3000);
+        });
+
+        window.addEventListener('beforeunload', function() {
+            if (testInterval) {
+                clearInterval(testInterval);
+            }
+        });
+    </script>
+</body>
+</html>

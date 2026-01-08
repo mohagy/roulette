@@ -1,0 +1,585 @@
+/**
+ * Custom Styles
+ * These styles override the default styles to hide the draw container
+ * and properly position the timer.
+ */
+
+/* Hide draw container completely */
+.draw-container {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Ensure timer container is visible and properly positioned */
+.timer-container {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: absolute !important;
+  bottom: 10px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background: rgba(0, 0, 0, 0.7) !important;
+  border-radius: 5px !important;
+  padding: 5px 15px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
+  z-index: 100 !important;
+}
+
+.timer-label {
+  color: #fff !important;
+  font-weight: bold !important;
+  margin-right: 10px !important;
+}
+
+.timer-display {
+  color: #ffcc00 !important;
+  font-weight: bold !important;
+  font-size: 1.2em !important;
+}
+
+/* Timer warning style (red color for last 10 seconds) */
+.timer-display.timer-warning {
+  color: #ff3333 !important;
+  animation: pulse 0.5s infinite alternate !important;
+}
+
+@keyframes pulse {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.5;
+  }
+}
+
+/* Cashout Button Styles */
+.cashout-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #f39c12, #e74c3c);
+  border-radius: 50%;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  cursor: pointer;
+  z-index: 9999;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  user-select: none;
+}
+
+.cashout-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.cashout-button:active {
+  transform: scale(0.95);
+}
+
+.cashout-button .icon {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.cashout-button .text {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Cashout Modal Styles */
+.cashout-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 10000;
+  overflow: auto;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.cashout-container {
+  background-color: #222;
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  width: 90%;
+  max-width: 500px;
+  margin: 50px auto;
+  position: relative;
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.cashout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(to right, #333, #222);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cashout-header h2 {
+  margin: 0;
+  color: #f39c12;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cashout-close {
+  color: #999;
+  cursor: pointer;
+  font-size: 18px;
+  transition: color 0.2s;
+}
+
+.cashout-close:hover {
+  color: #f39c12;
+}
+
+.cashout-body {
+  padding: 20px;
+  color: #ddd;
+}
+
+.cashout-input-group {
+  margin-bottom: 20px;
+}
+
+.cashout-input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #aaa;
+}
+
+.cashout-input-group .input-container {
+  position: relative;
+}
+
+.barcode-icon {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  color: #666;
+}
+
+.cashout-input-group input {
+  width: 100%;
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 12px 12px 12px 40px;
+  color: white;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: all 0.3s;
+}
+
+.cashout-input-group input:focus {
+  border-color: #f39c12;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(243, 156, 18, 0.3);
+}
+
+.cashout-error {
+  color: #e74c3c;
+  margin-top: 8px;
+  font-size: 14px;
+  display: none;
+}
+
+.cashout-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cashout-button-action {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cashout-verify-button {
+  background-color: #f39c12;
+  color: white;
+}
+
+.cashout-verify-button:hover {
+  background-color: #e67e22;
+  transform: translateY(-2px);
+}
+
+.cashout-verify-button:active {
+  transform: translateY(0);
+}
+
+.cashout-cancel-button {
+  background-color: transparent;
+  border: 1px solid #888;
+  color: #888;
+}
+
+.cashout-cancel-button:hover {
+  color: white;
+  border-color: white;
+}
+
+/* Loading spinner */
+.cashout-loading {
+  display: none;
+  text-align: center;
+  padding: 20px;
+}
+
+.cashout-loading .spinner {
+  border: 4px solid rgba(243, 156, 18, 0.3);
+  border-top: 4px solid #f39c12;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 15px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.cashout-loading .message {
+  color: #aaa;
+}
+
+/* Results section */
+.cashout-results {
+  display: none;
+  padding: 20px;
+  background-color: #2a2a2a;
+  border-radius: 4px;
+  margin-top: 20px;
+}
+
+.cashout-results-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.cashout-results-header .slip-number {
+  font-weight: bold;
+  color: #f39c12;
+}
+
+.cashout-results-header .draw-number {
+  color: #aaa;
+}
+
+.winning-number-display {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.winning-number {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
+
+.winning-number.red {
+  background-color: #e74c3c;
+}
+
+.winning-number.black {
+  background-color: #333;
+}
+
+.winning-number.green {
+  background-color: #2ecc71;
+}
+
+.bet-results {
+  margin-top: 20px;
+}
+
+.bet-results-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #aaa;
+  border-bottom: 1px solid #444;
+  padding-bottom: 5px;
+}
+
+.bet-item {
+  padding: 10px;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+}
+
+.bet-item:last-child {
+  border-bottom: none;
+}
+
+.bet-description {
+  flex: 1;
+}
+
+.bet-description .type {
+  font-weight: bold;
+  color: white;
+}
+
+.bet-description .details {
+  color: #aaa;
+  font-size: 14px;
+  margin-top: 3px;
+}
+
+.bet-amount {
+  color: #aaa;
+  margin-right: 15px;
+}
+
+.bet-result {
+  min-width: 80px;
+  text-align: right;
+}
+
+.bet-result.win {
+  color: #2ecc71;
+  font-weight: bold;
+}
+
+.bet-result.lose {
+  color: #999;
+}
+
+.cashout-summary {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #444;
+  text-align: right;
+}
+
+.cashout-total {
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+}
+
+.cashout-total .label {
+  color: #aaa;
+  margin-right: 10px;
+}
+
+.cashout-total .amount {
+  color: #2ecc71;
+}
+
+.cashout-total.no-win .amount {
+  color: #e74c3c;
+}
+
+.cashout-message {
+  margin-top: 20px;
+  text-align: center;
+  padding: 15px;
+  border-radius: 4px;
+}
+
+.cashout-message.success {
+  background-color: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.cashout-message.error {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.cashout-process-button {
+  background-color: #2ecc71;
+  color: white;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cashout-process-button:hover {
+  background-color: #27ae60;
+  transform: translateY(-2px);
+}
+
+.cashout-process-button:active {
+  transform: translateY(0);
+}
+
+.cashout-process-button:disabled {
+  background-color: #555;
+  color: #888;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Draggable functionality */
+.cashout-header {
+  cursor: move;
+}
+
+/* Receipt styles */
+.receipt-container {
+  background-color: white;
+  color: black;
+  padding: 20px;
+  max-width: 300px;
+  margin: 0 auto;
+  font-family: 'Courier New', monospace;
+  display: none;
+}
+
+.receipt-header {
+  text-align: center;
+  border-bottom: 1px dashed #999;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.receipt-header h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.receipt-header p {
+  margin: 5px 0;
+  font-size: 12px;
+}
+
+.receipt-body {
+  padding: 10px 0;
+}
+
+.receipt-item {
+  margin-bottom: 10px;
+  border-bottom: 1px dotted #eee;
+  padding-bottom: 10px;
+}
+
+.receipt-item .label {
+  font-weight: bold;
+}
+
+.receipt-item .value {
+  float: right;
+}
+
+.receipt-item.total {
+  font-weight: bold;
+  border-bottom: 1px dashed #999;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.receipt-barcode {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.receipt-barcode-number {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.receipt-footer {
+  text-align: center;
+  font-size: 12px;
+  margin-top: 20px;
+  border-top: 1px dashed #999;
+  padding-top: 10px;
+}
+
+.print-receipt-button {
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin-top: 15px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.visible {
+  display: block !important;
+}
+
+/* Add these styles at the end of the file */
+
+.cashout-note {
+  color: #aaa;
+  font-size: 13px;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+.slip-date {
+  text-align: center;
+  margin: 5px 0 15px;
+  color: #aaa;
+  font-size: 14px;
+}
+
+.slip-purchase-date {
+  display: inline-block;
+  padding: 5px 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+} 

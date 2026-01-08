@@ -1,0 +1,58 @@
+/* Show Stake Control Styles */
+
+/* Ensure stake control is visible */
+.stake-control {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 10;
+}
+
+/* Style the stake input */
+#global-stake-input {
+  width: 80px;
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  color: white;
+  font-size: 14px;
+  text-align: right;
+}
+
+/* Ensure the bet display container is visible */
+.bet-display-container {
+  display: block !important;
+}
+
+/* Override any styles that might hide the stake control */
+.stake-control {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  left: auto !important;
+}
+
+/* Add a highlight to make it more visible */
+.stake-control {
+  border-left: 3px solid var(--global-gold-color);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Style the label */
+.stake-control label {
+  font-weight: bold;
+  color: var(--global-gold-color);
+}
+
+/* Add focus styles for the input */
+#global-stake-input:focus {
+  outline: none;
+  border-color: var(--global-gold-color);
+  box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+}

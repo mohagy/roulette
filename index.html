@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="Description" content="Professional Roulette Point of Sale System" />
+    <meta name="theme-color" content="#202020" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Roulette" />
+    <meta name="application-name" content="Roulette POS System" />
+    <meta name="msapplication-TileColor" content="#202020" />
+    <meta name="msapplication-navbutton-color" content="#202020" />
+    <title>Roulette POS System</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="shortcut icon" href="images/icons/android/android-launchericon-48-48.png" type="image/png" />
+    <link rel="apple-touch-icon" href="images/icons/ios/180.png" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/draw-header.css">
+    <link rel="stylesheet" href="css/custom-styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/fixed-sidebar.css">
+    <link rel="stylesheet" href="css/movable-sidebar.css">
+    <link rel="stylesheet" href="css/enhanced-cashier-panel.css">
+    <link rel="stylesheet" href="css/cashier-draw-display.css">
+    <link rel="stylesheet" href="css/upcoming-draws-panel.css">
+    <link rel="stylesheet" href="css/reprint-button-middle-right.css">
+    <link rel="stylesheet" href="css/hide-menu-complete-button.css">
+    <link rel="stylesheet" href="css/hide-sound-button.css">
+    <link rel="stylesheet" href="css/hide-entire-menu-container.css">
+    <link rel="stylesheet" href="css/right-sidebar-action-buttons.css">
+    <!-- Glass Morphism No More Bets System -->
+    <link rel="stylesheet" href="css/no-more-bets.css">
+  </head>
+  <body class="index">
+    <div class="website-wrapper" id="website-wrapper">
+      <div class="roulette-table">
+        <div class="top-bar">
+          <div class="roulette-rolls-container">
+            <div class="roll roll5"></div>
+            <div class="roll roll4"></div>
+            <div class="roll roll3"></div>
+            <div class="roll roll2"></div>
+            <div class="roll roll1"></div>
+            <div class="roll roll-last"></div>
+          </div>
+          <div class="game-name">ROULETTE</div>
+          <div class="min-max-bet">
+            <div class="min-bet bet-size"><span class="text-color">MIN:</span> $100.00</div>
+            <div class="max-bet bet-size"><span class="text-color">MAX:</span> $5000.00</div>
+          </div>
+        </div>
+        <div class="roulette-wheel-container">
+          <div class="roulette-wheel">
+            <div class="roulette-wheel-main roulette-image"></div>
+            <div class="roulette-center roulette-image"></div>
+            <div class="roulette-cross-shadow roulette-image"></div>
+            <div class="roulette-cross roulette-image">
+              <div class="number-glow-container"></div>
+            </div>
+            <div class="ball-container"></div>
+          </div>
+        </div>
+
+        <div class="betting-area">
+          <div class="top-area">
+            <div class="number number0 regular regular0 part"></div>
+            <div class="number number3 black"></div>
+            <div class="number number2 red"></div>
+            <div class="number number1 black"></div>
+            <div class="number number6 red"></div>
+            <div class="number number5 black"></div>
+            <div class="number number4 red"></div>
+            <div class="number number9 black"></div>
+            <div class="number number8 red"></div>
+            <div class="number number7 black"></div>
+            <div class="number number12 red"></div>
+            <div class="number number11 black"></div>
+            <div class="number number10 red"></div>
+            <div class="number number15 black"></div>
+            <div class="number number14 red"></div>
+            <div class="number number13 black"></div>
+            <div class="number number18 red"></div>
+            <div class="number number17 black"></div>
+            <div class="number number16 red"></div>
+            <div class="number number21 black"></div>
+            <div class="number number20 red"></div>
+            <div class="number number19 black"></div>
+            <div class="number number24 red"></div>
+            <div class="number number23 black"></div>
+            <div class="number number22 red"></div>
+            <div class="number number27 black"></div>
+            <div class="number number26 red"></div>
+            <div class="number number25 black"></div>
+            <div class="number number30 red"></div>
+            <div class="number number29 black"></div>
+            <div class="number number28 red"></div>
+            <div class="number number33 black"></div>
+            <div class="number number32 red"></div>
+            <div class="number number31 black"></div>
+            <div class="number number36 red"></div>
+            <div class="number number35 black"></div>
+            <div class="number number34 red"></div>
+            <div class="number bet2to1-1 part"></div>
+            <div class="number bet2to1-2 part"></div>
+            <div class="number bet2to1-3 part"></div>
+            <div class="top-area-overlay">
+              <div class="part line line3 top-row"></div>
+              <div class="part regular regular3 top-row"></div>
+              <div class="part line line6 top-row"></div>
+              <div class="part regular regular6 top-row"></div>
+              <div class="part line line9 top-row"></div>
+              <div class="part regular regular9 top-row"></div>
+              <div class="part line line12 top-row"></div>
+              <div class="part regular regular12 top-row"></div>
+              <div class="part line line15 top-row"></div>
+              <div class="part regular regular15 top-row"></div>
+              <div class="part line line18 top-row"></div>
+              <div class="part regular regular18 top-row"></div>
+              <div class="part line line21 top-row"></div>
+              <div class="part regular regular21 top-row"></div>
+              <div class="part line line24 top-row"></div>
+              <div class="part regular regular24 top-row"></div>
+              <div class="part line line27 top-row"></div>
+              <div class="part regular regular27 top-row"></div>
+              <div class="part line line30 top-row"></div>
+              <div class="part regular regular30 top-row"></div>
+              <div class="part line line33 top-row"></div>
+              <div class="part regular regular33 top-row"></div>
+              <div class="part line line36 top-row"></div>
+              <div class="part regular regular36 last top-row"></div>
+              <div class="part corner corner3 line between"></div>
+              <div class="part between between3"></div>
+              <div class="part corner corner6 line between"></div>
+              <div class="part between between6"></div>
+              <div class="part corner corner9 line between"></div>
+              <div class="part between between9"></div>
+              <div class="part corner corner12 line between"></div>
+              <div class="part between between12"></div>
+              <div class="part corner corner15 line between"></div>
+              <div class="part between between15"></div>
+              <div class="part corner corner18 line between"></div>
+              <div class="part between between18"></div>
+              <div class="part corner corner21 line between"></div>
+              <div class="part between between21"></div>
+              <div class="part corner corner24 line between"></div>
+              <div class="part between between24"></div>
+              <div class="part corner corner27 line between"></div>
+              <div class="part between between27"></div>
+              <div class="part corner corner30 line between"></div>
+              <div class="part between between30"></div>
+              <div class="part corner corner33 line between"></div>
+              <div class="part between between33"></div>
+              <div class="part corner corner36 line between"></div>
+              <div class="part last between between36"></div>
+              <div class="part line line2 center"></div>
+              <div class="part regular regular2 center"></div>
+              <div class="part line line5 center"></div>
+              <div class="part regular regular5 center"></div>
+              <div class="part line line8 center"></div>
+              <div class="part regular regular8 center"></div>
+              <div class="part line line11 center"></div>
+              <div class="part regular regular11 center"></div>
+              <div class="part line line14 center"></div>
+              <div class="part regular regular14 center"></div>
+              <div class="part line line17 center"></div>
+              <div class="part regular regular17 center"></div>
+              <div class="part line line20 center"></div>
+              <div class="part regular regular20 center"></div>
+              <div class="part line line23 center"></div>
+              <div class="part regular regular23 center"></div>
+              <div class="part line line26 center"></div>
+              <div class="part regular regular26 center"></div>
+              <div class="part line line29 center"></div>
+              <div class="part regular regular29 center"></div>
+              <div class="part line line32 center"></div>
+              <div class="part regular regular32 center"></div>
+              <div class="part line line35 center"></div>
+              <div class="part regular regular35 last center"></div>
+              <div class="part corner corner2 line between"></div>
+              <div class="part between between2"></div>
+              <div class="part corner corner5 line between"></div>
+              <div class="part between between5"></div>
+              <div class="part corner corner8 line between"></div>
+              <div class="part between between8"></div>
+              <div class="part corner corner11 line between"></div>
+              <div class="part between between11"></div>
+              <div class="part corner corner14 line between"></div>
+              <div class="part between between14"></div>
+              <div class="part corner corner17 line between"></div>
+              <div class="part between between17"></div>
+              <div class="part corner corner20 line between"></div>
+              <div class="part between between20"></div>
+              <div class="part corner corner23 line between"></div>
+              <div class="part between between23"></div>
+              <div class="part corner corner26 line between"></div>
+              <div class="part between between26"></div>
+              <div class="part corner corner29 line between"></div>
+              <div class="part between between29"></div>
+              <div class="part corner corner32 line between"></div>
+              <div class="part between between32"></div>
+              <div class="part corner corner35 line between"></div>
+              <div class="part last between between35"></div>
+              <div class="part center line line1"></div>
+              <div class="part center regular regular1"></div>
+              <div class="part center line line4"></div>
+              <div class="part center regular regular4"></div>
+              <div class="part center line line7"></div>
+              <div class="part center regular regular7"></div>
+              <div class="part center line line10"></div>
+              <div class="part center regular regular10"></div>
+              <div class="part center line line13"></div>
+              <div class="part center regular regular13"></div>
+              <div class="part center line line16"></div>
+              <div class="part center regular regular16"></div>
+              <div class="part center line line19"></div>
+              <div class="part center regular regular19"></div>
+              <div class="part center line line22"></div>
+              <div class="part center regular regular22"></div>
+              <div class="part center line line25"></div>
+              <div class="part center regular regular25"></div>
+              <div class="part center line line28"></div>
+              <div class="part center regular regular28"></div>
+              <div class="part center line line31"></div>
+              <div class="part center regular regular31"></div>
+              <div class="part center line line34"></div>
+              <div class="part center regular regular34 last"></div>
+              <div class="part corner corner1 line between"></div>
+              <div class="part between between1"></div>
+              <div class="part corner corner4 line between"></div>
+              <div class="part between between4"></div>
+              <div class="part corner corner7 line between"></div>
+              <div class="part between between7"></div>
+              <div class="part corner corner10 line between"></div>
+              <div class="part between between10"></div>
+              <div class="part corner corner13 line between"></div>
+              <div class="part between between13"></div>
+              <div class="part corner corner16 line between"></div>
+              <div class="part between between16"></div>
+              <div class="part corner corner19 line between"></div>
+              <div class="part between between19"></div>
+              <div class="part corner corner22 line between"></div>
+              <div class="part between between22"></div>
+              <div class="part corner corner25 line between"></div>
+              <div class="part between between25"></div>
+              <div class="part corner corner28 line between"></div>
+              <div class="part between between28"></div>
+              <div class="part corner corner31 line between"></div>
+              <div class="part between between31"></div>
+              <div class="part corner corner34 line between"></div>
+              <div class="part last between between34"></div>
+            </div>
+          </div>
+          <div class="bottom-area">
+            <div class="bottom-column bottom-column1 column-1st12 part"></div>
+            <div class="bottom-column bottom-column2 column-2nd12 part"></div>
+            <div class="bottom-column bottom-column3 column-3rd12 part"></div>
+            <div class="bottom-column bottom-column4 column-1to18 part"></div>
+
+            <div class="bottom-column bottom-column5 column-even part"></div>
+            <div class="bottom-column bottom-column6 column-red part"></div>
+            <div class="bottom-column bottom-column7 column-black part"></div>
+            <div class="bottom-column bottom-column8 column-odd part"></div>
+            <div class="bottom-column bottom-column9 column-19to36 part"></div>
+          </div>
+        </div>
+        <div class="bet-type-tooltip"></div>
+        <div class="selections-container">
+          <div class="betting-chips-container">
+
+          </div>
+          <div class="menu-container">
+            <div class="button button-complete">
+              <div class="circle">
+                <i class="fas fa-th icon"></i>
+              </div>
+              <div class="circle-overlay"></div>
+              <div class="button-text">COMPLETE</div>
+            </div>
+            <div class="button button-sound">
+              <div class="circle">
+                <i class="fas fa-volume-up icon icon1"></i>
+                <div class="cross-line"></div>
+              </div>
+              <div class="circle-overlay"></div>
+              <div class="button-text">SOUNDS</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="money-container">
+          <div class="cash-area area">
+            <div class="text"><span>CASH</span> $</div>
+            <div class="cash-total"></div>
+          </div>
+          <div class="bet-area area">
+            <div class="text"><span>BET</span> $</div>
+            <div class="bet-total">0.00</div>
+          </div>
+        </div>
+
+        <!-- Floating Bet Display Window -->
+        <div class="bet-display-container" id="bet-display-container">
+          <div class="bet-display-header">
+            <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
+            <div class="bet-display-title">Your Bets</div>
+            <div class="bet-display-toggle"><i class="fas fa-chevron-left"></i></div>
+          </div>
+          <div class="stake-control">
+            <label for="global-stake-input">Stake / Bet</label>
+            <div class="stake-input-wrapper">
+              <input type="number" id="global-stake-input" min="100" max="5000" placeholder="100" value="100">
+            </div>
+          </div>
+          <div class="bet-display-body">
+            <div class="bet-display-list">
+              <!-- Bets will be added here dynamically -->
+            </div>
+            <div class="bet-display-summary">
+              <div class="bet-count">
+                <span>Number of Bets:</span>
+                <div class="count-value">0</div>
+              </div>
+              <div class="total-stakes">
+                <span>Total Stakes:</span>
+                <div class="stakes-value">$0.00</div>
+              </div>
+            </div>
+          </div>
+          <div class="bet-display-footer">
+            <button class="bet-action-button print-slip-button" id="print-betting-slip-btn">
+              <i class="fas fa-print"></i> Print Betting Slip
+            </button>
+            <button class="bet-action-button cancel-slip-button" id="cancel-betting-slip-btn">
+              <i class="fas fa-times-circle"></i> Cancel Bets
+            </button>
+          </div>
+
+          <!-- Resize handles -->
+          <div class="resize-handle resize-e" data-resize="e"></div>
+          <div class="resize-handle resize-w" data-resize="w"></div>
+          <div class="resize-handle resize-s" data-resize="s"></div>
+          <div class="resize-handle resize-se" data-resize="se"></div>
+          <div class="resize-handle resize-sw" data-resize="sw"></div>
+        </div>
+
+        <!-- Real-time countdown timer will be created dynamically by real-time-countdown-timer.js -->
+
+        <!-- Draw Number Container -->
+        <div class="draw-container" style="display: block;">
+          <div class="draw-information">
+            <div class="last-draw">
+              <div class="draw-label">LAST DRAW</div>
+              <div class="draw-number" id="last-draw-number">#14</div>
+            </div>
+            <div class="next-draw">
+              <div class="draw-label">NEXT DRAW</div>
+              <div class="draw-number" id="next-draw-number">#15</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alert messages start ---------------------------------------------------------------->
+        <div class="alert-message-container alert-bets">
+          <div class="alert-message">PLEASE PLACE YOUR BETS</div>
+        </div>
+
+        <div class="alert-message-container alert-money">
+          <div class="alert-message">NOT ENOUGH MONEY</div>
+        </div>
+
+        <div class="alert-message-container alert-max-bet">
+          <div class="alert-message">YOU SHOULD NOT EXCEED MAXIMUM BET OF $50000</div>
+        </div>
+
+        <div class="alert-message-container alert-spin-result">
+          <div class="results">
+            <div class="odd-even text">ODD</div>
+            <div class="high-low text">HIGH</div>
+            <div class="roll-number text">26</div>
+            <div class="win-lose text">WIN</div>
+            <div class="win-amount text">100</div>
+          </div>
+        </div>
+
+        <div class="alert-message-container alert-game-over">
+          <div class="alert-message">
+            <div class="text text1">
+              YOU ARE OUT OF MONEY.
+            </div>
+            <div class="text text2">
+              WOULD YOU LIKE TO PLAY AGAIN?
+            </div>
+            <div class="answers">
+              <div class="answer answer-no">NO</div>
+              <div class="answer answer-yes">YES</div>
+            </div>
+          </div>
+        </div>
+        <!-- Alert messages end ---------------------------------------------------------------->
+      </div>
+    </div>
+
+
+
+    <!-- Update Stake Modal -->
+    <div class="update-stake-modal">
+      <div class="update-stake-container">
+        <div class="update-stake-header">
+          <h2>Update Bet Amount</h2>
+          <div class="update-stake-close"><i class="fas fa-times"></i></div>
+        </div>
+        <div class="update-stake-body">
+          <div class="update-stake-info">
+            <p class="update-bet-type">Straight Up (0)</p>
+            <p>Current stake: $<span class="current-stake-amount">5.00</span></p>
+          </div>
+          <input type="number" id="update-stake-input" min="100" max="50000" placeholder="Enter new amount (100-50000)">
+          <div class="update-stake-error">Amount must be between $100 and $50000</div>
+          <div class="update-stake-button">Update Bet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Draw Header Container has been removed -->
+
+    <!-- Cancel Slip Confirmation Modal -->
+    <div class="cancel-slip-modal">
+      <div class="cancel-slip-container">
+        <div class="cancel-slip-header">
+          <h2>Cancel Betting Slip</h2>
+          <div class="cancel-slip-close"><i class="fas fa-times"></i></div>
+        </div>
+        <div class="cancel-slip-body">
+          <p>Are you sure you want to cancel all current bets? This action cannot be undone.</p>
+          <div class="cancel-slip-actions">
+            <button class="cancel-cancel-button">No, Keep Bets</button>
+            <button class="confirm-cancel-button">Yes, Cancel All</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
+    <!-- Firebase Configuration and Service -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/firebase-service.js"></script>
+    <script src="js/test-firebase-write.js"></script>
+    
+    <!-- Script Source -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" data-auto-replace-svg="nest"></script>
+    <script src="js/betting-board-blocker.js"></script>
+    <script src="js/auth-check.js"></script>
+    <script src="js/left-side-toggle.js"></script>
+    <script src="js/right-side-draw-toggle.js"></script>
+    <script src="js/upcoming-draws-header-fix.js"></script>
+    <script src="js/upcoming-draws-content-visibility-fix.js"></script>
+    <script src="js/cash-manager.js"></script>
+    <script src="js/scripts.js"></script>
+    <script src="js/reprint-direct.js"></script>
+    <script src="js/disable-draw-header.js"></script>
+    <script>
+        // Draw header loading has been disabled
+        console.log('Draw header loading has been disabled');
+    </script>
+    <script src="js/firebase-draw-manager.js"></script>
+    <script src="js/draw-header.js"></script>
+    <script src="js/draw-betting-integration.js"></script>
+    <script src="js/betting-slip-patch.js"></script>
+    <script src="js/feature-removal-patch.js"></script>
+    <script src="js/complete-bets-fix.js"></script>
+    <script src="js/complete-bet-fix.js"></script>
+    <script src="js/independent-floating-complete-button.js"></script>
+    <script src="js/sidebar-unhide-button.js"></script>
+    <script src="js/hybrid-multi-draw-system.js"></script>
+    <script src="js/update-stake-limits.js"></script>
+    <script src="js/timer-sync.js"></script>
+    <script src="js/payout-button-remover.js"></script>
+    <script src="js/fixed-buttons.js"></script>
+    <script src="js/draw-sync.js"></script>
+    <script src="js/cashout.js"></script>
+    <script src="js/roll-history-sync.js"></script>
+    <script src="js/tv-betting-integration.js"></script>
+    <script src="js/movable-sidebar.js"></script>
+    <script src="js/cashier-draw-display.js"></script>
+    <script src="js/cashier-draw-integration.js"></script>
+    <script src="js/upcoming-draws-panel.js"></script>
+    <script src="js/upcoming-draws-integration.js"></script>
+    <script src="js/upcoming-draws-layout-toggle.js"></script>
+    <link rel="stylesheet" href="css/show-stake-control.css">
+    <link rel="stylesheet" href="css/global-stake-keypad.css">
+    <link rel="stylesheet" href="css/change-calculator.css">
+    <link rel="stylesheet" href="css/elegant-cancel-button.css">
+    <link rel="stylesheet" href="css/reprint-slip-button.css">
+    <link rel="stylesheet" href="css/reprint-slip-keypad.css">
+    <link rel="stylesheet" href="css/hide-draw-header.css">
+    <link rel="stylesheet" href="css/upcoming-draws-horizontal-header.css">
+    <link rel="stylesheet" href="css/upcoming-draws-vertical-restore.css">
+    <link rel="stylesheet" href="css/upcoming-draws-header-fix.css">
+    <link rel="stylesheet" href="css/upcoming-draws-content-visibility-fix.css">
+    <link rel="stylesheet" href="css/right-action-sidebar-toggle.css">
+    <link rel="stylesheet" href="css/cancel-slip-edge-toggle-styling.css">
+    <link rel="stylesheet" href="css/role-based-cancel-slip-visibility.css">
+    <link rel="stylesheet" href="css/cancel-slip-edge-toggle-nuclear-override.css">
+    <link rel="stylesheet" href="css/right-action-sidebar-toggle-override.css">
+    <link rel="stylesheet" href="css/simple-roulette-positioning-fix.css">
+    <link rel="stylesheet" href="css/simplified-your-bets-styling.css">
+    <script src="js/change-calculator.js"></script>
+    <script src="js/stake-input-handler.js"></script>
+    <script src="js/global-stake-keypad.js"></script>
+    <script src="js/user-role-manager.js"></script>
+    <script src="js/elegant-cancel-button.js"></script>
+    <script src="js/role-based-cancel-slip-manager.js"></script>
+    <script src="js/cancel-slip-edge-toggle.js"></script>
+    <script src="js/reprint-slip-button.js"></script>
+    <script src="js/straight-up-confirmation.js"></script>
+    <script src="js/test-draw-numbers.js"></script>
+    <script src="js/right-sidebar-action-buttons.js"></script>
+    <script src="js/right-action-sidebar-toggle.js"></script>
+    <script src="js/betting-board-debugger.js"></script>
+    <script src="js/bet-display-toggle.js"></script>
+
+    <!-- Real-time 3-minute countdown timer with auto-refresh -->
+    <script src="js/real-time-countdown-timer.js"></script>
+
+    <!-- Glass Morphism No More Bets System -->
+    <script src="js/no-more-bets.js"></script>
+
+    <!-- TV-style draw display -->
+    <link rel="stylesheet" href="css/tv-style-draw-display.css">
+    <link rel="stylesheet" href="css/hide-draw-bar.css">
+    <link rel="stylesheet" href="css/hide-draw-numbers-header.css">
+    <script src="js/tv-style-draw-display.js"></script>
+    <script src="js/disable-draw-bar.js"></script>
+    <script>
+        // Initialize the TV-style draw display
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create the TV-style draw display
+            window.tvStyleDrawDisplay = new TVStyleDrawDisplay({
+                debug: true,
+                syncInterval: 2000 // Sync every 2 seconds
+            });
+
+            // Initialize the enhanced cashier draw display
+            console.log('🎯 Initializing Enhanced Cashier Draw Display...');
+            if (window.CashierDrawDisplay) {
+                // The display is already auto-initialized, but let's ensure it's working
+                setTimeout(() => {
+                    if (window.CashierDrawDisplay) {
+                        window.CashierDrawDisplay.forceSync();
+                        console.log('🎯 Enhanced Cashier Draw Display initialized and synced');
+                    }
+                }, 2000);
+            } else {
+                console.error('🎯 CashierDrawDisplay not available');
+            }
+        });
+    </script>
+
+    <!-- PWA Installer -->
+    <script src="js/pwa-installer.js"></script>
+
+    <!-- Force Draw Numbers Update -->
+    <script>
+        // Force the draw numbers to update immediately when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set a timeout to ensure all other scripts have loaded
+            setTimeout(function() {
+                console.log('🎯 Initializing draw number elements for betting slip functionality...');
+
+                // Create draw number elements if they don't exist
+                let lastDrawElement = document.getElementById('last-draw-number');
+                let nextDrawElement = document.getElementById('next-draw-number');
+
+                if (!lastDrawElement) {
+                    lastDrawElement = document.createElement('div');
+                    lastDrawElement.id = 'last-draw-number';
+                    lastDrawElement.style.display = 'none'; // Hidden but accessible to scripts
+                    document.body.appendChild(lastDrawElement);
+                    console.log('🎯 Created last-draw-number element');
+                }
+
+                if (!nextDrawElement) {
+                    nextDrawElement = document.createElement('div');
+                    nextDrawElement.id = 'next-draw-number';
+                    nextDrawElement.style.display = 'none'; // Hidden but accessible to scripts
+                    document.body.appendChild(nextDrawElement);
+                    console.log('🎯 Created next-draw-number element');
+                }
+
+                // Fetch current draw numbers from database and update elements
+                fetch('php/get_next_draw_number.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('🎯 Database response for draw numbers:', data);
+
+                        if (data.status === 'success') {
+                            if (data.current_draw_number) {
+                                lastDrawElement.textContent = `#${data.current_draw_number}`;
+                                console.log('🎯 Set last-draw-number to:', `#${data.current_draw_number}`);
+                            }
+
+                            if (data.next_draw_number) {
+                                nextDrawElement.textContent = `#${data.next_draw_number}`;
+                                console.log('🎯 Set next-draw-number to:', `#${data.next_draw_number}`);
+                            }
+                        } else {
+                            console.error('🎯 Failed to get draw numbers from database:', data.message);
+                            // Set fallback values
+                            lastDrawElement.textContent = '#1';
+                            nextDrawElement.textContent = '#2';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('🎯 Error fetching draw numbers:', error);
+                        // Set fallback values
+                        lastDrawElement.textContent = '#1';
+                        nextDrawElement.textContent = '#2';
+                    });
+
+                // Make sure the draw container is visible
+                const drawContainer = document.querySelector('.draw-container');
+                if (drawContainer) {
+                    drawContainer.style.display = 'block';
+                }
+
+                // Force an update of the TV display if it exists
+                if (window.tvStyleDrawDisplay) {
+                    const upcomingDraws = [];
+                    const upcomingDrawTimes = [];
+
+                    // Generate 10 upcoming draws starting from 15
+                    for (let i = 0; i < 10; i++) {
+                        upcomingDraws.push(15 + i);
+                        const drawTime = new Date();
+                        drawTime.setSeconds(drawTime.getSeconds() + (i * 180));
+                        upcomingDrawTimes.push(drawTime.toTimeString().substring(0, 8));
+                    }
+
+                    // Force an update of the TV display
+                    window.tvStyleDrawDisplay.updateDrawNumbersHeader(upcomingDraws, upcomingDrawTimes);
+                }
+
+                // Also trigger a sync with the server to get the latest draw numbers
+                if (window.tvStyleDrawDisplay) {
+                    window.tvStyleDrawDisplay.syncWithServer();
+                }
+            }, 1000);
+        });
+    </script>
+
+    <!-- Offline Status Detector -->
+    <script>
+        // Check if the user is online or offline
+        function updateOnlineStatus() {
+            const statusElement = document.createElement('div');
+            statusElement.id = 'online-status';
+            statusElement.style.position = 'fixed';
+            statusElement.style.bottom = '10px';
+            statusElement.style.left = '10px';
+            statusElement.style.padding = '8px 12px';
+            statusElement.style.borderRadius = '4px';
+            statusElement.style.fontSize = '14px';
+            statusElement.style.fontWeight = 'bold';
+            statusElement.style.zIndex = '9999';
+            statusElement.style.transition = 'all 0.3s ease';
+
+            if (navigator.onLine) {
+                // Online
+                if (document.getElementById('online-status')) {
+                    document.getElementById('online-status').remove();
+                }
+            } else {
+                // Offline
+                statusElement.textContent = '🔴 Offline Mode';
+                statusElement.style.backgroundColor = 'rgba(220, 53, 69, 0.9)';
+                statusElement.style.color = 'white';
+
+                if (!document.getElementById('online-status')) {
+                    document.body.appendChild(statusElement);
+                }
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        // Initial check
+        document.addEventListener('DOMContentLoaded', updateOnlineStatus);
+    </script>
+  </body>
+</html>

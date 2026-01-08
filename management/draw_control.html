@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette Draw Control Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: #121212;
+            --secondary-bg: #1e1e1e;
+            --card-bg: #242424;
+            --highlight-color: #4CAF50;
+            --text-primary: #ffffff;
+            --text-secondary: #aaaaaa;
+            --border-color: #333333;
+            --red-color: #e74c3c;
+            --black-color: #2c3e50;
+            --green-color: #27ae60;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: var(--highlight-color);
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .header-button {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .header-button:hover {
+            background-color: var(--highlight-color);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-content {
+            margin-top: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .timer-display {
+            font-size: 2.5rem;
+            text-align: center;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .timer-button {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .timer-button:hover {
+            background-color: var(--highlight-color);
+        }
+
+        .timer-button.start {
+            background-color: var(--green-color);
+        }
+
+        .timer-button.pause {
+            background-color: var(--black-color);
+        }
+
+        .timer-button.reset {
+            background-color: var(--red-color);
+        }
+
+        .settings-group {
+            margin-bottom: 1rem;
+        }
+
+        .settings-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .settings-input {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--secondary-bg);
+            color: var(--text-secondary);
+        }
+
+        tr:hover {
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        .winning-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            height: 120px;
+            margin: 1rem 0;
+        }
+
+        .number-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0 auto;
+        }
+
+        .red { background-color: var(--red-color); }
+        .black { background-color: var(--black-color); }
+        .green { background-color: var(--green-color); }
+
+        .roll-history {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .roll-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .spinner {
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-top-color: var(--highlight-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background-color: rgba(231, 76, 60, 0.2);
+            border-left: 4px solid var(--red-color);
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 200px;
+        }
+
+        .error-message i {
+            font-size: 3rem;
+            color: var(--red-color);
+            margin-bottom: 1rem;
+        }
+
+        .auto-refresh-status {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-dice"></i> Roulette Draw Control Panel</h1>
+            <div class="header-buttons">
+                <button class="header-button" id="refreshButton">
+                    <i class="fas fa-sync-alt"></i> Refresh Data
+                </button>
+                <button class="header-button" id="viewBetDistribution">
+                    <i class="fas fa-chart-pie"></i> Bet Distribution
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-title">
+                    Current Draw Information
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="card-content">
+                    <div class="stat-value" id="currentDrawNumber">-</div>
+                    <div class="stat-label">Current Draw Number</div>
+
+                    <table>
+                        <tr>
+                            <td>Last Draw Time:</td>
+                            <td id="lastDrawTime">-</td>
+                        </tr>
+                        <tr>
+                            <td>Next Draw Time:</td>
+                            <td id="nextDrawTime">-</td>
+                        </tr>
+                        <tr>
+                            <td>Mode:</td>
+                            <td id="currentMode">-</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    Draw Timer
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="card-content">
+                    <div class="timer-display" id="timerDisplay">00:00</div>
+                    <div class="timer-controls">
+                        <button class="timer-button start" id="startTimer">
+                            <i class="fas fa-play"></i> Start
+                        </button>
+                        <button class="timer-button pause" id="pauseTimer">
+                            <i class="fas fa-pause"></i> Pause
+                        </button>
+                        <button class="timer-button reset" id="resetTimer">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                    <div class="settings-group">
+                        <label class="settings-label">Draw Interval (seconds):</label>
+                        <input type="number" id="timerInterval" class="settings-input" value="60" min="10" max="300">
+                    </div>
+                    <button class="header-button" id="updateTimerSettings">
+                        <i class="fas fa-save"></i> Update Settings
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    Winning Number
+                    <div>
+                        <button class="header-button" id="toggleAutoMode">
+                            <i class="fas fa-robot"></i> <span id="modeToggleText">Auto Mode</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="winning-number">
+                        <div class="number-circle" id="winningNumberDisplay">-</div>
+                    </div>
+                    <div id="winningNumberSource">Source: -</div>
+                    <div id="winningNumberReason">Reason: -</div>
+
+                    <div class="settings-group">
+                        <label class="settings-label">Set Manual Winning Number:</label>
+                        <input type="number" id="manualWinningNumber" class="settings-input" value="0" min="0" max="36">
+                    </div>
+                    <button class="header-button" id="setManualWinningNumber">
+                        <i class="fas fa-hand-pointer"></i> Set Winning Number
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 1.5rem;">
+            <div class="card-title">
+                Recent Roll History
+                <i class="fas fa-history"></i>
+            </div>
+            <div class="roll-history" id="rollHistory">
+                <!-- Roll history items will be added here -->
+            </div>
+            <div class="auto-refresh-status">
+                <span>Auto-refreshing data every 15 seconds (Last updated: -)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading data...</p>
+    </div>
+
+    <script>
+        // DOM Elements
+        const refreshButton = document.getElementById('refreshButton');
+        const viewBetDistributionButton = document.getElementById('viewBetDistribution');
+        const currentDrawNumberElement = document.getElementById('currentDrawNumber');
+        const lastDrawTimeElement = document.getElementById('lastDrawTime');
+        const nextDrawTimeElement = document.getElementById('nextDrawTime');
+        const currentModeElement = document.getElementById('currentMode');
+        const timerDisplayElement = document.getElementById('timerDisplay');
+        const startTimerButton = document.getElementById('startTimer');
+        const pauseTimerButton = document.getElementById('pauseTimer');
+        const resetTimerButton = document.getElementById('resetTimer');
+        const timerIntervalInput = document.getElementById('timerInterval');
+        const updateTimerSettingsButton = document.getElementById('updateTimerSettings');
+        const winningNumberDisplayElement = document.getElementById('winningNumberDisplay');
+        const winningNumberSourceElement = document.getElementById('winningNumberSource');
+        const winningNumberReasonElement = document.getElementById('winningNumberReason');
+        const toggleAutoModeButton = document.getElementById('toggleAutoMode');
+        const modeToggleTextElement = document.getElementById('modeToggleText');
+        const manualWinningNumberInput = document.getElementById('manualWinningNumber');
+        const setManualWinningNumberButton = document.getElementById('setManualWinningNumber');
+        const rollHistoryContainer = document.getElementById('rollHistory');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // Timer variables
+        let timerInterval = 60; // Default timer interval in seconds
+        let timerValue = timerInterval;
+        let timerRunning = false;
+        let timerIntervalId = null;
+
+        // Auto-refresh variables
+        let autoRefreshIntervalId = null;
+        const autoRefreshInterval = 15000; // 15 seconds
+
+        // Current draw state
+        let currentDrawNumber = 0;
+        let isAutoMode = true;
+        let currentWinningNumber = null;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize data
+            fetchDrawInfo();
+
+            // Start auto-refresh
+            startAutoRefresh();
+
+            // Event listeners
+            refreshButton.addEventListener('click', fetchDrawInfo);
+            viewBetDistributionButton.addEventListener('click', () => {
+                window.location.href = 'bet_distribution.html';
+            });
+
+            // Timer controls
+            startTimerButton.addEventListener('click', startTimer);
+            pauseTimerButton.addEventListener('click', pauseTimer);
+            resetTimerButton.addEventListener('click', resetTimer);
+            updateTimerSettingsButton.addEventListener('click', updateTimerSettings);
+
+            // Winning number controls
+            toggleAutoModeButton.addEventListener('click', toggleMode);
+            setManualWinningNumberButton.addEventListener('click', setManualWinningNumber);
+        });
+
+        // Function to fetch draw information
+        async function fetchDrawInfo() {
+            showLoading(true);
+
+            try {
+                const response = await fetch('../api/draw_info.php');
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    // Update with the new nested data structure
+                    updateDrawInfo(data.data);
+
+                    // Set countdown timer based on API response
+                    if (data.data.countdown !== undefined) {
+                        timerValue = data.data.countdown;
+                        updateTimerDisplay();
+                    }
+
+                    // Update roll history
+                    updateRollHistory(data.data.recent_rolls, data.data.recent_colors);
+
+                    // Update mode toggle button
+                    const modeToggleBtn = document.getElementById('toggleAutoMode');
+                    modeToggleBtn.textContent = data.data.is_automatic ? 'Switch to Manual' : 'Switch to Auto';
+                    modeToggleBtn.classList.toggle('btn-warning', !data.data.is_automatic);
+                    modeToggleBtn.classList.toggle('btn-success', data.data.is_automatic);
+
+                    // Update the mode display
+                    document.getElementById('currentMode').textContent = data.data.is_automatic ? 'Automatic' : 'Manual';
+
+                    // Update timer settings
+                    document.getElementById('timerInterval').value = data.data.timer_seconds;
+                } else {
+                    console.error('Failed to fetch draw info:', data.message);
+                    showToast('Error', data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching draw info:', error);
+                showToast('Error', 'Failed to connect to server. Please try again.', 'error');
+            } finally {
+                showLoading(false);
+                updateLastUpdated();
+            }
+        }
+
+        // Function to update draw information on the page
+        function updateDrawInfo(data) {
+            currentDrawNumber = data.current_draw || '-';
+            currentDrawNumberElement.textContent = currentDrawNumber;
+
+            // Update draw number displays
+            const lastDraw = data.last_draw || '-';
+            lastDrawTimeElement.textContent = lastDraw;
+
+            const nextDraw = data.next_draw || '-';
+            nextDrawTimeElement.textContent = nextDraw;
+
+            // Update mode
+            isAutoMode = data.is_automatic;
+            currentModeElement.textContent = isAutoMode ? 'Automatic' : 'Manual';
+            modeToggleTextElement.textContent = isAutoMode ? 'Switch to Manual' : 'Switch to Auto';
+
+            // Update winning number
+            if (data.winning_number !== null) {
+                currentWinningNumber = data.winning_number;
+                winningNumberDisplayElement.textContent = data.winning_number;
+                winningNumberDisplayElement.className = 'number-circle ' + data.winning_color;
+                winningNumberSourceElement.textContent = `Source: ${data.winning_number_source}`;
+                winningNumberReasonElement.textContent = `Reason: ${data.winning_number_reason}`;
+            } else {
+                winningNumberDisplayElement.textContent = '-';
+                winningNumberDisplayElement.className = 'number-circle';
+                winningNumberSourceElement.textContent = 'Source: -';
+                winningNumberReasonElement.textContent = 'Reason: -';
+            }
+
+            // Update manual winning number input
+            if (data.manual_winning_number) {
+                manualWinningNumberInput.value = data.manual_winning_number;
+            }
+
+            // Update roll history
+            updateRollHistory(data.recent_rolls, data.recent_colors);
+        }
+
+        // Function to update roll history display
+        function updateRollHistory(rolls, colors) {
+            rollHistoryContainer.innerHTML = '';
+
+            if (rolls.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.textContent = 'No roll history available';
+                emptyMessage.style.color = 'var(--text-secondary)';
+                rollHistoryContainer.appendChild(emptyMessage);
+                return;
+            }
+
+            rolls.forEach((roll, index) => {
+                const rollItem = document.createElement('div');
+                rollItem.className = `roll-item ${colors[index]}`;
+                rollItem.textContent = roll;
+                rollHistoryContainer.appendChild(rollItem);
+            });
+        }
+
+        // Timer functions
+        function startTimer() {
+            if (!timerRunning) {
+                timerRunning = true;
+
+                // Clear any existing interval
+                if (timerIntervalId) {
+                    clearInterval(timerIntervalId);
+                }
+
+                // Start the countdown
+                timerIntervalId = setInterval(() => {
+                    timerValue--;
+
+                    if (timerValue <= 0) {
+                        // Timer has reached zero, reset
+                        resetTimer();
+                        // Fetch new draw info
+                        fetchDrawInfo();
+                    }
+
+                    updateTimerDisplay();
+                }, 1000);
+
+                updateTimerControlsUI();
+            }
+        }
+
+        function pauseTimer() {
+            if (timerRunning) {
+                timerRunning = false;
+                clearInterval(timerIntervalId);
+                timerIntervalId = null;
+                updateTimerControlsUI();
+            }
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timerValue = timerInterval;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerValue / 60);
+            const seconds = timerValue % 60;
+            timerDisplayElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimerControlsUI() {
+            startTimerButton.disabled = timerRunning;
+            pauseTimerButton.disabled = !timerRunning;
+        }
+
+        function updateTimerSettings() {
+            const newInterval = parseInt(timerIntervalInput.value);
+            if (newInterval >= 10 && newInterval <= 300) {
+                timerInterval = newInterval;
+
+                // Update the server with the new timer interval
+                fetch('../api/update_timer_settings.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `duration=${timerInterval}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showToast('Success', 'Timer settings updated successfully', 'success');
+                        resetTimer();
+                    } else {
+                        showError(data.message || 'Failed to update timer settings');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating timer settings:', error);
+                    showError('Failed to update timer settings. Please try again.');
+                });
+            } else {
+                showError('Please enter a valid interval between 10 and 300 seconds');
+            }
+        }
+
+        // Winning number functions
+        function toggleMode() {
+            const newMode = !isAutoMode ? 'automatic' : 'manual';
+
+            fetch('../api/toggle_mode.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `mode=${newMode}`
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        showToast('Mode Changed', data.message, 'success');
+
+                        // Update UI based on the new mode
+                        isAutoMode = data.data.automatic;
+                        currentModeElement.textContent = isAutoMode ? 'Automatic' : 'Manual';
+                        modeToggleTextElement.textContent = isAutoMode ? 'Switch to Manual' : 'Switch to Auto';
+
+                        // Refresh the draw info
+                        fetchDrawInfo();
+                    } else {
+                        showError(data.message || 'Failed to toggle mode');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error toggling mode:', error);
+                    showError('Failed to toggle mode. Please try again.');
+                });
+        }
+
+        function setManualWinningNumber() {
+            const number = parseInt(manualWinningNumberInput.value);
+
+            if (isNaN(number) || number < 0 || number > 36) {
+                showError('Please enter a valid number (0-36)');
+                return;
+            }
+
+            // Show a loading message
+            showToast('Processing', `Setting winning number to ${number}...`, 'info');
+
+            // The parameter name in the API is 'winning_number', not 'number'
+            fetch('../api/set_winning_number.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `winning_number=${number}`
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    showToast('Success', data.message || `Successfully set winning number to ${number}`, 'success');
+                    manualWinningNumberInput.value = '';
+
+                    // Make sure we're in manual mode
+                    isAutoMode = false;
+
+                    // Update the UI to reflect manual mode
+                    if (toggleAutoModeButton) {
+                        toggleAutoModeButton.textContent = 'Switch to Automatic';
+                        toggleAutoModeButton.classList.remove('btn-danger');
+                        toggleAutoModeButton.classList.add('btn-success');
+                    }
+
+                    // Refresh the data to show the changes
+                    fetchDrawInfo();
+
+                    console.log('Set winning number success:', data);
+                } else {
+                    showError(data.message || 'Failed to set winning number');
+                    console.error('Set winning number failed:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error setting winning number:', error);
+                showError(`Failed to set winning number: ${error.message}`);
+
+                // Try to refresh the data anyway
+                fetchDrawInfo();
+            });
+        }
+
+        // Auto-refresh functions
+        function startAutoRefresh() {
+            if (autoRefreshIntervalId) {
+                clearInterval(autoRefreshIntervalId);
+            }
+
+            autoRefreshIntervalId = setInterval(fetchDrawInfo, autoRefreshInterval);
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshIntervalId) {
+                clearInterval(autoRefreshIntervalId);
+                autoRefreshIntervalId = null;
+            }
+        }
+
+        // Function to show/hide loading overlay
+        function showLoading(show) {
+            loadingOverlay.style.display = show ? 'flex' : 'none';
+        }
+
+        // Function to update last updated timestamp
+        function updateLastUpdated() {
+            const lastUpdated = new Date();
+            const elements = document.querySelectorAll('.auto-refresh-status span');
+            elements.forEach(el => {
+                el.innerHTML = `Auto-refreshing data every 15 seconds (Last updated: ${lastUpdated.toLocaleTimeString()})`;
+            });
+        }
+
+        // Function to show error message
+        function showError(message) {
+            // Use the toast function if available, otherwise fall back to alert
+            if (typeof showToast === 'function') {
+                showToast('Error', message, 'error');
+            } else {
+                alert(`Error: ${message}`);
+            }
+        }
+
+        // Function to show toast notifications
+        function showToast(title, message, type) {
+            // If using a toast library like Toastify or similar
+            // Otherwise fall back to simple alert
+            console.log(`${type.toUpperCase()}: ${title} - ${message}`);
+
+            // Simple implementation - could be replaced with a prettier UI
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-header">${title}</div>
+                <div class="toast-body">${message}</div>
+            `;
+
+            // Add some basic styling
+            toast.style.position = 'fixed';
+            toast.style.top = '20px';
+            toast.style.right = '20px';
+            toast.style.backgroundColor = type === 'error' ? '#f44336' : '#4caf50';
+            toast.style.color = 'white';
+            toast.style.padding = '15px';
+            toast.style.borderRadius = '5px';
+            toast.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+            toast.style.zIndex = '1000';
+
+            // Append to body
+            document.body.appendChild(toast);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => document.body.removeChild(toast), 500);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

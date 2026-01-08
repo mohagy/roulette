@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎲 Last 8 Spins Synchronization Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .display-card {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #FFD700;
+        }
+        .display-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #FFD700;
+        }
+        .iframe-container {
+            width: 100%;
+            height: 350px;
+            border: 2px solid #555;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transform: scale(0.7);
+            transform-origin: 0 0;
+            width: 142.86%;
+            height: 142.86%;
+        }
+        .spins-comparison {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .spins-comparison h4 {
+            margin: 0 0 10px 0;
+            color: #FFD700;
+        }
+        .spin-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px solid #555;
+        }
+        .spin-number {
+            font-weight: bold;
+        }
+        .spin-number.red { color: #ff6b6b; }
+        .spin-number.black { color: #ffffff; }
+        .spin-number.green { color: #51cf66; }
+        .test-button {
+            background: #FFD700;
+            color: black;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 3px;
+            width: 100%;
+            font-size: 12px;
+        }
+        .test-button:hover {
+            background: #e6c200;
+        }
+        .control-panel {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .instructions {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 5px solid #FFD700;
+        }
+        .instructions h3 {
+            margin: 0 0 10px 0;
+            color: #FFD700;
+        }
+        .status-good { color: #28a745; }
+        .status-warning { color: #ffc107; }
+        .status-error { color: #dc3545; }
+        .sync-status {
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎲 Last 8 Spins Synchronization Test</h1>
+            <p>Verify that the "Last 8 Spins" section shows identical data across all displays</p>
+            <div id="overall-status" class="sync-status" style="background: #444;">
+                Status: Initializing last 8 spins test...
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>🧪 Test Instructions:</h3>
+            <ol>
+                <li><strong>Step 1:</strong> Wait for all displays to load (about 5 seconds)</li>
+                <li><strong>Step 2:</strong> Click on the <strong>MASTER</strong> display and press <strong>'A'</strong> to show analytics</li>
+                <li><strong>Step 3:</strong> Look at the <strong>"Last 8 Spins"</strong> section in the analytics panels</li>
+                <li><strong>Step 4:</strong> Verify that all three displays show <strong>identical spin numbers and colors</strong></li>
+                <li><strong>Step 5:</strong> Check the comparison tables below for detailed verification</li>
+            </ol>
+        </div>
+
+        <div class="test-grid">
+            <!-- Master Display -->
+            <div class="display-card">
+                <div class="display-title">👑 MASTER</div>
+                <div class="iframe-container">
+                    <iframe id="master-frame" src="index.html"></iframe>
+                </div>
+                <div class="spins-comparison" id="master-spins">
+                    <h4>Last 8 Spins (Master)</h4>
+                    <div id="master-spins-list">Loading...</div>
+                </div>
+                <button class="test-button" onclick="refreshMaster()">🔄 Refresh</button>
+            </div>
+
+            <!-- Client 1 Display -->
+            <div class="display-card">
+                <div class="display-title">📺 CLIENT 1</div>
+                <div class="iframe-container">
+                    <iframe id="client1-frame" src="shop1.html"></iframe>
+                </div>
+                <div class="spins-comparison" id="client1-spins">
+                    <h4>Last 8 Spins (Client 1)</h4>
+                    <div id="client1-spins-list">Loading...</div>
+                </div>
+                <button class="test-button" onclick="refreshClient1()">🔄 Refresh</button>
+            </div>
+
+            <!-- Client 2 Display -->
+            <div class="display-card">
+                <div class="display-title">📺 CLIENT 2</div>
+                <div class="iframe-container">
+                    <iframe id="client2-frame" src="shop2.html"></iframe>
+                </div>
+                <div class="spins-comparison" id="client2-spins">
+                    <h4>Last 8 Spins (Client 2)</h4>
+                    <div id="client2-spins-list">Loading...</div>
+                </div>
+                <button class="test-button" onclick="refreshClient2()">🔄 Refresh</button>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h3>🎮 Test Controls</h3>
+            <button class="test-button" onclick="checkSpinsSync()" style="width: auto; margin: 5px;">🎲 Check Last 8 Spins Sync</button>
+            <button class="test-button" onclick="refreshAll()" style="width: auto; margin: 5px;">🔄 Refresh All</button>
+            <button class="test-button" onclick="openDebugTool()" style="width: auto; margin: 5px;">🔍 Open Debug Tool</button>
+        </div>
+
+        <div class="instructions">
+            <h3>✅ Success Criteria:</h3>
+            <ul>
+                <li><span class="status-good">✅ All displays show identical spin numbers in the same order</span></li>
+                <li><span class="status-good">✅ Color coding matches across all displays (red/black/green)</span></li>
+                <li><span class="status-good">✅ Draw numbers are sequential and consistent</span></li>
+                <li><span class="status-good">✅ Most recent spin appears first in all lists</span></li>
+            </ul>
+            
+            <h3>❌ Failure Indicators:</h3>
+            <ul>
+                <li><span class="status-error">❌ Different spin numbers between displays</span></li>
+                <li><span class="status-error">❌ Mismatched color coding</span></li>
+                <li><span class="status-error">❌ Empty or missing last 8 spins section on clients</span></li>
+                <li><span class="status-error">❌ Different order of spins between displays</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let testInterval;
+
+        function getSpinsData(frameId) {
+            try {
+                const frame = document.getElementById(frameId);
+                if (frame && frame.contentDocument) {
+                    const historyContainer = frame.contentDocument.getElementById('number-history');
+                    if (historyContainer) {
+                        const historyItems = historyContainer.querySelectorAll('.history-item');
+                        const spins = [];
+                        
+                        historyItems.forEach(item => {
+                            const drawElement = item.querySelector('.history-draw');
+                            const numberElement = item.querySelector('.history-number');
+                            
+                            if (drawElement && numberElement) {
+                                const draw = drawElement.textContent.trim();
+                                const number = numberElement.textContent.trim();
+                                const colorClass = numberElement.classList.contains('red') ? 'red' :
+                                                 numberElement.classList.contains('black') ? 'black' : 'green';
+                                
+                                spins.push({ draw, number, color: colorClass });
+                            }
+                        });
+                        
+                        return spins;
+                    }
+                }
+            } catch (error) {
+                console.log(`Cannot access ${frameId} spins data:`, error.message);
+            }
+            return [];
+        }
+
+        function updateSpinsDisplay() {
+            const masterSpins = getSpinsData('master-frame');
+            const client1Spins = getSpinsData('client1-frame');
+            const client2Spins = getSpinsData('client2-frame');
+
+            // Update master display
+            updateSpinsList('master-spins-list', masterSpins);
+            
+            // Update client displays with sync status
+            updateSpinsList('client1-spins-list', client1Spins, masterSpins);
+            updateSpinsList('client2-spins-list', client2Spins, masterSpins);
+
+            // Update overall status
+            updateOverallStatus(masterSpins, client1Spins, client2Spins);
+        }
+
+        function updateSpinsList(elementId, spins, masterSpins = null) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+
+            if (spins.length === 0) {
+                element.innerHTML = '<div style="color: #ffc107;">No spins data available</div>';
+                return;
+            }
+
+            let html = '';
+            spins.forEach((spin, index) => {
+                let syncStatus = '';
+                if (masterSpins && masterSpins.length > index) {
+                    const masterSpin = masterSpins[index];
+                    const isMatch = spin.number === masterSpin.number && spin.color === masterSpin.color;
+                    syncStatus = isMatch ? ' ✅' : ' ❌';
+                }
+
+                html += `
+                    <div class="spin-item">
+                        <span>${spin.draw}</span>
+                        <span class="spin-number ${spin.color}">${spin.number}${syncStatus}</span>
+                    </div>
+                `;
+            });
+
+            element.innerHTML = html;
+        }
+
+        function updateOverallStatus(masterSpins, client1Spins, client2Spins) {
+            const statusElement = document.getElementById('overall-status');
+            
+            if (masterSpins.length === 0) {
+                statusElement.innerHTML = 'Status: ⚠️ No master spins data available';
+                statusElement.style.background = '#ffc107';
+                return;
+            }
+
+            const client1Match = compareSpins(masterSpins, client1Spins);
+            const client2Match = compareSpins(masterSpins, client2Spins);
+
+            if (client1Match && client2Match) {
+                statusElement.innerHTML = 'Status: ✅ Perfect Last 8 Spins Synchronization';
+                statusElement.style.background = '#28a745';
+            } else if (client1Match || client2Match) {
+                statusElement.innerHTML = 'Status: ⚠️ Partial Last 8 Spins Synchronization';
+                statusElement.style.background = '#ffc107';
+            } else {
+                statusElement.innerHTML = 'Status: ❌ Last 8 Spins Synchronization Failed';
+                statusElement.style.background = '#dc3545';
+            }
+        }
+
+        function compareSpins(masterSpins, clientSpins) {
+            if (masterSpins.length !== clientSpins.length) return false;
+            
+            for (let i = 0; i < masterSpins.length; i++) {
+                if (masterSpins[i].number !== clientSpins[i].number || 
+                    masterSpins[i].color !== clientSpins[i].color) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function checkSpinsSync() {
+            console.log('🎲 Checking last 8 spins synchronization...');
+            updateSpinsDisplay();
+            
+            const masterSpins = getSpinsData('master-frame');
+            const client1Spins = getSpinsData('client1-frame');
+            const client2Spins = getSpinsData('client2-frame');
+            
+            if (masterSpins.length === 0) {
+                alert('⚠️ No master spins data found. Make sure analytics are visible on the master display.');
+                return;
+            }
+
+            const client1Match = compareSpins(masterSpins, client1Spins);
+            const client2Match = compareSpins(masterSpins, client2Spins);
+            
+            if (client1Match && client2Match) {
+                alert('✅ Last 8 spins synchronization is working perfectly!');
+            } else {
+                alert('❌ Last 8 spins synchronization failed. Check the displays and comparison tables.');
+            }
+        }
+
+        function refreshMaster() {
+            document.getElementById('master-frame').src = 'index.html?' + Date.now();
+        }
+
+        function refreshClient1() {
+            document.getElementById('client1-frame').src = 'shop1.html?' + Date.now();
+        }
+
+        function refreshClient2() {
+            document.getElementById('client2-frame').src = 'shop2.html?' + Date.now();
+        }
+
+        function refreshAll() {
+            refreshMaster();
+            refreshClient1();
+            refreshClient2();
+        }
+
+        function openDebugTool() {
+            window.open('analytics-debug.html', '_blank');
+        }
+
+        // Auto-monitoring
+        window.addEventListener('load', function() {
+            console.log('🎲 Last 8 spins sync test loaded');
+            
+            setTimeout(() => {
+                updateSpinsDisplay();
+                testInterval = setInterval(updateSpinsDisplay, 3000);
+                console.log('🎲 Started automatic spins monitoring');
+            }, 3000);
+        });
+
+        window.addEventListener('beforeunload', function() {
+            if (testInterval) {
+                clearInterval(testInterval);
+            }
+        });
+    </script>
+</body>
+</html>

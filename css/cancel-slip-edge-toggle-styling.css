@@ -1,0 +1,283 @@
+/**
+ * Cancel Slip Edge Toggle Styling
+ * Provides the visual styling for the cancel slip edge toggle control
+ */
+
+/* Main toggle control container */
+.cancel-slip-edge-toggle-control {
+  position: fixed;
+  right: 0;
+  top: 75%;
+  transform: translateY(-50%);
+  z-index: 10004;
+  font-family: 'Orbitron', 'Arial', sans-serif;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Toggle tab styling */
+.cancel-slip-edge-toggle-tab {
+  background: linear-gradient(135deg, 
+    rgba(220, 53, 69, 0.95) 0%, 
+    rgba(255, 77, 77, 0.95) 50%, 
+    rgba(220, 53, 69, 0.95) 100%);
+  border: 2px solid #dc3545;
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  padding: 8px 3px 8px 6px;
+  min-height: 80px;
+  width: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 
+    -3px 0 15px rgba(220, 53, 69, 0.3),
+    -1px 0 8px rgba(0, 0, 0, 0.3),
+    inset 1px 0 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  transform: translateX(6px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover effect shimmer */
+.cancel-slip-edge-toggle-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  transition: right 0.6s ease;
+}
+
+.cancel-slip-edge-toggle-control:hover .cancel-slip-edge-toggle-tab::before {
+  right: 100%;
+}
+
+/* Hover state */
+.cancel-slip-edge-toggle-control:hover .cancel-slip-edge-toggle-tab {
+  transform: translateX(0);
+  box-shadow: 
+    -4px 0 20px rgba(220, 53, 69, 0.4),
+    -2px 0 12px rgba(0, 0, 0, 0.4),
+    inset -1px 0 0 rgba(255, 255, 255, 0.15);
+  border-color: #ff4757;
+}
+
+/* Active state */
+.cancel-slip-edge-toggle-control.active .cancel-slip-edge-toggle-tab {
+  transform: translateX(-2px) scale(0.98);
+  box-shadow: 
+    -2px 0 10px rgba(220, 53, 69, 0.5),
+    -1px 0 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Icon styling */
+.cancel-slip-edge-toggle-icon {
+  color: #ffffff;
+  font-size: 14px;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+  margin-bottom: 2px;
+}
+
+.cancel-slip-edge-toggle-control:hover .cancel-slip-edge-toggle-icon {
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+  transform: scale(1.1);
+}
+
+/* Text container */
+.cancel-slip-edge-toggle-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* Label styling */
+.cancel-slip-edge-toggle-label {
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+  line-height: 1;
+}
+
+/* Status styling */
+.cancel-slip-edge-toggle-status {
+  color: #ffffff;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.cancel-slip-edge-toggle-control:hover .cancel-slip-edge-toggle-label,
+.cancel-slip-edge-toggle-control:hover .cancel-slip-edge-toggle-status {
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+}
+
+/* Arrow styling */
+.cancel-slip-edge-toggle-arrow {
+  color: #ffffff;
+  font-size: 10px;
+  margin-top: 2px;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
+.cancel-slip-edge-toggle-control:hover .cancel-slip-edge-toggle-arrow {
+  transform: translateX(-1px);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .cancel-slip-edge-toggle-tab {
+    width: 32px;
+    min-height: 60px;
+    padding: 6px 3px 6px 4px;
+    transform: translateX(4px);
+  }
+  
+  .cancel-slip-edge-toggle-icon {
+    font-size: 12px;
+  }
+  
+  .cancel-slip-edge-toggle-label {
+    font-size: 7px;
+  }
+  
+  .cancel-slip-edge-toggle-status {
+    font-size: 6px;
+  }
+  
+  .cancel-slip-edge-toggle-arrow {
+    font-size: 8px;
+    margin-top: 1px;
+  }
+  
+  .cancel-slip-edge-toggle-control:hover .cancel-slip-edge-toggle-tab {
+    box-shadow: 
+      -3px 0 15px rgba(220, 53, 69, 0.4),
+      -1px 0 8px rgba(0, 0, 0, 0.4);
+  }
+}
+
+@media (max-width: 480px) {
+  .cancel-slip-edge-toggle-tab {
+    width: 28px;
+    min-height: 50px;
+    padding: 5px 2px 5px 3px;
+    gap: 2px;
+    transform: translateX(3px);
+  }
+  
+  .cancel-slip-edge-toggle-icon {
+    font-size: 11px;
+    margin-bottom: 1px;
+  }
+  
+  .cancel-slip-edge-toggle-text {
+    display: none;
+  }
+  
+  .cancel-slip-edge-toggle-arrow {
+    font-size: 9px;
+    margin-top: 3px;
+  }
+  
+  .cancel-slip-edge-toggle-control:hover .cancel-slip-edge-toggle-arrow {
+    transform: translateX(-0.5px);
+  }
+}
+
+/* Pulse animation for attention */
+@keyframes cancelSlipTogglePulse {
+  0%, 100% { 
+    box-shadow: 
+      -3px 0 15px rgba(220, 53, 69, 0.3),
+      -1px 0 8px rgba(0, 0, 0, 0.3);
+  }
+  50% { 
+    box-shadow: 
+      -4px 0 20px rgba(220, 53, 69, 0.5),
+      -2px 0 12px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.cancel-slip-edge-toggle-control.pulse .cancel-slip-edge-toggle-tab {
+  animation: cancelSlipTogglePulse 2s ease-in-out infinite;
+}
+
+/* Accessibility improvements */
+.cancel-slip-edge-toggle-control:focus {
+  outline: 2px solid #dc3545;
+  outline-offset: 2px;
+}
+
+.cancel-slip-edge-toggle-control[aria-pressed="true"] .cancel-slip-edge-toggle-status::after {
+  content: " ✓";
+}
+
+.cancel-slip-edge-toggle-control[aria-pressed="false"] .cancel-slip-edge-toggle-status::after {
+  content: " ✗";
+}
+
+/* Ensure toggle doesn't interfere with other elements */
+.cancel-slip-edge-toggle-control {
+  pointer-events: auto;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .cancel-slip-edge-toggle-tab {
+    border-width: 3px;
+    background: #dc3545;
+  }
+  
+  .cancel-slip-edge-toggle-icon,
+  .cancel-slip-edge-toggle-label,
+  .cancel-slip-edge-toggle-status,
+  .cancel-slip-edge-toggle-arrow {
+    color: #ffffff;
+    text-shadow: none;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .cancel-slip-edge-toggle-control,
+  .cancel-slip-edge-toggle-tab,
+  .cancel-slip-edge-toggle-icon,
+  .cancel-slip-edge-toggle-label,
+  .cancel-slip-edge-toggle-status,
+  .cancel-slip-edge-toggle-arrow {
+    transition: none;
+    animation: none;
+  }
+  
+  .cancel-slip-edge-toggle-tab::before {
+    display: none;
+  }
+}

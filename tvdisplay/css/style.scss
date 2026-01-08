@@ -1,0 +1,329 @@
+/* Betting Shop Roulette TV Display Styles */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap');
+
+:root {
+  --primary-color: #1a1a2e;
+  --secondary-color: #16213e;
+  --accent-color: #e94560;
+  --text-color: #f1f1f1;
+  --red-color: #e71d36;
+  --black-color: #1f1f1f;
+  --green-color: #2ecc71;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Orbitron', sans-serif;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  overflow: hidden;
+}
+
+.display-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: var(--secondary-color);
+  border-bottom: 3px solid var(--accent-color);
+  border-radius: 10px 10px 0 0;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--accent-color);
+  text-shadow: 0 0 10px rgba(233, 69, 96, 0.7);
+}
+
+.countdown-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.countdown-container h2 {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+.countdown {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 2px solid var(--accent-color);
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+}
+
+.wheel-container {
+  flex: 0 0 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.roulette-wheel {
+  position: relative;
+  width: 500px;
+  height: 500px;
+}
+
+.wheel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.wheel-center, .wheel-cross, .ball {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.wheel-center {
+  width: 20%;
+  height: 20%;
+  z-index: 2;
+}
+
+.wheel-cross {
+  width: 90%;
+  height: 90%;
+  z-index: 1;
+}
+
+.ball {
+  width: 4%;
+  height: 4%;
+  z-index: 3;
+  transition: transform 0.1s linear;
+}
+
+.result-display {
+  margin-top: 20px;
+  background: var(--secondary-color);
+  padding: 15px 30px;
+  border-radius: 15px;
+  border: 3px solid var(--accent-color);
+}
+
+.last-number {
+  font-size: 3rem;
+  font-weight: 900;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto;
+  background-color: var(--green-color);
+  color: white;
+  box-shadow: 0 0 20px rgba(46, 204, 113, 0.8);
+}
+
+.last-number.red {
+  background-color: var(--red-color);
+  box-shadow: 0 0 20px rgba(231, 29, 54, 0.8);
+}
+
+.last-number.black {
+  background-color: var(--black-color);
+  box-shadow: 0 0 20px rgba(31, 31, 31, 0.8);
+}
+
+.statistics {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background-color: var(--secondary-color);
+  border-radius: 10px;
+  border: 2px solid var(--accent-color);
+}
+
+.recent-numbers, .hot-cold {
+  flex: 1;
+}
+
+h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: var(--accent-color);
+  text-align: center;
+  text-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+}
+
+.numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 10px;
+}
+
+.number-ball {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.number-ball.red {
+  background-color: var(--red-color);
+}
+
+.number-ball.black {
+  background-color: var(--black-color);
+}
+
+.number-ball.green {
+  background-color: var(--green-color);
+}
+
+.hot-cold {
+  display: flex;
+  gap: 20px;
+}
+
+.hot-numbers, .cold-numbers {
+  flex: 1;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.hot-numbers-list, .cold-numbers-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.footer {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: var(--secondary-color);
+  border-top: 3px solid var(--accent-color);
+  border-radius: 0 0 10px 10px;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.stat-name {
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Animations */
+@keyframes spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes ballSpin {
+  0% { transform: translate(calc(-50% + 180px), -50%) rotate(0deg); }
+  100% { transform: translate(calc(-50% + 180px), -50%) rotate(360deg); }
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+  100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+}
+
+.spinning {
+  animation: spin 5s linear infinite;
+}
+
+.ball-spinning {
+  animation: ballSpin 3s linear infinite;
+}
+
+.pulse {
+  animation: pulseGlow 2s infinite;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 1200px) {
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .roulette-wheel {
+    width: 400px;
+    height: 400px;
+  }
+  
+  .statistics {
+    padding: 10px;
+  }
+  
+  .numbers-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .roulette-wheel {
+    width: 300px;
+    height: 300px;
+  }
+  
+  .hot-cold {
+    flex-direction: column;
+  }
+  
+  .numbers-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}

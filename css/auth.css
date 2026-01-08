@@ -1,0 +1,93 @@
+/* Authentication Styles */
+
+/* Logout Button */
+.logout-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(230, 57, 70, 0.9);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.logout-button i {
+    margin-right: 8px;
+}
+
+.logout-button:hover {
+    background: rgba(230, 57, 70, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.logout-button:active {
+    transform: translateY(0);
+}
+
+/* User Info Display */
+.user-info {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(29, 53, 87, 0.9);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.user-info i {
+    margin-right: 8px;
+    color: #f1faee;
+}
+
+.user-info .username {
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+/* Transactions Link */
+.transactions-link {
+    color: #a8dadc;
+    text-decoration: none;
+    margin-top: 8px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+.transactions-link:hover {
+    color: #f1faee;
+    text-decoration: underline;
+}
+
+.transactions-link i {
+    margin-right: 5px;
+}
+
+/* Admin Link */
+.admin-link {
+    color: #ffb703;
+    font-weight: bold;
+}
+
+.admin-link:hover {
+    color: #ffd166;
+}

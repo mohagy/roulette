@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Migrate to Firebase</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px 20px; font-size: 16px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Migrate MySQL Database to Firebase Realtime Database</h1>
+    <p><strong>Important:</strong> Make sure you're looking at <strong>Realtime Database</strong>, not Firestore!</p>
+    <p>Go to: <a href="https://console.firebase.google.com/project/roulette-2f902/database" target="_blank">Firebase Realtime Database</a></p>
+    
+    <button onclick="runMigration()">Start Migration</button>
+    <div id="results"></div>
+
+    <script>
+        async function runMigration() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>Starting migration... This may take a minute.</p>';
+            
+            try {
+                const response = await fetch('php/migrate_from_sql_file.php');
+                
+                // Get response text first to check for errors
+                const responseText = await response.text();
+                let data;
+                
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    throw new Error('Invalid JSON response: ' + responseText.substring(0, 200));
+                }
+                
+                let html = '<h2>Migration Results</h2>';
+                
+                if (data.status === 'success') {
+                    html += '<p class="success">✅ Migration completed successfully!</p>';
+                    html += '<h3>Migrated Items:</h3><ul>';
+                    data.migrations.forEach(item => {
+                        html += `<li class="success">${item}</li>`;
+                    });
+                    html += '</ul>';
+                    
+                    if (data.errors && data.errors.length > 0) {
+                        html += '<h3>Errors:</h3><ul>';
+                        data.errors.forEach(error => {
+                            html += `<li class="error">${error}</li>`;
+                        });
+                        html += '</ul>';
+                    }
+                } else {
+                    html += '<p class="error">❌ Migration failed</p>';
+                    if (data.errors) {
+                        html += '<ul>';
+                        data.errors.forEach(error => {
+                            html += `<li class="error">${error}</li>`;
+                        });
+                        html += '</ul>';
+                    }
+                }
+                
+                resultsDiv.innerHTML = html;
+            } catch (error) {
+                resultsDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
+

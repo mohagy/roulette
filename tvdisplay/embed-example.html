@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette TV Display Embedding Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            margin-top: 30px;
+            color: #444;
+        }
+
+        .example-container {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        pre {
+            background-color: #333;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 14px;
+        }
+
+        .note {
+            background-color: #fffde7;
+            border-left: 4px solid #ffd600;
+            padding: 10px 15px;
+            margin: 20px 0;
+        }
+
+        .warning {
+            background-color: #fff4e5;
+            border-left: 4px solid #ff9800;
+            padding: 10px 15px;
+            margin: 20px 0;
+        }
+
+        .feature-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Roulette TV Display Sharing & Embedding</h1>
+
+    <p>This page demonstrates how to share the Roulette TV Display with multiple viewers in a view-only mode.</p>
+
+    <div class="note">
+        <strong>Key Features:</strong>
+        <ul class="feature-list">
+            <li>Real-time synchronization with the main roulette system</li>
+            <li>View-only mode prevents any interaction or modification</li>
+            <li>Automatic updates of draw numbers and countdown timer</li>
+            <li>Responsive design works on all devices</li>
+            <li>Fullscreen mode for optimal viewing</li>
+            <li>Easy embedding on any website</li>
+        </ul>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" data-tab="embed">Embedding</div>
+        <div class="tab" data-tab="direct">Direct Link</div>
+        <div class="tab" data-tab="secure">Secure Sharing</div>
+    </div>
+
+    <div class="tab-content active" id="embed-content">
+        <h2>Embedding the Roulette TV Display</h2>
+
+        <h3>Example 1: Basic Responsive Embedding</h3>
+        <div class="example-container">
+            <p>Add this script tag to your HTML for a responsive embed that works on all devices:</p>
+            <pre>&lt;script src="http://localhost/slipp/tvdisplay/embed.js"&gt;&lt;/script&gt;</pre>
+
+            <p>Result:</p>
+            <!-- The actual embed -->
+            <script src="embed.js"></script>
+        </div>
+
+        <h3>Example 2: Fixed Size Embedding</h3>
+        <div class="example-container">
+            <p>You can customize the size and disable responsive behavior:</p>
+            <pre>&lt;script src="http://localhost/slipp/tvdisplay/embed.js" data-width="800px" data-height="400px" data-responsive="false"&gt;&lt;/script&gt;</pre>
+
+            <p>Result:</p>
+            <!-- The actual embed with custom size -->
+            <script src="embed.js" data-width="800px" data-height="400px" data-responsive="false"></script>
+        </div>
+
+        <h3>Example 3: Custom Title</h3>
+        <div class="example-container">
+            <p>You can set a custom title for accessibility:</p>
+            <pre>&lt;script src="http://localhost/slipp/tvdisplay/embed.js" data-title="Live Roulette Results"&gt;&lt;/script&gt;</pre>
+
+            <p>Result:</p>
+            <!-- The actual embed with custom title -->
+            <script src="embed.js" data-title="Live Roulette Results"></script>
+        </div>
+
+        <div class="warning">
+            <strong>Note:</strong> The embedded display auto-refreshes every 5 seconds. The manual refresh parameter (data-refresh) is no longer recommended as it may cause flickering.
+        </div>
+    </div>
+
+    <div class="tab-content" id="direct-content">
+        <h2>Direct Link Sharing</h2>
+
+        <p>You can share these direct links to the view-only display:</p>
+
+        <h3>Standard View</h3>
+        <pre>http://localhost/slipp/tvdisplay/view-only.html</pre>
+        <a href="view-only.html" target="_blank" class="button">Open Standard View</a>
+
+        <h3>PHP-Powered View (Recommended)</h3>
+        <p>This version includes additional server-side processing and logging:</p>
+        <pre>http://localhost/slipp/tvdisplay/share.php</pre>
+        <a href="share.php" target="_blank" class="button">Open PHP-Powered View</a>
+
+        <div class="note">
+            <strong>Tip:</strong> The view-only display includes a fullscreen button in the bottom-left corner for optimal viewing.
+        </div>
+    </div>
+
+    <div class="tab-content" id="secure-content">
+        <h2>Secure Sharing Options</h2>
+
+        <h3>Token-Based Authentication</h3>
+        <p>For restricted access, you can enable token-based authentication:</p>
+
+        <ol>
+            <li>Edit the share.php file and set <code>$enableAuth = true;</code></li>
+            <li>Change the <code>$validToken</code> value to a secure random string</li>
+            <li>Share the URL with the token parameter:</li>
+        </ol>
+
+        <pre>http://localhost/slipp/tvdisplay/share.php?token=your-secret-token</pre>
+
+        <h3>Access Logging</h3>
+        <p>All access to the share.php page is logged in the logs/view_access.log file, including:</p>
+        <ul>
+            <li>Timestamp of access</li>
+            <li>IP address of viewer</li>
+            <li>User agent (browser information)</li>
+        </ul>
+
+        <div class="warning">
+            <strong>Important:</strong> For production use, consider implementing additional security measures such as HTTPS, IP restrictions, or user authentication.
+        </div>
+    </div>
+
+    <script>
+        // Simple tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+
+                    // Hide all tab content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+
+                    // Show the corresponding tab content
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId + '-content').classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
