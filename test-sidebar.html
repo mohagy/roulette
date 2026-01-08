@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sidebar Test</title>
+</head>
+<body>
+    <h1>Testing Sidebar Creation</h1>
+    <script>
+        const sidebarHTML = `
+            <div class="sidebar" style="width: 250px; background: blue; color: white; height: 100vh; position: fixed; left: 0; top: 0;">
+                <h2>Sidebar Test</h2>
+                <p>If you see this, sidebar creation works!</p>
+            </div>
+        `;
+        
+        if (document.body) {
+            document.body.insertAdjacentHTML('afterbegin', sidebarHTML);
+            console.log('Sidebar inserted successfully');
+        } else {
+            console.error('Body not found');
+        }
+    </script>
+</body>
+</html>
+

@@ -254,19 +254,34 @@ function createAdminSidebar(currentPage = 'index.html') {
     try {
         const body = document.body;
         if (!body) {
-            console.error('Body element not found');
+            console.error('Body element not found, retrying...');
             setTimeout(() => createAdminSidebar(currentPage), 100);
             return;
         }
+        
+        console.log('Inserting sidebar HTML into body...');
         body.insertAdjacentHTML('afterbegin', sidebarHTML);
-        console.log('Sidebar HTML inserted');
+        console.log('Sidebar HTML inserted successfully');
+        
+        // Verify sidebar was created
+        const createdSidebar = document.querySelector('.sidebar');
+        if (!createdSidebar) {
+            console.error('Sidebar HTML was inserted but element not found in DOM');
+            return;
+        }
+        console.log('Sidebar element found in DOM:', createdSidebar);
         
         // Setup sidebar interactions
         setupSidebarInteractions();
+        console.log('Sidebar interactions setup complete');
     } catch (error) {
         console.error('Error creating sidebar:', error);
+        console.error('Error stack:', error.stack);
         // Retry after a short delay
-        setTimeout(() => createAdminSidebar(currentPage), 500);
+        setTimeout(() => {
+            console.log('Retrying sidebar creation...');
+            createAdminSidebar(currentPage);
+        }, 500);
     }
 }
 
