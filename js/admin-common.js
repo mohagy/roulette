@@ -404,14 +404,20 @@ function showAlert(message, type = 'info') {
 }
 
 // Initialize sidebar when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get current page from URL
-        const currentPage = window.location.pathname.split('/').pop() || 'admin.html';
-        createAdminSidebar(currentPage);
-    });
-} else {
+function initAdminSidebar() {
+    // Get current page from URL
     const currentPage = window.location.pathname.split('/').pop() || 'admin.html';
     createAdminSidebar(currentPage);
+}
+
+// Try to initialize immediately
+initAdminSidebar();
+
+// Also initialize when DOM is ready as fallback
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdminSidebar);
+} else {
+    // DOM already ready, initialize again after a short delay to ensure Firebase is loaded
+    setTimeout(initAdminSidebar, 500);
 }
 
