@@ -621,10 +621,15 @@ var bankSum = 0; // Will be loaded from database
 
 // Initialize cash from database when CashManager is ready
 $(document).ready(function() {
-  // First run the auto fix transactions script to ensure everything is in sync
+  // Try to run auto fix transactions (only works on local PHP server)
   fetch('auto_fix_transactions.php')
     .then(() => {
       console.log('Auto fix transactions completed');
+    })
+    .catch(() => {
+      console.log('Auto fix transactions skipped (not on PHP server)');
+    })
+    .finally(() => {
 
       // Now initialize the CashManager with the updated balance
       if (typeof CashManager !== 'undefined') {
