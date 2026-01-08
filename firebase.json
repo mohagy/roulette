@@ -3,7 +3,7 @@
     "rules": "firebase-security-rules.json"
   },
   "hosting": {
-    "public": "tvdisplay",
+    "public": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -11,10 +11,17 @@
       "**/*.md",
       "**/*.php",
       "**/php/**",
+      "**/api/**",
       "**/sounds/**",
       "**/*.ps1",
       "**/*.aup",
-      "**/*.au"
+      "**/*.au",
+      "**/backups/**",
+      "**/logs/**",
+      "**/.venv/**",
+      "**/migrate*.js",
+      "**/migrate*.html",
+      "**/package*.json"
     ],
     "rewrites": [
       {

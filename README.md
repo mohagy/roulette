@@ -1,129 +1,107 @@
 # Roulette POS System
 
-A point-of-sale (POS) system for selling betting slips for roulette games with persistent state storage using PHP/MySQL.
+A professional Roulette Point of Sale system with real-time synchronization using Firebase Realtime Database.
 
-## Setup Instructions
+## 🚀 Live Demo
 
-### Database Setup
+- **Firebase Hosting**: https://roulette-2f902.web.app (Recommended)
+- **GitHub Pages**: https://mohagy.github.io/roulette/ (Static only - PHP features disabled)
 
-1. Make sure XAMPP is running with MySQL and Apache services started
-2. Access the setup script by navigating to: http://localhost/slipp/setup.php
-   - This will automatically create the required database and tables
-   - You should see a success message if everything worked correctly
+## ⚠️ Important Notes
 
-### Configuration
+### GitHub Pages Limitations
 
-If you need to customize the database connection:
+GitHub Pages only supports **static websites** (HTML, CSS, JavaScript). The following features **will NOT work** on GitHub Pages:
 
-1. Open `db_config.php` in your editor
-2. Modify the following variables as needed:
-   - `$host` - Database server (default: 'localhost')
-   - `$dbname` - Database name (default: 'roulette')
-   - `$username` - Database username (default: 'root')
-   - `$password` - Database password (default: '')
+- ❌ PHP backend APIs
+- ❌ MySQL database connections
+- ❌ Server-side authentication
+- ❌ Any PHP file processing
 
-### Running the Application
+### Recommended: Firebase Hosting
 
-1. Make sure XAMPP is running with MySQL and Apache services
-2. Navigate to the application in your browser:
-   - http://localhost/slipp/tvdisplay/
+Since this application uses Firebase Realtime Database, **Firebase Hosting is the recommended hosting solution**:
 
-### Resetting the Application State
+```bash
+# Deploy to Firebase Hosting
+firebase deploy --only hosting
+```
 
-If you need to reset the roll history and game state:
+Your app will be available at: `https://roulette-2f902.web.app`
 
-1. Navigate to: http://localhost/slipp/reset_database.php
-2. This will clear all roll history data and reset the game to its initial state
-3. Return to the game by clicking the link provided or navigate to http://localhost/slipp/tvdisplay/
+## 🛠️ Features
 
-## Features
+- Real-time roulette game synchronization
+- Firebase Realtime Database integration
+- TV display mode
+- Betting slip management
+- Cash management
+- Commission tracking
+- Transaction history
+- User authentication
+- Multi-draw betting system
 
-- **Cashier Login System**: Secure login with 12-digit username and 6-digit password
-- **Cash Management**: Track and manage cash balances for each cashier
-- **Transaction History**: View detailed transaction history
-- **Voucher System**: Create and redeem vouchers to add credits
-- **Commission Tracking**: Track 4% commission on bets sold
-- **Admin Panel**: Manage users, cash balances, and vouchers
-- Persistent storage of roulette roll history across browser sessions
-- Database-backed countdown timer that continues even when the browser is closed
-- Persistent tracking of draw numbers
-- Fallback to localStorage if database connection fails
+## 📁 Project Structure
 
-## Cash System
+```
+├── index.html          # Main application
+├── tvdisplay/          # TV display interface
+├── js/                 # JavaScript modules
+├── css/                # Stylesheets
+├── php/                # PHP backend (not available on GitHub Pages)
+├── api/                # API endpoints (not available on GitHub Pages)
+└── firebase.json       # Firebase configuration
+```
 
-The cash system allows cashiers to:
+## 🔥 Firebase Integration
 
-1. **Place Bets**: Deducts cash from the cashier's balance
-2. **Win Bets**: Adds winnings to the cashier's balance
-3. **Redeem Vouchers**: Add credits using voucher codes
-4. **Track Transactions**: View all cash movements
-5. **Track Commission**: Monitor 4% commission on bets sold
+The application uses Firebase Realtime Database for:
+- Real-time game state synchronization
+- Draw results storage
+- Analytics data
+- Betting slips
+- User data
 
-All cash balances and transactions are stored in the database and persist across page refreshes.
+## 🚀 Getting Started
 
-## Default Login Credentials
+### Local Development
 
-### Admin User
-- Username: 000000000000
-- Password: 000000
+1. Clone the repository:
+```bash
+git clone https://github.com/mohagy/roulette.git
+cd roulette
+```
 
-### Cashier User
-- Username: 123456789012
-- Password: 123456
+2. For local development with PHP:
+   - Use XAMPP or similar PHP server
+   - Configure MySQL database
+   - Update database credentials in `php/db_connect.php`
 
-## Project Structure
+3. For static hosting (Firebase/GitHub Pages):
+   - The app will use Firebase for all backend operations
+   - No PHP or MySQL required
 
-The application is organized into the following directories:
+### Firebase Setup
 
-- **`/admin`** - Administration panel and management tools
-- **`/api`** - API endpoints for system operations
-- **`/php`** - PHP backend logic and APIs
-- **`/js`** - JavaScript files for frontend functionality
-- **`/css`** - Stylesheets for the application
-- **`/tvdisplay`** - TV display application for showing roulette game
-- **`/docs`** - Documentation files (see below)
-- **`/accounting`** - Accounting module
-- **`/finance`** - Financial management module
-- **`/hr`** - Human resources module
-- **`/it`** - IT module
-- **`/sales`** - Sales module
-- **`/stock`** - Stock and inventory management
-- **`/remote`** - Remote access and control functionality
-- **`/management`** - Management tools and interfaces
+1. Install Firebase CLI:
+```bash
+npm install -g firebase-tools
+```
 
-For detailed folder structure information, see [`docs/FOLDER_STRUCTURE.md`](docs/FOLDER_STRUCTURE.md).
+2. Login to Firebase:
+```bash
+firebase login
+```
 
-## Documentation
+3. Deploy:
+```bash
+firebase deploy
+```
 
-Comprehensive documentation is available in the `/docs` folder:
+## 📝 License
 
-- **[FOLDER_STRUCTURE.md](docs/FOLDER_STRUCTURE.md)** - Complete folder structure and file organization
-- **[CLEANUP_SUMMARY.md](docs/CLEANUP_SUMMARY.md)** - Cleanup summary and development guidelines
-- **[CLEANUP_REPORT.md](docs/CLEANUP_REPORT.md)** - Detailed cleanup report
-- **Setup Guides** - Various setup and configuration guides
-- **Feature Documentation** - Documentation for specific features
-- **Fix Documentation** - Bug fix and implementation summaries
+This project is proprietary software.
 
-## Troubleshooting
+## 👤 Author
 
-If you experience any issues:
-
-1. Check that XAMPP services are running
-2. Try accessing the setup script again: http://localhost/slipp/setup.php
-3. Reset the database state: http://localhost/slipp/reset_database.php
-4. Check PHP error logs in XAMPP (usually at C:\xampp\php\logs\php_error_log)
-5. Ensure your browser has JavaScript enabled
-6. Clear your browser cache and cookies, then reload the page
-
-If roll history is not displaying correctly:
-- Check browser console for JavaScript errors
-- Verify database connection is working
-- Try resetting the database with reset_database.php
-
-## Recent Updates
-
-**January 7, 2026** - Comprehensive codebase cleanup:
-- Removed 150+ test, debug, and temporary files
-- Consolidated all documentation into `/docs` folder
-- Organized project structure for better maintainability
-- See [`docs/CLEANUP_REPORT.md`](docs/CLEANUP_REPORT.md) for details
+mohagy (nathonheart@gmail.com)

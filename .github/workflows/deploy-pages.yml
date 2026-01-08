@@ -1,0 +1,59 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Build static site
+        run: |
+          # Create a static version (excluding PHP files)
+          mkdir -p _site
+          # Copy HTML, CSS, JS, and assets
+          cp -r *.html _site/ 2>/dev/null || true
+          cp -r css _site/ 2>/dev/null || true
+          cp -r js _site/ 2>/dev/null || true
+          cp -r images _site/ 2>/dev/null || true
+          cp -r tvdisplay _site/ 2>/dev/null || true
+          cp -r assets _site/ 2>/dev/null || true
+          cp manifest.json _site/ 2>/dev/null || true
+          cp service-worker.js _site/ 2>/dev/null || true
+          # Note: PHP files and API endpoints won't work on GitHub Pages
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
