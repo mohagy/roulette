@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Draw Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .warning h2 {
+            color: #856404;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .warning ul {
+            color: #856404;
+            margin-left: 20px;
+        }
+        .warning li {
+            margin: 5px 0;
+        }
+        .info {
+            background: #e7f3ff;
+            border: 2px solid #2196F3;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #0d47a1;
+        }
+        .button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        .button-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .button-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+        .button-danger:active {
+            transform: translateY(0);
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        .status.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+            display: block;
+        }
+        .status.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+            display: block;
+        }
+        .status.info {
+            background: #d1ecf1;
+            border: 2px solid #17a2b8;
+            color: #0c5460;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Reset Draw Data</h1>
+        
+        <div class="warning">
+            <h2>⚠️ Warning: This action cannot be undone!</h2>
+            <ul>
+                <li>All draw history will be permanently deleted</li>
+                <li>All analytics data will be cleared</li>
+                <li>Game state will reset to draw #1</li>
+                <li>This will affect both Firebase and the application</li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <strong>What will be reset:</strong>
+            <ul style="margin-top: 10px;">
+                <li>All draws in Firebase</li>
+                <li>Game state (current draw #1, next draw #2)</li>
+                <li>Analytics (spins, frequency)</li>
+                <li>Draw history</li>
+            </ul>
+        </div>
+
+        <button class="button button-danger" id="resetButton" onclick="confirmAndReset()">
+            🗑️ Delete All Draw Data & Reset to Draw #1
+        </button>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <script src="js/reset-draws.js"></script>
+    <script>
+        async function confirmAndReset() {
+            const confirmed = confirm(
+                '⚠️ FINAL WARNING ⚠️\n\n' +
+                'This will PERMANENTLY DELETE all draw data and reset to draw #1.\n\n' +
+                'This action CANNOT be undone!\n\n' +
+                'Are you absolutely sure you want to continue?'
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            const button = document.getElementById('resetButton');
+            const status = document.getElementById('status');
+            
+            button.disabled = true;
+            button.textContent = '🔄 Resetting...';
+            status.className = 'status info';
+            status.textContent = 'Resetting draw data... Please wait...';
+            status.style.display = 'block';
+
+            try {
+                const results = await ResetDraws.resetAll();
+                
+                const allSuccess = Object.values(results).every(r => r === true);
+                
+                if (allSuccess) {
+                    status.className = 'status success';
+                    status.textContent = '✅ Success! All draw data has been deleted and reset to draw #1. Please refresh the page.';
+                    button.textContent = '✅ Reset Complete';
+                } else {
+                    status.className = 'status error';
+                    status.textContent = '❌ Some operations failed. Check console for details.';
+                    button.disabled = false;
+                    button.textContent = '🔄 Try Again';
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = '❌ Error: ' + error.message;
+                button.disabled = false;
+                button.textContent = '🔄 Try Again';
+            }
+        }
+    </script>
+</body>
+</html>
+
