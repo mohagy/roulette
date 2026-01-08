@@ -251,11 +251,23 @@ function createAdminSidebar(currentPage = 'index.html') {
     `;
     
     // Insert sidebar before body content
-    const body = document.body;
-    body.insertAdjacentHTML('afterbegin', sidebarHTML);
-    
-    // Setup sidebar interactions
-    setupSidebarInteractions();
+    try {
+        const body = document.body;
+        if (!body) {
+            console.error('Body element not found');
+            setTimeout(() => createAdminSidebar(currentPage), 100);
+            return;
+        }
+        body.insertAdjacentHTML('afterbegin', sidebarHTML);
+        console.log('Sidebar HTML inserted');
+        
+        // Setup sidebar interactions
+        setupSidebarInteractions();
+    } catch (error) {
+        console.error('Error creating sidebar:', error);
+        // Retry after a short delay
+        setTimeout(() => createAdminSidebar(currentPage), 500);
+    }
 }
 
 /**
@@ -412,17 +424,22 @@ function showAlert(message, type = 'info') {
 function initAdminSidebar() {
     // Get current page from URL
     const currentPage = window.location.pathname.split('/').pop() || 'admin.html';
+    console.log('Initializing sidebar for page:', currentPage);
     createAdminSidebar(currentPage);
 }
 
-// Try to initialize immediately
-initAdminSidebar();
-
-// Also initialize when DOM is ready as fallback
+// Wait for DOM to be ready before initializing
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAdminSidebar);
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing sidebar');
+        initAdminSidebar();
+    });
 } else {
-    // DOM already ready, initialize again after a short delay to ensure Firebase is loaded
-    setTimeout(initAdminSidebar, 500);
+    // DOM already ready
+    console.log('DOM already ready, initializing sidebar');
+    // Use setTimeout to ensure body is fully available
+    setTimeout(initAdminSidebar, 100);
+    // Also retry after a longer delay as fallback
+    setTimeout(initAdminSidebar, 1000);
 }
 
