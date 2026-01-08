@@ -20,12 +20,217 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- Sidebar will be inserted here by JavaScript -->
-    <noscript>
-        <div style="padding: 20px; background: #f8f9fc; text-align: center;">
-            <p>JavaScript is required for this page to function properly. Please enable JavaScript.</p>
+    <!-- Mobile Menu Toggle Button (outside sidebar) -->
+    <button id="mobile-menu-toggle" class="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-dice"></i>
+                <span>Roulette Admin</span>
+            </div>
+            <button id="sidebar-toggle" class="sidebar-toggle">
+                <i class="fas fa-chevron-left"></i>
+            </button>
         </div>
-    </noscript>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="user-info">
+                <div class="user-name" id="sidebar-username">Admin</div>
+                <div class="user-role">Administrator</div>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="menu-header">Main</li>
+            <li class="active">
+                <a href="admin.html">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li class="menu-header">User Management</li>
+            <li>
+                <a href="admin/users.html">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin/betting_shops.html">
+                    <i class="fas fa-store"></i>
+                    <span>Betting Shops</span>
+                </a>
+            </li>
+
+            <li class="menu-header">Departments</li>
+            <li>
+                <a href="admin/departments_setup.html">
+                    <i class="fas fa-database"></i>
+                    <span>Setup Departments</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin/stock_accounting_setup.html">
+                    <i class="fas fa-database"></i>
+                    <span>Setup Stock & Accounting</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin/hr_setup.html">
+                    <i class="fas fa-database"></i>
+                    <span>Setup HR Department</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin/remote_setup.html">
+                    <i class="fas fa-database"></i>
+                    <span>Setup Remote Monitoring</span>
+                </a>
+            </li>
+            <li>
+                <a href="sales/index.html" target="_blank">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Sales Department</span>
+                </a>
+            </li>
+            <li>
+                <a href="it/index.html" target="_blank">
+                    <i class="fas fa-laptop"></i>
+                    <span>IT Department</span>
+                </a>
+            </li>
+            <li>
+                <a href="finance/index.html" target="_blank">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>Finance Department</span>
+                </a>
+            </li>
+            <li>
+                <a href="stock/index.html" target="_blank">
+                    <i class="fas fa-boxes"></i>
+                    <span>Stock Department</span>
+                </a>
+            </li>
+            <li>
+                <a href="accounting/index.html" target="_blank">
+                    <i class="fas fa-calculator"></i>
+                    <span>Accounting Department</span>
+                </a>
+            </li>
+            <li>
+                <a href="hr/index.html" target="_blank">
+                    <i class="fas fa-users"></i>
+                    <span>HR Department</span>
+                </a>
+            </li>
+
+            <li class="menu-header">Remote Monitoring</li>
+            <li>
+                <a href="remote/bet_distribution.html" target="_blank">
+                    <i class="fas fa-desktop"></i>
+                    <span>Remote Bet Distribution</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin/remote_dashboard.html">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Remote Employee Dashboard</span>
+                </a>
+            </li>
+
+            <li class="menu-header">Finance</li>
+            <li>
+                <a href="admin/cash.html">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Cash Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin/vouchers.html">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Vouchers</span>
+                </a>
+            </li>
+            <li>
+                <a href="commission.html">
+                    <i class="fas fa-percentage"></i>
+                    <span>Commission</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin/transactions.html">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Transactions</span>
+                </a>
+            </li>
+
+            <li class="menu-header">Game Management</li>
+            <li>
+                <a href="admin/game_settings.html">
+                    <i class="fas fa-cogs"></i>
+                    <span>Game Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin/betting_history.html">
+                    <i class="fas fa-history"></i>
+                    <span>Betting History</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin/bet_distribution.html">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Bet Distribution & Draw Control</span>
+                </a>
+            </li>
+
+            <li class="menu-header">System</li>
+            <li>
+                <a href="admin/settings.html">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin/logs.html">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Logs</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin/system_logs.html">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>System Audit Logs</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin/db_setup.html">
+                    <i class="fas fa-database"></i>
+                    <span>Database Setup</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <a href="index.html" class="footer-link" title="Go to Game">
+                <i class="fas fa-gamepad"></i>
+            </a>
+            <a href="admin/settings.html" class="footer-link" title="Settings">
+                <i class="fas fa-cog"></i>
+            </a>
+            <a href="#" id="sidebar-logout-link" class="footer-link" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <div class="main-content">
@@ -240,10 +445,103 @@
     <script src="js/firebase-vouchers.js"></script>
     <script src="js/firebase-commission.js"></script>
     
-    <!-- Admin Common Functions (sidebar, auth, etc.) -->
-    <script src="js/admin-common.js"></script>
-    
     <!-- Admin Dashboard JavaScript -->
     <script src="js/admin_firebase.js"></script>
+    
+    <!-- Sidebar Scripts -->
+    <script>
+        // Update username when Firebase Auth is ready
+        function updateSidebarUsername() {
+            if (window.FirebaseAuth && window.FirebaseAuth.isInitialized && window.FirebaseAuth.isInitialized()) {
+                const currentUser = window.FirebaseAuth.getCurrentUser();
+                if (currentUser && currentUser.username) {
+                    const usernameElement = document.getElementById('sidebar-username');
+                    if (usernameElement) {
+                        usernameElement.textContent = currentUser.username;
+                    }
+                }
+            } else {
+                // Retry after a delay
+                setTimeout(updateSidebarUsername, 500);
+            }
+        }
+
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileToggle = document.getElementById('mobile-menu-toggle');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.querySelector('.sidebar');
+
+            if (mobileToggle && sidebar) {
+                mobileToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                });
+            }
+
+            // Sidebar toggle (for tablet view)
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                });
+            }
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                if (!sidebar || !mobileToggle) return;
+
+                // If sidebar is active on mobile and click is outside sidebar and not on the toggle button
+                if (window.innerWidth <= 768 &&
+                    sidebar.classList.contains('active') &&
+                    !sidebar.contains(event.target) &&
+                    event.target !== mobileToggle &&
+                    !mobileToggle.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // Handle responsive behavior based on screen size
+            function handleResponsiveLayout() {
+                if (!sidebar) return;
+
+                if (window.innerWidth <= 768) {
+                    // Mobile view
+                    sidebar.classList.remove('active');
+                } else if (window.innerWidth <= 1024) {
+                    // Tablet view - collapsed sidebar by default
+                    sidebar.classList.remove('active');
+                } else {
+                    // Desktop view - expanded sidebar
+                    sidebar.classList.remove('active');
+                }
+            }
+
+            // Initialize on page load
+            handleResponsiveLayout();
+
+            // Update on window resize
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(handleResponsiveLayout, 250);
+            });
+
+            // Update username from Firebase
+            updateSidebarUsername();
+
+            // Logout link
+            const sidebarLogoutLink = document.getElementById('sidebar-logout-link');
+            if (sidebarLogoutLink) {
+                sidebarLogoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Are you sure you want to logout?')) {
+                        if (window.FirebaseAuth && window.FirebaseAuth.logout) {
+                            window.FirebaseAuth.logout();
+                        }
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
