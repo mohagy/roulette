@@ -265,6 +265,36 @@ const UpcomingDrawsPanel = (function() {
             state.syncStatus = 'syncing';
             updateRefreshButton(true);
 
+            // Try Firebase first if available
+            if (window.FirebaseService && window.FirebaseService.isOnline()) {
+                try {
+                    log('Checking Firebase for current draw...');
+                    const drawInfo = await window.FirebaseService.GameState.getDrawInfo();
+                    const gameState = await window.FirebaseService.GameState.getCurrent();
+                    
+                    let currentDraw = 0;
+                    if (drawInfo && drawInfo.currentDraw) {
+                        currentDraw = drawInfo.currentDraw;
+                    } else if (gameState && gameState.drawNumber) {
+                        currentDraw = gameState.drawNumber;
+                    }
+                    
+                    if (currentDraw > 0) {
+                        log('Got current draw from Firebase:', currentDraw);
+                        const generatedDraws = await generateUpcomingDraws({
+                            last_completed_draw: currentDraw,
+                            current_completed_draw: currentDraw
+                        });
+                        processUpcomingDrawsData(generatedDraws);
+                        state.syncStatus = 'active';
+                        updateRefreshButton(false);
+                        return;
+                    }
+                } catch (firebaseError) {
+                    log('Firebase check failed, falling back to API:', firebaseError);
+                }
+            }
+
             // Try primary endpoint first
             let response = await fetch(config.apiEndpoint + '?_cb=' + Date.now());
             let responseText = '';
@@ -279,7 +309,7 @@ const UpcomingDrawsPanel = (function() {
                     try {
                         const fallbackData = JSON.parse(responseText);
                         if (fallbackData.status === 'success' && fallbackData.data) {
-                            const generatedDraws = generateUpcomingDraws(fallbackData.data);
+                            const generatedDraws = await generateUpcomingDraws(fallbackData.data);
                             processUpcomingDrawsData(generatedDraws);
                             state.syncStatus = 'active';
                             updateRefreshButton(false);
@@ -324,7 +354,7 @@ const UpcomingDrawsPanel = (function() {
             // Try to generate basic upcoming draws as last resort
             try {
                 log('Attempting fallback draw generation...');
-                const basicDraws = generateBasicUpcomingDraws();
+                const basicDraws = await generateBasicUpcomingDraws();
                 if (basicDraws.upcoming_draws.length > 0) {
                     processUpcomingDrawsData(basicDraws);
                     state.syncStatus = 'active';
@@ -344,8 +374,36 @@ const UpcomingDrawsPanel = (function() {
     /**
      * Generate upcoming draws from base data
      */
-    function generateUpcomingDraws(baseData) {
-        const lastCompletedDraw = baseData.last_completed_draw || baseData.current_completed_draw || 0;
+    async function generateUpcomingDraws(baseData) {
+        // Try to get current draw from Firebase first
+        let lastCompletedDraw = baseData.last_completed_draw || baseData.current_completed_draw || 0;
+        
+        // If baseData doesn't have draw info, try Firebase
+        if (lastCompletedDraw === 0 || lastCompletedDraw > 100) {
+            try {
+                if (window.FirebaseService && window.FirebaseService.isOnline()) {
+                    const drawInfo = await window.FirebaseService.GameState.getDrawInfo();
+                    if (drawInfo && drawInfo.currentDraw) {
+                        lastCompletedDraw = drawInfo.currentDraw;
+                        log('Got draw number from Firebase drawInfo:', lastCompletedDraw);
+                    } else {
+                        const gameState = await window.FirebaseService.GameState.getCurrent();
+                        if (gameState && gameState.drawNumber) {
+                            lastCompletedDraw = gameState.drawNumber;
+                            log('Got draw number from Firebase gameState:', lastCompletedDraw);
+                        }
+                    }
+                }
+            } catch (e) {
+                log('Error getting draw from Firebase:', e);
+            }
+        }
+        
+        // Ensure we start from draw #1 if reset
+        if (lastCompletedDraw === 0) {
+            lastCompletedDraw = 0; // Will generate from #1
+        }
+        
         const upcomingDraws = [];
 
         for (let i = 1; i <= config.drawCount; i++) {
@@ -371,23 +429,45 @@ const UpcomingDrawsPanel = (function() {
     /**
      * Generate basic upcoming draws as last resort fallback
      */
-    function generateBasicUpcomingDraws() {
+    async function generateBasicUpcomingDraws() {
         log('Generating basic upcoming draws as fallback...');
 
-        // Try to get base draw from localStorage or use default
+        // Try to get base draw from Firebase first
         let baseDraw = 0;
         try {
-            const storedDraw = localStorage.getItem('cashier_current_draw');
-            if (storedDraw) {
-                baseDraw = parseInt(storedDraw) || 0;
+            if (window.FirebaseService && window.FirebaseService.isOnline()) {
+                const drawInfo = await window.FirebaseService.GameState.getDrawInfo();
+                if (drawInfo && drawInfo.currentDraw) {
+                    baseDraw = drawInfo.currentDraw;
+                    log('Got base draw from Firebase:', baseDraw);
+                } else {
+                    const gameState = await window.FirebaseService.GameState.getCurrent();
+                    if (gameState && gameState.drawNumber) {
+                        baseDraw = gameState.drawNumber;
+                        log('Got base draw from Firebase gameState:', baseDraw);
+                    }
+                }
             }
         } catch (e) {
-            // Use default
+            log('Error getting draw from Firebase:', e);
         }
 
-        // If still 0, use a reasonable default
+        // Try localStorage as fallback
         if (baseDraw === 0) {
-            baseDraw = 100; // Default starting point
+            try {
+                const storedDraw = localStorage.getItem('cashier_current_draw');
+                if (storedDraw) {
+                    baseDraw = parseInt(storedDraw) || 0;
+                }
+            } catch (e) {
+                // Use default
+            }
+        }
+
+        // If still 0, start from draw #1 (reset default)
+        if (baseDraw === 0) {
+            baseDraw = 0; // Start from draw #1 (0 + 1 = 1)
+            log('Using default base draw: 0 (will generate from #1)');
         }
 
         const upcomingDraws = [];
