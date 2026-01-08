@@ -4,7 +4,13 @@
  */
 
 function createAdminSidebar() {
-    const currentUser = window.FirebaseAuth ? window.FirebaseAuth.getCurrentUser() : null;
+    // Wait for Firebase Auth to be available
+    if (!window.FirebaseAuth || !window.FirebaseAuth.isInitialized()) {
+        setTimeout(createAdminSidebar, 200);
+        return;
+    }
+    
+    const currentUser = window.FirebaseAuth.getCurrentUser();
     const username = currentUser ? currentUser.username : 'Admin';
     
     const sidebarHTML = `
@@ -220,7 +226,9 @@ function createAdminSidebar() {
         </div>
     `;
     
-    document.getElementById('admin-sidebar').innerHTML = sidebarHTML;
+    // Insert sidebar before body content
+    const body = document.body;
+    body.insertAdjacentHTML('afterbegin', sidebarHTML);
     
     // Setup sidebar interactions
     setupSidebarInteractions();
@@ -289,10 +297,6 @@ function setupSidebarInteractions() {
     });
 }
 
-// Initialize sidebar when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', createAdminSidebar);
-} else {
-    createAdminSidebar();
-}
+// Initialize sidebar immediately (will retry if Firebase not ready)
+createAdminSidebar();
 
