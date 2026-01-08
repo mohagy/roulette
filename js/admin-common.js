@@ -80,70 +80,70 @@ function createAdminSidebar(currentPage = 'index.html') {
                         <span>Users</span>
                     </a>
                 </li>
-                <li>
-                    <a href="#">
+                <li class="${['betting_shops.php', 'betting_shops_add.php', 'betting_shops_edit.php', 'betting_shops_view.php', 'betting_shops_users.php'].includes(currentPageKey) ? 'active' : ''}">
+                    <a href="admin/betting_shops.html">
                         <i class="fas fa-store"></i>
                         <span>Betting Shops</span>
                     </a>
                 </li>
 
                 <li class="menu-header">Departments</li>
-                <li>
-                    <a href="#">
+                <li class="${currentPageKey === 'departments_setup.php' ? 'active' : ''}">
+                    <a href="admin/departments_setup.html">
                         <i class="fas fa-database"></i>
                         <span>Setup Departments</span>
                     </a>
                 </li>
-                <li>
-                    <a href="#">
+                <li class="${currentPageKey === 'stock_accounting_setup.php' ? 'active' : ''}">
+                    <a href="admin/stock_accounting_setup.html">
                         <i class="fas fa-database"></i>
                         <span>Setup Stock & Accounting</span>
                     </a>
                 </li>
-                <li>
-                    <a href="#">
+                <li class="${currentPageKey === 'hr_setup.php' ? 'active' : ''}">
+                    <a href="admin/hr_setup.html">
                         <i class="fas fa-database"></i>
                         <span>Setup HR Department</span>
                     </a>
                 </li>
-                <li>
-                    <a href="#">
+                <li class="${currentPageKey === 'remote_setup.php' ? 'active' : ''}">
+                    <a href="admin/remote_setup.html">
                         <i class="fas fa-database"></i>
                         <span>Setup Remote Monitoring</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="sales/index.html" target="_blank">
                         <i class="fas fa-chart-line"></i>
                         <span>Sales Department</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="it/index.html" target="_blank">
                         <i class="fas fa-laptop"></i>
                         <span>IT Department</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="finance/index.html" target="_blank">
                         <i class="fas fa-dollar-sign"></i>
                         <span>Finance Department</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="stock/index.html" target="_blank">
                         <i class="fas fa-boxes"></i>
                         <span>Stock Department</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="accounting/index.html" target="_blank">
                         <i class="fas fa-calculator"></i>
                         <span>Accounting Department</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="hr/index.html" target="_blank">
                         <i class="fas fa-users"></i>
                         <span>HR Department</span>
                     </a>
@@ -151,13 +151,13 @@ function createAdminSidebar(currentPage = 'index.html') {
 
                 <li class="menu-header">Remote Monitoring</li>
                 <li>
-                    <a href="#">
+                    <a href="remote/bet_distribution.html" target="_blank">
                         <i class="fas fa-desktop"></i>
                         <span>Remote Bet Distribution</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#">
+                    <a href="admin/remote_dashboard.html">
                         <i class="fas fa-chart-line"></i>
                         <span>Remote Employee Dashboard</span>
                     </a>
@@ -210,26 +210,26 @@ function createAdminSidebar(currentPage = 'index.html') {
                 </li>
 
                 <li class="menu-header">System</li>
-                <li>
-                    <a href="#">
+                <li class="${currentPageKey === 'settings.php' ? 'active' : ''}">
+                    <a href="admin/settings.html">
                         <i class="fas fa-sliders-h"></i>
                         <span>Settings</span>
                     </a>
                 </li>
-                <li>
-                    <a href="#">
+                <li class="${currentPageKey === 'logs.php' ? 'active' : ''}">
+                    <a href="admin/logs.html">
                         <i class="fas fa-clipboard-list"></i>
                         <span>Logs</span>
                     </a>
                 </li>
-                <li>
-                    <a href="#">
+                <li class="${currentPageKey === 'system_logs.php' ? 'active' : ''}">
+                    <a href="admin/system_logs.html">
                         <i class="fas fa-shield-alt"></i>
                         <span>System Audit Logs</span>
                     </a>
                 </li>
-                <li>
-                    <a href="#">
+                <li class="${currentPageKey === 'db_setup.php' ? 'active' : ''}">
+                    <a href="admin/db_setup.html">
                         <i class="fas fa-database"></i>
                         <span>Database Setup</span>
                     </a>
@@ -240,7 +240,7 @@ function createAdminSidebar(currentPage = 'index.html') {
                 <a href="index.html" class="footer-link" title="Go to Game">
                     <i class="fas fa-gamepad"></i>
                 </a>
-                <a href="#" class="footer-link" title="Settings">
+                <a href="admin/settings.html" class="footer-link" title="Settings">
                     <i class="fas fa-cog"></i>
                 </a>
                 <a href="#" id="sidebar-logout-link" class="footer-link" title="Logout">
@@ -300,24 +300,24 @@ function setupSidebarInteractions() {
         });
     }
     
+    // Sidebar toggle (for tablet view)
     if (sidebarToggle && sidebar) {
         sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('collapsed');
-            const mainContent = document.querySelector('.main-content');
-            if (mainContent) {
-                mainContent.classList.toggle('expanded');
-            }
+            sidebar.classList.toggle('active');
         });
     }
     
     // Close sidebar when clicking outside on mobile
     document.addEventListener('click', function(event) {
-        if (sidebar && window.innerWidth <= 768 && sidebar.classList.contains('active')) {
-            if (!sidebar.contains(event.target) && 
-                event.target !== mobileToggle && 
-                !mobileToggle.contains(event.target)) {
-                sidebar.classList.remove('active');
-            }
+        if (!sidebar) return;
+        
+        // If sidebar is active on mobile and click is outside sidebar and not on the toggle button
+        if (window.innerWidth <= 768 &&
+            sidebar.classList.contains('active') &&
+            !sidebar.contains(event.target) &&
+            event.target !== mobileToggle &&
+            (!mobileToggle || !mobileToggle.contains(event.target))) {
+            sidebar.classList.remove('active');
         }
     });
     
@@ -330,25 +330,30 @@ function setupSidebarInteractions() {
         });
     }
     
-    // Handle responsive behavior
+    // Handle responsive behavior based on screen size
     function handleResponsiveLayout() {
         if (!sidebar) return;
         
         if (window.innerWidth <= 768) {
+            // Mobile view
             sidebar.classList.remove('active');
         } else if (window.innerWidth <= 1024) {
+            // Tablet view - collapsed sidebar by default
             sidebar.classList.remove('active');
         } else {
+            // Desktop view - expanded sidebar
             sidebar.classList.remove('active');
         }
     }
     
+    // Initialize on page load
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', handleResponsiveLayout);
     } else {
         handleResponsiveLayout();
     }
     
+    // Update on window resize
     let resizeTimer;
     window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
