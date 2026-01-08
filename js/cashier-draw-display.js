@@ -328,7 +328,66 @@ const CashierDrawDisplay = (function() {
         try {
             updateSyncStatus('syncing');
 
-            // Fetch enhanced draw details
+            // Try Firebase first if available
+            if (window.FirebaseService && window.FirebaseService.isOnline()) {
+                try {
+                    log('Fetching draw data from Firebase...');
+                    
+                    // Get draw info from Firebase
+                    const drawInfo = await window.FirebaseService.GameState.getDrawInfo();
+                    const gameState = await window.FirebaseService.GameState.getCurrent();
+                    
+                    let currentDraw = 0;
+                    let lastCompletedDraw = 0;
+                    
+                    if (drawInfo && drawInfo.currentDraw) {
+                        currentDraw = drawInfo.currentDraw;
+                        lastCompletedDraw = currentDraw;
+                    } else if (gameState && gameState.drawNumber) {
+                        currentDraw = gameState.drawNumber;
+                        lastCompletedDraw = currentDraw;
+                    }
+                    
+                    // Get last draw details from Firebase
+                    let lastDrawDetails = null;
+                    if (lastCompletedDraw > 0) {
+                        try {
+                            const lastDraw = await window.FirebaseService.Draws.getDraw(lastCompletedDraw);
+                            if (lastDraw) {
+                                lastDrawDetails = {
+                                    draw_number: lastCompletedDraw,
+                                    winning_number: lastDraw.winningNumber || null,
+                                    winning_number_color: lastDraw.color || null,
+                                    total_slips: lastDraw.totalSlips || 0,
+                                    winning_slips: lastDraw.winningSlips || 0
+                                };
+                            }
+                        } catch (e) {
+                            log('Error fetching last draw details:', e);
+                        }
+                    }
+                    
+                    if (currentDraw > 0) {
+                        const firebaseData = {
+                            draw_number: lastCompletedDraw,
+                            last_completed_draw: lastCompletedDraw,
+                            next_draw_for_betting: currentDraw + 1,
+                            upcoming_draw: currentDraw + 1,
+                            ...lastDrawDetails
+                        };
+                        
+                        processDrawData(firebaseData);
+                        updateLastCompletedDrawDetails(firebaseData);
+                        updateSyncStatus('active');
+                        log('Successfully synced from Firebase:', firebaseData);
+                        return;
+                    }
+                } catch (firebaseError) {
+                    log('Firebase sync failed, trying API fallback:', firebaseError);
+                }
+            }
+
+            // Fallback to PHP API if Firebase is not available
             const response = await fetch(config.apiEndpoint + '?_cb=' + Date.now());
 
             if (!response.ok) {
@@ -352,12 +411,12 @@ const CashierDrawDisplay = (function() {
     }
 
     /**
-     * Process draw data from API
+     * Process draw data from API or Firebase
      */
     function processDrawData(data) {
-        // Handle enhanced API response format
-        const lastCompletedDraw = data.draw_number;
-        const upcomingDraw = lastCompletedDraw ? lastCompletedDraw + 1 : null;
+        // Handle enhanced API response format or Firebase data
+        const lastCompletedDraw = data.draw_number || data.last_completed_draw || data.current_completed_draw || 0;
+        const upcomingDraw = data.upcoming_draw || data.next_draw_for_betting || (lastCompletedDraw ? lastCompletedDraw + 1 : 1);
 
         // Update state
         const hasChanges = (
