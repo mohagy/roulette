@@ -21,7 +21,7 @@ $(document).ready(function() {
     // Check authentication using Firebase (for static hosting) or PHP (for local)
     function checkAuth() {
         // Try Firebase authentication first
-        if (window.FirebaseAuth && window.FirebaseAuth.isAuthenticated()) {
+        if (window.FirebaseAuth && window.FirebaseAuth.isInitialized()) {
             const user = window.FirebaseAuth.getCurrentUser();
             if (user) {
                 // User is authenticated, add logout button and user info if they don't exist
@@ -36,28 +36,34 @@ $(document).ready(function() {
                     $('body').append(logoutButton);
 
                     // Create user info display with movable structure
-                    const userInfo = $('<div id="user-info" class="user-info left-toggle-showing" style="display: flex !important; z-index: 10000 !important;">' +
+                    const userInfo = $('<div id="user-info" class="user-info left-toggle-showing" style="display: flex !important; z-index: 10000 !important; left: 20px; top: 20px;">' +
                         '<div class="user-info-drag-handle"><i class="fas fa-grip-lines"></i><span>Cashier Info</span><i class="fas fa-arrows-alt"></i></div>' +
                         '<div class="user-info-content">' +
                         '<div class="user-info-header"><i class="fas fa-user-circle"></i>' +
                         '<span>Cashier: <span class="username">' + user.username + '</span></span></div>' +
-                        '<a href="my_transactions_new.php" class="transactions-link"><i class="fas fa-history"></i> Transactions</a>' +
-                        '<a href="redeem_voucher.php" class="transactions-link"><i class="fas fa-ticket-alt"></i> Redeem Voucher</a>' +
-                        '<a href="commission.php" class="transactions-link"><i class="fas fa-percentage"></i> Commission</a>' +
-                        (user.role === 'admin' ? '<a href="admin.php" class="transactions-link admin-link"><i class="fas fa-cogs"></i> Admin Panel</a>' : '') +
+                        '<a href="my_transactions_new.html" class="transactions-link"><i class="fas fa-history"></i> Transactions</a>' +
+                        '<a href="redeem_voucher.html" class="transactions-link"><i class="fas fa-ticket-alt"></i> Redeem Voucher</a>' +
+                        '<a href="commission.html" class="transactions-link"><i class="fas fa-percentage"></i> Commission</a>' +
+                        (user.role === 'admin' ? '<a href="admin.html" class="transactions-link admin-link"><i class="fas fa-cogs"></i> Admin Panel</a>' : '') +
                         '</div>' +
                         '</div>');
 
                     // Add user info to the body
                     $('body').append(userInfo);
                     
-                    // Ensure panel is visible
+                    // Ensure panel is visible and positioned
                     setTimeout(function() {
                         const panel = document.getElementById('user-info');
                         if (panel) {
                             panel.style.display = 'flex';
+                            panel.style.visibility = 'visible';
+                            panel.style.opacity = '1';
+                            panel.style.left = '20px';
+                            panel.style.top = '20px';
                             panel.classList.add('left-toggle-showing');
                             panel.classList.remove('left-toggle-hiding');
+                            panel.classList.remove('completely-hidden');
+                            console.log('✅ User info panel created and made visible');
                         }
                     }, 100);
 
@@ -124,12 +130,18 @@ $(document).ready(function() {
     }
 
     // Wait for Firebase to initialize, then check auth
-    if (window.FirebaseAuth) {
-        checkAuth();
-    } else {
-        // Wait a bit for Firebase to load
-        setTimeout(function() {
+    function tryCheckAuth() {
+        if (window.FirebaseAuth && window.FirebaseAuth.isInitialized()) {
             checkAuth();
-        }, 500);
+        } else if (window.FirebaseAuth) {
+            // FirebaseAuth exists but not initialized yet, wait a bit
+            setTimeout(tryCheckAuth, 200);
+        } else {
+            // FirebaseAuth not loaded yet, wait longer
+            setTimeout(tryCheckAuth, 500);
+        }
     }
+    
+    // Start checking
+    tryCheckAuth();
 });
