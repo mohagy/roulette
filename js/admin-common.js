@@ -443,18 +443,32 @@ function initAdminSidebar() {
     createAdminSidebar(currentPage);
 }
 
-// Wait for DOM to be ready before initializing
+// Force sidebar creation - try multiple times to ensure it works
+function forceInitSidebar() {
+    console.log('forceInitSidebar called');
+    const currentPage = window.location.pathname.split('/').pop() || 'admin.html';
+    createAdminSidebar(currentPage);
+}
+
+// Try immediately
+console.log('admin-common.js loaded, attempting to create sidebar');
+forceInitSidebar();
+
+// Also wait for DOM to be ready
 if (document.readyState === 'loading') {
+    console.log('DOM still loading, waiting for DOMContentLoaded');
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM loaded, initializing sidebar');
-        initAdminSidebar();
+        forceInitSidebar();
     });
 } else {
     // DOM already ready
     console.log('DOM already ready, initializing sidebar');
     // Use setTimeout to ensure body is fully available
-    setTimeout(initAdminSidebar, 100);
+    setTimeout(forceInitSidebar, 100);
     // Also retry after a longer delay as fallback
-    setTimeout(initAdminSidebar, 1000);
+    setTimeout(forceInitSidebar, 500);
+    setTimeout(forceInitSidebar, 1000);
+    setTimeout(forceInitSidebar, 2000);
 }
 
