@@ -3,172 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#4e73df">
     <title>Admin Dashboard - Roulette POS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #f8f9fa;
-            padding: 20px;
-        }
-        .admin-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-left: 4px solid;
-        }
-        .stat-card.primary { border-left-color: #007bff; }
-        .stat-card.success { border-left-color: #28a745; }
-        .stat-card.warning { border-left-color: #ffc107; }
-        .stat-card.info { border-left-color: #17a2b8; }
-        .stat-card.danger { border-left-color: #dc3545; }
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #333;
-        }
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .nav-link {
-            color: #333;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin: 5px 0;
-        }
-        .nav-link:hover {
-            background-color: #f0f0f0;
-        }
-    </style>
+    <link rel="stylesheet" href="admin/css/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container-fluid">
-        <!-- Admin Header -->
-        <div class="admin-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1><i class="fas fa-cogs"></i> Admin Dashboard</h1>
-                    <p class="mb-0" id="welcome-message">Welcome, Admin</p>
-                </div>
-                <div>
-                    <a href="#" id="logout-link" class="btn btn-light">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+    <!-- Sidebar -->
+    <div id="admin-sidebar"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navbar -->
+        <nav class="top-navbar">
+            <div class="navbar-search">
+                <input type="text" class="search-input" placeholder="Search...">
+            </div>
+
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-bell"></i>
                     </a>
-                </div>
-            </div>
-        </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" id="logout-link" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
 
-        <!-- Stats Cards -->
-        <div class="row">
-            <div class="col-md-3">
-                <div class="stat-card primary">
-                    <div class="stat-label">Total Users</div>
-                    <div class="stat-value" id="total-users">0</div>
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <div class="breadcrumb">
+                    <div class="breadcrumb-item"><a href="admin.html">Admin</a></div>
+                    <div class="breadcrumb-item active">Dashboard</div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card success">
-                    <div class="stat-label">Total Transactions</div>
-                    <div class="stat-value" id="total-transactions">0</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card warning">
-                    <div class="stat-label">Total Cash</div>
-                    <div class="stat-value" id="total-cash">$0.00</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card info">
-                    <div class="stat-label">Active Vouchers</div>
-                    <div class="stat-value" id="total-vouchers">0</div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Quick Actions -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+            <!-- Stats Cards -->
+            <div class="row">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Users</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-users">0</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <a href="index.html" class="nav-link">
-                                    <i class="fas fa-gamepad"></i> Game Interface
-                                </a>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Total Cash Balance</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-cash">$0.00</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                </div>
                             </div>
-                            <div class="col-md-3">
-                                <a href="my_transactions_new.html" class="nav-link">
-                                    <i class="fas fa-history"></i> View Transactions
-                                </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Total Bets</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-bets">$0.00</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-dice fa-2x text-gray-300"></i>
+                                </div>
                             </div>
-                            <div class="col-md-3">
-                                <a href="redeem_voucher.html" class="nav-link">
-                                    <i class="fas fa-ticket-alt"></i> Manage Vouchers
-                                </a>
-                            </div>
-                            <div class="col-md-3">
-                                <a href="commission.html" class="nav-link">
-                                    <i class="fas fa-percentage"></i> Commission Report
-                                </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Total Commission</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-commission">$0.00</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Recent Activity -->
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fas fa-users"></i> Recent Users</h5>
+            <!-- Content Row -->
+            <div class="row">
+                <!-- Area Chart -->
+                <div class="col-xl-8 col-lg-7">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <canvas id="earningsChart"></canvas>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div id="recent-users">
-                            <p class="text-muted">Loading...</p>
+                </div>
+
+                <!-- Pie Chart -->
+                <div class="col-xl-4 col-lg-5">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Transaction Types</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-pie">
+                                <canvas id="transactionTypesChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fas fa-exchange-alt"></i> Recent Transactions</h5>
+
+            <!-- Content Row -->
+            <div class="row">
+                <!-- Recent Transactions -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Recent Transactions</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>User</th>
+                                            <th>Amount</th>
+                                            <th>Type</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-transactions-tbody">
+                                        <tr><td colspan="5" class="text-center">Loading...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <a href="#" class="btn btn-primary btn-sm" id="view-all-transactions">View All Transactions</a>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div id="recent-transactions">
-                            <p class="text-muted">Loading...</p>
+                </div>
+
+                <!-- Recent Users -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Recent Users</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Username</th>
+                                            <th>Role</th>
+                                            <th>Balance</th>
+                                            <th>Created</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-users-tbody">
+                                        <tr><td colspan="5" class="text-center">Loading...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <a href="#" class="btn btn-primary btn-sm" id="view-all-users">View All Users</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -180,9 +227,10 @@
     <script src="js/firebase-auth.js"></script>
     <script src="js/firebase-transactions.js"></script>
     <script src="js/firebase-vouchers.js"></script>
+    <script src="js/firebase-commission.js"></script>
     
     <!-- Admin JavaScript -->
     <script src="js/admin_firebase.js"></script>
+    <script src="js/admin_sidebar.js"></script>
 </body>
 </html>
-
