@@ -14,6 +14,9 @@
       "**/api/**",
       "**/sounds/**",
       "**/*.ps1",
+      "**/*.bat",
+      "**/*.exe",
+      "**/*.py",
       "**/*.aup",
       "**/*.au",
       "**/backups/**",
@@ -21,7 +24,9 @@
       "**/.venv/**",
       "**/migrate*.js",
       "**/migrate*.html",
-      "**/package*.json"
+      "**/package*.json",
+      "**/*.sql",
+      "**/requirements.txt"
     ],
     "rewrites": [
       {

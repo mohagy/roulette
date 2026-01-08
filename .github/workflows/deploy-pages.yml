@@ -37,8 +37,12 @@ jobs:
         run: |
           # Create a static version (excluding PHP files)
           mkdir -p _site
-          # Copy HTML, CSS, JS, and assets
-          cp -r *.html _site/ 2>/dev/null || true
+          # Copy main index.html first (this is the main application)
+          cp index.html _site/ 2>/dev/null || true
+          # Copy other HTML files
+          cp login.html _site/ 2>/dev/null || true
+          cp offline.html _site/ 2>/dev/null || true
+          # Copy CSS, JS, and assets
           cp -r css _site/ 2>/dev/null || true
           cp -r js _site/ 2>/dev/null || true
           cp -r images _site/ 2>/dev/null || true
