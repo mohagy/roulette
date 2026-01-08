@@ -5,7 +5,7 @@
 
 $(document).ready(function() {
     // Check if we're already on the login page to prevent redirect loops
-    if (window.location.pathname.includes('login.php')) {
+    if (window.location.pathname.includes('login.html') || window.location.pathname.includes('login.php')) {
         return; // Skip authentication check if already on login page
     }
 
@@ -18,18 +18,12 @@ $(document).ready(function() {
         return;
     }
 
-    // Check if user is authenticated
-    $.ajax({
-        url: 'check_auth.php',
-        type: 'GET',
-        dataType: 'json',
-        success: function(response) {
-            if (!response.authenticated) {
-                // User is not authenticated, set redirect flag and redirect to login page
-                sessionStorage.setItem('redirecting', 'true');
-                window.location.href = 'login.php';
-                return;
-            } else {
+    // Check authentication using Firebase (for static hosting) or PHP (for local)
+    function checkAuth() {
+        // Try Firebase authentication first
+        if (window.FirebaseAuth && window.FirebaseAuth.isAuthenticated()) {
+            const user = window.FirebaseAuth.getCurrentUser();
+            if (user) {
                 // User is authenticated, add logout button and user info if they don't exist
                 if ($('#logout-button').length === 0) {
                     // Create logout button
@@ -46,11 +40,11 @@ $(document).ready(function() {
                         '<div class="user-info-drag-handle"><i class="fas fa-grip-lines"></i><span>Cashier Info</span><i class="fas fa-arrows-alt"></i></div>' +
                         '<div class="user-info-content">' +
                         '<div class="user-info-header"><i class="fas fa-user-circle"></i>' +
-                        '<span>Cashier: <span class="username">' + response.user.username + '</span></span></div>' +
+                        '<span>Cashier: <span class="username">' + user.username + '</span></span></div>' +
                         '<a href="my_transactions_new.php" class="transactions-link"><i class="fas fa-history"></i> Transactions</a>' +
                         '<a href="redeem_voucher.php" class="transactions-link"><i class="fas fa-ticket-alt"></i> Redeem Voucher</a>' +
                         '<a href="commission.php" class="transactions-link"><i class="fas fa-percentage"></i> Commission</a>' +
-                        (response.user.role === 'admin' ? '<a href="admin.php" class="transactions-link admin-link"><i class="fas fa-cogs"></i> Admin Panel</a>' : '') +
+                        (user.role === 'admin' ? '<a href="admin.php" class="transactions-link admin-link"><i class="fas fa-cogs"></i> Admin Panel</a>' : '') +
                         '</div>' +
                         '</div>');
 
@@ -71,32 +65,71 @@ $(document).ready(function() {
                     logoutButton.on('click', function() {
                         // Show confirmation dialog
                         if (confirm('Are you sure you want to logout?')) {
-                            // Perform logout
-                            $.ajax({
-                                url: 'logout.php',
-                                type: 'POST',
-                                dataType: 'json',
-                                success: function() {
-                                    sessionStorage.setItem('redirecting', 'true');
-                                    window.location.href = 'login.php';
-                                },
-                                error: function() {
-                                    sessionStorage.setItem('redirecting', 'true');
-                                    window.location.href = 'login.php';
-                                }
-                            });
+                            // Perform logout using Firebase
+                            if (window.FirebaseAuth) {
+                                window.FirebaseAuth.logout();
+                            }
+                            sessionStorage.setItem('redirecting', 'true');
+                            window.location.href = 'login.html';
                         }
                     });
                 }
-            }
-        },
-        error: function(xhr, status, error) {
-            console.log("Authentication check error:", error);
-            // Only redirect if it's a real authentication error, not a network error
-            if (xhr.status === 401 || xhr.status === 403) {
-                sessionStorage.setItem('redirecting', 'true');
-                window.location.href = 'login.php';
+                return; // User is authenticated
             }
         }
-    });
+
+        // Fallback to PHP authentication (for local development)
+        $.ajax({
+            url: 'check_auth.php',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (!response.authenticated) {
+                    sessionStorage.setItem('redirecting', 'true');
+                    window.location.href = 'login.html';
+                } else {
+                    // Handle PHP authentication (same as Firebase above)
+                    if ($('#logout-button').length === 0) {
+                        const logoutButton = $('<div id="logout-button" class="logout-button">' +
+                            '<i class="fas fa-sign-out-alt"></i>' +
+                            '<span>Logout</span>' +
+                            '</div>');
+                        $('body').append(logoutButton);
+                        // ... (same user info code as above)
+                        logoutButton.on('click', function() {
+                            if (confirm('Are you sure you want to logout?')) {
+                                $.ajax({
+                                    url: 'logout.php',
+                                    type: 'POST',
+                                    success: function() {
+                                        sessionStorage.setItem('redirecting', 'true');
+                                        window.location.href = 'login.html';
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                // If PHP check fails and Firebase is not available, redirect to login
+                if (!window.FirebaseAuth || !window.FirebaseAuth.isAuthenticated()) {
+                    if (xhr.status === 401 || xhr.status === 403 || xhr.status === 404) {
+                        sessionStorage.setItem('redirecting', 'true');
+                        window.location.href = 'login.html';
+                    }
+                }
+            }
+        });
+    }
+
+    // Wait for Firebase to initialize, then check auth
+    if (window.FirebaseAuth) {
+        checkAuth();
+    } else {
+        // Wait a bit for Firebase to load
+        setTimeout(function() {
+            checkAuth();
+        }, 500);
+    }
 });
