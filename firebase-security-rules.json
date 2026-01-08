@@ -45,11 +45,11 @@
       }
     },
     "users": {
-      ".read": "auth != null",
-      ".write": "auth != null",
+      ".read": true,
+      ".write": true,
       "$userId": {
-        ".read": "auth != null || $userId == auth.uid",
-        ".write": "auth != null || $userId == auth.uid"
+        ".read": true,
+        ".write": true
       }
     },
     "transactions": {
