@@ -1,33 +1,28 @@
 <?php
-/**
- * Authentication Check Endpoint
- * Returns JSON response indicating if user is authenticated and user information
- */
-
 // Start session
 session_start();
 
-// Set JSON header
+// Set response header to JSON
 header('Content-Type: application/json');
 
-// Check if user is authenticated
-if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
-    // User is authenticated
+// Check if user is logged in
+if (isset($_SESSION['user_id'])) {
+    // User is logged in
     echo json_encode([
+        'status' => 'success',
         'authenticated' => true,
         'user' => [
             'id' => $_SESSION['user_id'],
             'username' => $_SESSION['username'],
-            'role' => $_SESSION['role'] ?? 'cashier'
+            'role' => $_SESSION['role']
         ]
     ]);
 } else {
-    // User is not authenticated
+    // User is not logged in
     echo json_encode([
+        'status' => 'error',
         'authenticated' => false,
-        'user' => null
+        'message' => 'Not authenticated'
     ]);
 }
-exit;
 ?>
-

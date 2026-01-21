@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Betting Slip - Automatic Printing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .betting-slip {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .slip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #007bff;
+        }
+        
+        .slip-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .bets-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .bets-table th,
+        .bets-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .bets-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .print-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .print-action-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .print-action-button:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        .print-action-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .test-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="betting-slip" data-slip-id="1183">
+        <div class="slip-header">
+            <h2>Betting Slip</h2>
+            <div class="slip-number">#34721293</div>
+        </div>
+        
+        <div class="slip-info">
+            <div class="info-item">
+                <span><strong>Date:</strong></span>
+                <span>2025-08-28 17:46</span>
+            </div>
+            <div class="info-item">
+                <span><strong>Draw #:</strong></span>
+                <span>84</span>
+            </div>
+            <div class="info-item">
+                <span><strong>Total Stake:</strong></span>
+                <span>$1,500.00</span>
+            </div>
+            <div class="info-item">
+                <span><strong>Potential Win:</strong></span>
+                <span>$27,600.00</span>
+            </div>
+        </div>
+        
+        <table class="bets-table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Odds</th>
+                    <th>Potential Return</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Straight</td>
+                    <td>Straight Up on 9</td>
+                    <td>$100.00</td>
+                    <td>35:1</td>
+                    <td>$3,600.00</td>
+                </tr>
+                <tr>
+                    <td>Straight</td>
+                    <td>Straight Up on 5</td>
+                    <td>$100.00</td>
+                    <td>35:1</td>
+                    <td>$3,600.00</td>
+                </tr>
+                <tr>
+                    <td>Split</td>
+                    <td>Split (20,21)</td>
+                    <td>$100.00</td>
+                    <td>17:1</td>
+                    <td>$1,800.00</td>
+                </tr>
+                <tr>
+                    <td>Corner</td>
+                    <td>Corner (16,17,19,20)</td>
+                    <td>$100.00</td>
+                    <td>8:1</td>
+                    <td>$900.00</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="print-actions">
+            <!-- UPDATED: Your existing print button with automatic printing -->
+            <button class="print-action-button" data-slip-id="1183">
+                <i class="fas fa-print"></i>
+                Print Slip
+            </button>
+            
+            <!-- Optional: Print with printer selection -->
+            <button class="print-action-button" onclick="printWithPrinterSelection()">
+                <i class="fas fa-cog"></i>
+                Select Printer & Print
+            </button>
+        </div>
+    </div>
+    
+    <!-- Test Section -->
+    <div class="test-section">
+        <h3>Test Automatic Printing</h3>
+        <p>Use these buttons to test the automatic printing functionality:</p>
+        
+        <div class="print-actions">
+            <button class="print-action-button" onclick="testPrint()">
+                <i class="fas fa-flask"></i>
+                Test Print
+            </button>
+            
+            <button class="print-action-button" onclick="showAvailablePrinters()">
+                <i class="fas fa-list"></i>
+                Show Printers
+            </button>
+        </div>
+    </div>
+
+    <!-- Include the automatic printing JavaScript -->
+    <script src="js/automatic_printing.js"></script>
+    
+    <script>
+        // Additional helper functions
+        async function printWithPrinterSelection() {
+            if (window.automaticPrinter) {
+                window.automaticPrinter.showPrinterDialog(async (printerName) => {
+                    if (printerName !== undefined) { // User didn't cancel
+                        try {
+                            await window.automaticPrinter.printSlip('1183', printerName);
+                            window.automaticPrinter.showSuccess('Slip printed successfully!');
+                        } catch (error) {
+                            window.automaticPrinter.showError('Print failed: ' + error.message);
+                        }
+                    }
+                });
+            }
+        }
+        
+        async function testPrint() {
+            if (window.automaticPrinter) {
+                try {
+                    await window.automaticPrinter.testPrint();
+                    window.automaticPrinter.showSuccess('Test print sent successfully!');
+                } catch (error) {
+                    window.automaticPrinter.showError('Test print failed: ' + error.message);
+                }
+            }
+        }
+        
+        async function showAvailablePrinters() {
+            if (window.automaticPrinter) {
+                const printers = window.automaticPrinter.availablePrinters;
+                if (printers.length > 0) {
+                    alert('Available Printers:\n' + printers.join('\n'));
+                } else {
+                    alert('No printers found');
+                }
+            }
+        }
+        
+        // Example: Print specific slip by ID
+        async function printSlipById(slipId) {
+            if (window.automaticPrinter) {
+                try {
+                    await window.automaticPrinter.printSlip(slipId);
+                    window.automaticPrinter.showSuccess(`Slip ${slipId} printed successfully!`);
+                } catch (error) {
+                    window.automaticPrinter.showError(`Failed to print slip ${slipId}: ` + error.message);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

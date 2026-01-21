@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firestore Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔥 Firestore Connection Test</h1>
+    <div id="status"></div>
+    <div>
+        <button onclick="testConnection()">Test Connection</button>
+        <button onclick="testWrite()">Test Write</button>
+        <button onclick="testRead()">Test Read</button>
+        <button onclick="testListener()">Test Listener</button>
+    </div>
+    <div id="results"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/firestore-service.js"></script>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const resultsDiv = document.getElementById('results');
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.textContent = message;
+            statusDiv.appendChild(div);
+            console.log(message);
+        }
+
+        function logResult(message) {
+            const pre = document.createElement('pre');
+            pre.textContent = message;
+            resultsDiv.appendChild(pre);
+            console.log(message);
+        }
+
+        function testConnection() {
+            statusDiv.innerHTML = '';
+            resultsDiv.innerHTML = '';
+            log('Testing Firestore connection...', 'info');
+
+            setTimeout(() => {
+                log('Checking Firebase SDK...', 'info');
+                log(`Firebase SDK: ${typeof firebase !== 'undefined' ? '✅ Loaded' : '❌ Not loaded'}`, 
+                    typeof firebase !== 'undefined' ? 'success' : 'error');
+                
+                if (typeof firebase !== 'undefined') {
+                    log(`firebase.firestore type: ${typeof firebase.firestore}`, 'info');
+                    log(`firebase.firestore value: ${firebase.firestore}`, 'info');
+                    
+                    // Try to initialize Firestore directly if not available
+                    if (!window.firebaseFirestore && typeof firebase.firestore === 'function') {
+                        try {
+                            log('Attempting to initialize Firestore directly...', 'info');
+                            const firestoreInstance = firebase.firestore();
+                            window.firebaseFirestore = firestoreInstance;
+                            log('✅ Firestore initialized directly!', 'success');
+                        } catch (error) {
+                            log(`❌ Failed to initialize Firestore: ${error.message}`, 'error');
+                            logResult(`Error details:\n${error.stack}`);
+                        }
+                    }
+                }
+                
+                log(`Firestore SDK: ${typeof firebase?.firestore !== 'undefined' ? '✅ Loaded' : '❌ Not loaded'}`,
+                    typeof firebase?.firestore !== 'undefined' ? 'success' : 'error');
+                
+                log(`firebaseFirestore: ${window.firebaseFirestore ? '✅ Available' : '❌ Not available'}`,
+                    window.firebaseFirestore ? 'success' : 'error');
+                
+                if (window.firebaseFirestore) {
+                    log(`firebaseFirestore type: ${typeof window.firebaseFirestore}`, 'info');
+                    log(`firebaseFirestore.collection: ${typeof window.firebaseFirestore.collection}`, 'info');
+                }
+                
+                log(`FirestoreService: ${window.FirestoreService ? '✅ Available' : '❌ Not available'}`,
+                    window.FirestoreService ? 'success' : 'error');
+                
+                if (window.FirestoreService) {
+                    const isAvailable = window.FirestoreService.isAvailable();
+                    log(`FirestoreService.isAvailable(): ${isAvailable}`,
+                        isAvailable ? 'success' : 'error');
+                }
+
+                if (window.firebaseFirestore) {
+                    log('✅ Firestore connection successful!', 'success');
+                } else {
+                    log('❌ Firestore connection failed!', 'error');
+                    log('Check the browser console for detailed error messages.', 'info');
+                }
+            }, 2000);
+        }
+
+        async function testWrite() {
+            statusDiv.innerHTML = '';
+            resultsDiv.innerHTML = '';
+            log('Testing Firestore write...', 'info');
+
+            if (!window.FirestoreService || !window.FirestoreService.isAvailable()) {
+                log('❌ FirestoreService not available', 'error');
+                return;
+            }
+
+            try {
+                const testData = {
+                    test: true,
+                    timestamp: new Date().toISOString(),
+                    message: 'Test write from connection test page'
+                };
+
+                await window.firebaseFirestore.collection('test').doc('connection-test').set(testData);
+                log('✅ Write successful!', 'success');
+                logResult('Written data:\n' + JSON.stringify(testData, null, 2));
+            } catch (error) {
+                log('❌ Write failed: ' + error.message, 'error');
+                logResult('Error:\n' + error.stack);
+            }
+        }
+
+        async function testRead() {
+            statusDiv.innerHTML = '';
+            resultsDiv.innerHTML = '';
+            log('Testing Firestore read...', 'info');
+
+            if (!window.firebaseFirestore) {
+                log('❌ Firestore not available', 'error');
+                return;
+            }
+
+            try {
+                const doc = await window.firebaseFirestore.collection('test').doc('connection-test').get();
+                if (doc.exists()) {
+                    log('✅ Read successful!', 'success');
+                    logResult('Read data:\n' + JSON.stringify(doc.data(), null, 2));
+                } else {
+                    log('⚠️ Document does not exist (write a test document first)', 'info');
+                }
+            } catch (error) {
+                log('❌ Read failed: ' + error.message, 'error');
+                logResult('Error:\n' + error.stack);
+            }
+        }
+
+        function testListener() {
+            statusDiv.innerHTML = '';
+            resultsDiv.innerHTML = '';
+            log('Testing Firestore listener...', 'info');
+
+            if (!window.FirestoreService || !window.FirestoreService.isAvailable()) {
+                log('❌ FirestoreService not available', 'error');
+                return;
+            }
+
+            try {
+                const unsubscribe = window.FirestoreService.listenToTimerState((data) => {
+                    log('✅ Listener received data!', 'success');
+                    logResult('Timer data:\n' + JSON.stringify(data, null, 2));
+                });
+
+                log('✅ Listener set up successfully', 'success');
+                log('Waiting for timer updates... (set a winning number to trigger)', 'info');
+
+                // Also test spin commands listener
+                const spinUnsubscribe = window.FirestoreService.listenToSpinCommands((command) => {
+                    log('✅ Spin command received!', 'success');
+                    logResult('Spin command:\n' + JSON.stringify(command, null, 2));
+                });
+
+                log('✅ Spin commands listener set up', 'success');
+            } catch (error) {
+                log('❌ Listener setup failed: ' + error.message, 'error');
+                logResult('Error:\n' + error.stack);
+            }
+        }
+
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            setTimeout(testConnection, 1000);
+        });
+    </script>
+</body>
+</html>
+

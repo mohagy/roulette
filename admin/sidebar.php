@@ -64,79 +64,30 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
         </li>
 
-        <li class="menu-header">Departments</li>
-        <li class="<?php echo $current_page === 'departments_setup.php' ? 'active' : ''; ?>">
-            <a href="departments_setup.php">
-                <i class="fas fa-database"></i>
-                <span>Setup Departments</span>
-            </a>
-        </li>
-        <li class="<?php echo $current_page === 'stock_accounting_setup.php' ? 'active' : ''; ?>">
-            <a href="stock_accounting_setup.php">
-                <i class="fas fa-database"></i>
-                <span>Setup Stock & Accounting</span>
-            </a>
-        </li>
-        <li class="<?php echo $current_page === 'hr_setup.php' ? 'active' : ''; ?>">
-            <a href="hr_setup.php">
-                <i class="fas fa-database"></i>
-                <span>Setup HR Department</span>
-            </a>
-        </li>
-        <li class="<?php echo $current_page === 'remote_setup.php' ? 'active' : ''; ?>">
-            <a href="remote_setup.php">
-                <i class="fas fa-database"></i>
-                <span>Setup Remote Monitoring</span>
-            </a>
-        </li>
-        <li>
-            <a href="../sales/index.php" target="_blank">
-                <i class="fas fa-chart-line"></i>
-                <span>Sales Department</span>
-            </a>
-        </li>
-        <li>
-            <a href="../it/index.php" target="_blank">
-                <i class="fas fa-laptop"></i>
-                <span>IT Department</span>
-            </a>
-        </li>
-        <li>
-            <a href="../finance/index.php" target="_blank">
-                <i class="fas fa-dollar-sign"></i>
-                <span>Finance Department</span>
-            </a>
-        </li>
-        <li>
-            <a href="../stock/index.php" target="_blank">
-                <i class="fas fa-boxes"></i>
-                <span>Stock Department</span>
-            </a>
-        </li>
-        <li>
-            <a href="../accounting/index.php" target="_blank">
-                <i class="fas fa-calculator"></i>
-                <span>Accounting Department</span>
-            </a>
-        </li>
-        <li>
-            <a href="../hr/index.php" target="_blank">
-                <i class="fas fa-users"></i>
-                <span>HR Department</span>
-            </a>
-        </li>
 
-        <li class="menu-header">Remote Monitoring</li>
-        <li>
-            <a href="../remote/bet_distribution.php" target="_blank">
-                <i class="fas fa-desktop"></i>
-                <span>Remote Bet Distribution</span>
+        <li class="menu-header">Game Management</li>
+        <li class="<?php echo $current_page === 'game_settings.php' ? 'active' : ''; ?>">
+            <a href="game_settings.php">
+                <i class="fas fa-cogs"></i>
+                <span>Game Settings</span>
             </a>
         </li>
-        <li>
-            <a href="remote_dashboard.php">
-                <i class="fas fa-chart-line"></i>
-                <span>Remote Employee Dashboard</span>
+        <li class="<?php echo $current_page === 'betting_history.php' ? 'active' : ''; ?>">
+            <a href="betting_history.php">
+                <i class="fas fa-history"></i>
+                <span>Betting History</span>
+            </a>
+        </li>
+        <li class="<?php echo $current_page === 'bet_distribution.php' || $current_page === 'bet_distribution/index.php' ? 'active' : ''; ?>">
+            <a href="bet_distribution/">
+                <i class="fas fa-chart-bar"></i>
+                <span>Bet Distribution & Draw Control</span>
+            </a>
+        </li>
+        <li class="<?php echo strpos($current_page, 'tvdisplay') !== false ? 'active' : ''; ?>">
+            <a href="tvdisplay/manager.php">
+                <i class="fas fa-tv"></i>
+                <span>TV Display Manager</span>
             </a>
         </li>
 
@@ -163,26 +114,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="transactions.php">
                 <i class="fas fa-exchange-alt"></i>
                 <span>Transactions</span>
-            </a>
-        </li>
-
-        <li class="menu-header">Game Management</li>
-        <li class="<?php echo $current_page === 'game_settings.php' ? 'active' : ''; ?>">
-            <a href="game_settings.php">
-                <i class="fas fa-cogs"></i>
-                <span>Game Settings</span>
-            </a>
-        </li>
-        <li class="<?php echo $current_page === 'betting_history.php' ? 'active' : ''; ?>">
-            <a href="betting_history.php">
-                <i class="fas fa-history"></i>
-                <span>Betting History</span>
-            </a>
-        </li>
-        <li class="<?php echo $current_page === 'bet_distribution.php' ? 'active' : ''; ?>">
-            <a href="bet_distribution.php">
-                <i class="fas fa-chart-bar"></i>
-                <span>Bet Distribution & Draw Control</span>
             </a>
         </li>
 

@@ -91,3 +91,12 @@ Your app is already partially Firebase-ready:
 1. Use Firebase Hosting (recommended)
 2. Or convert remaining PHP calls to Firebase client-side calls for GitHub Pages
 
+
+
+
+
+
+
+
+
+

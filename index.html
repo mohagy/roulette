@@ -31,6 +31,16 @@
     <link rel="stylesheet" href="css/right-sidebar-action-buttons.css">
     <!-- Glass Morphism No More Bets System -->
     <link rel="stylesheet" href="css/no-more-bets.css">
+    <!-- Bet Display Z-Index Fix -->
+    <link rel="stylesheet" href="css/bet-display-z-index-fix.css">
+    <!-- Upcoming Draws Top Position -->
+    <link rel="stylesheet" href="css/upcoming-draws-top-position.css">
+    <!-- Right Action Sidebar Horizontal Top -->
+    <link rel="stylesheet" href="css/right-action-sidebar-horizontal-top.css">
+    <!-- Top Bar Z-Index Fix -->
+    <link rel="stylesheet" href="css/top-bar-z-index-fix.css">
+    <!-- Beautiful Countdown Timer -->
+    <link rel="stylesheet" href="css/countdown-timer-beautiful.css">
   </head>
   <body class="index">
     <div class="website-wrapper" id="website-wrapper">
@@ -441,15 +451,6 @@
       </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    
-    <!-- Firebase Configuration and Service -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/firebase-service.js"></script>
-    <script src="js/test-firebase-write.js"></script>
-    
     <!-- Script Source -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" data-auto-replace-svg="nest"></script>
@@ -467,7 +468,6 @@
         // Draw header loading has been disabled
         console.log('Draw header loading has been disabled');
     </script>
-    <script src="js/firebase-draw-manager.js"></script>
     <script src="js/draw-header.js"></script>
     <script src="js/draw-betting-integration.js"></script>
     <script src="js/betting-slip-patch.js"></script>
@@ -521,8 +521,8 @@
     <script src="js/test-draw-numbers.js"></script>
     <script src="js/right-sidebar-action-buttons.js"></script>
     <script src="js/right-action-sidebar-toggle.js"></script>
+    <script src="js/right-action-sidebar-horizontal-position.js"></script>
     <script src="js/betting-board-debugger.js"></script>
-    <script src="js/bet-display-toggle.js"></script>
 
     <!-- Real-time 3-minute countdown timer with auto-refresh -->
     <script src="js/real-time-countdown-timer.js"></script>
@@ -542,7 +542,8 @@
             // Create the TV-style draw display
             window.tvStyleDrawDisplay = new TVStyleDrawDisplay({
                 debug: true,
-                syncInterval: 2000 // Sync every 2 seconds
+                syncInterval: 2000, // Sync every 2 seconds
+                syncUrl: 'api/get_current_draw.php' // Explicitly set the correct API endpoint
             });
 
             // Initialize the enhanced cashier draw display

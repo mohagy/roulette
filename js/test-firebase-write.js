@@ -76,3 +76,12 @@ if (window.FirebaseService && window.FirebaseService.isInitialized()) {
 // Make it available globally
 window.testFirebaseWrite = testFirebaseWrite;
 
+
+
+
+
+
+
+
+
+

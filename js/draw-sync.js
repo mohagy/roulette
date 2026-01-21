@@ -8,7 +8,7 @@ const DrawSync = (function() {
     // Configuration
     const config = {
         fetchInterval: 5000,         // Poll for updates every 5 seconds
-        drawSyncEndpoint: 'php/draw_sync.php',
+        drawSyncEndpoint: 'api/get_current_draw.php',  // Use correct API endpoint
         updateDrawEndpoint: 'php/update_draw.php',
         debug: true,                 // Enable debug logging
         autoSync: true,              // Auto-sync with the database on page load
@@ -22,9 +22,7 @@ const DrawSync = (function() {
         nextDraw: null,
         isInitialized: false,
         pollingTimer: null,
-        retryCount: 0,
-        firebaseListener: null,
-        useFirebase: false
+        retryCount: 0
     };
 
     /**
@@ -65,39 +63,37 @@ const DrawSync = (function() {
     }
 
     /**
-     * Fetch the current draw info from Firebase or database
+     * Fetch the current draw info from the database
      * @returns {Promise} Promise that resolves with the draw data
      */
-    async function fetchDrawInfo() {
-        // Try Firebase first if available
-        if (window.FirebaseDrawManager && window.FirebaseService) {
-            try {
-                log('Fetching draw information from Firebase');
-                
-                // Wait a moment for Firebase to connect if it's still connecting
-                if (!FirebaseService.isOnline()) {
-                    log('Firebase appears offline, waiting 2 seconds for connection...');
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+    function fetchDrawInfo() {
+        log('Fetching draw information from database');
+
+        return fetch(config.drawSyncEndpoint + '?_cb=' + Date.now())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Server responded with status ${response.status}`);
                 }
-                
-                const gameState = await FirebaseDrawManager.getCurrentDrawState();
-                const drawInfo = await FirebaseService.GameState.getDrawInfo();
-                
-                // If no data in Firebase, try to get from server and write to Firebase
-                if (!gameState && !drawInfo) {
-                    log('No data in Firebase yet, will initialize from server data');
-                    // Don't return here, fall through to server fetch
-                } else {
-                    const currentDraw = drawInfo?.currentDraw || gameState?.drawNumber || gameState?.currentDrawNumber || 1;
-                    const nextDraw = drawInfo?.nextDraw || gameState?.nextDrawNumber || 2;
+                return response.json();
+            })
+            .then(data => {
+                log('Received draw data:', data);
+
+                // Handle api/get_current_draw.php response format
+                if (data.status === 'success' && data.data) {
+                    const currentDraw = data.data.current_draw_number || data.data.currentDraw || 1;
+                    const nextDraw = (currentDraw + 1) > 480 ? 480 : (currentDraw + 1); // Calculate next draw, cap at 480
+                    
+                    console.log('[DrawSync] 📊 API Response:', {
+                        current_draw_number: data.data.current_draw_number,
+                        calculated_next: nextDraw,
+                        server_time: data.data.server_time
+                    });
                     
                     state.currentDraw = currentDraw;
                     state.nextDraw = nextDraw;
                     state.isInitialized = true;
-                    state.useFirebase = true;
                     state.retryCount = 0;
-
-                    log('✅ Successfully loaded from Firebase:', { currentDraw, nextDraw });
 
                     // Trigger event to notify other components
                     const event = new CustomEvent('drawSync:updated', {
@@ -112,44 +108,14 @@ const DrawSync = (function() {
                     // Update the draw numbers in the main UI
                     updateDrawNumbersInUI(currentDraw, nextDraw);
 
-                    // Setup Firebase listener for real-time updates
-                    setupFirebaseListener();
-
-                    return { success: true, currentDraw, nextDraw };
-                }
-            } catch (error) {
-                log('Firebase fetch failed, falling back to server:', error);
-            }
-        }
-
-        // Fallback to server fetch
-        log('Fetching draw information from server');
-
-        return fetch(config.drawSyncEndpoint)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Server responded with status ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                log('Received draw data:', data);
-
-                if (data.success) {
+                    return { success: true, currentDraw: currentDraw, nextDraw: nextDraw };
+                } else if (data.success) {
+                    // Fallback for old format
                     state.currentDraw = data.currentDraw;
                     state.nextDraw = data.nextDraw;
                     state.isInitialized = true;
                     state.retryCount = 0;
 
-                    // If we got data from server and Firebase is available, write it to Firebase
-                    if (window.FirebaseDrawManager && !state.useFirebase) {
-                        log('Writing server data to Firebase for future sync...');
-                        FirebaseDrawManager.updateDrawNumbers(data.currentDraw, data.nextDraw).catch(err => {
-                            log('Failed to write to Firebase (will retry):', err);
-                        });
-                    }
-
-                    // Trigger event to notify other components
                     const event = new CustomEvent('drawSync:updated', {
                         detail: {
                             currentDraw: data.currentDraw,
@@ -159,9 +125,7 @@ const DrawSync = (function() {
                     });
                     document.dispatchEvent(event);
 
-                    // Update the draw numbers in the main UI
                     updateDrawNumbersInUI(data.currentDraw, data.nextDraw);
-
                     return data;
                 } else {
                     throw new Error(data.message || 'Unknown error fetching draw info');
@@ -174,75 +138,9 @@ const DrawSync = (function() {
     }
 
     /**
-     * Setup Firebase real-time listener for draw updates
-     */
-    function setupFirebaseListener() {
-        if (!window.FirebaseDrawManager || !window.FirebaseService || state.firebaseListener) {
-            return;
-        }
-
-        log('Setting up Firebase real-time listener');
-
-        // Listen to draw info changes
-        const drawInfoListener = FirebaseService.GameState.listenDrawInfo((data) => {
-            if (data) {
-                log('Firebase draw info updated:', data);
-                state.currentDraw = data.currentDraw;
-                state.nextDraw = data.nextDraw;
-                state.isInitialized = true;
-
-                // Trigger event
-                const event = new CustomEvent('drawSync:updated', {
-                    detail: {
-                        currentDraw: data.currentDraw,
-                        nextDraw: data.nextDraw,
-                        suppressDrawHeader: false
-                    }
-                });
-                document.dispatchEvent(event);
-
-                // Update UI
-                updateDrawNumbersInUI(data.currentDraw, data.nextDraw);
-            }
-        });
-
-        // Also listen to game state changes
-        const gameStateListener = FirebaseDrawManager.listenToCurrentDraw((data) => {
-            if (data) {
-                log('Firebase game state updated:', data);
-                const currentDraw = data.drawNumber || data.currentDrawNumber;
-                const nextDraw = data.nextDrawNumber;
-
-                if (currentDraw && nextDraw) {
-                    state.currentDraw = currentDraw;
-                    state.nextDraw = nextDraw;
-
-                    const event = new CustomEvent('drawSync:updated', {
-                        detail: {
-                            currentDraw: currentDraw,
-                            nextDraw: nextDraw,
-                            suppressDrawHeader: false
-                        }
-                    });
-                    document.dispatchEvent(event);
-                    updateDrawNumbersInUI(currentDraw, nextDraw);
-                }
-            }
-        });
-
-        state.firebaseListener = { drawInfoListener, gameStateListener };
-        log('Firebase listeners set up');
-    }
-
-    /**
-     * Start polling for draw updates (only if not using Firebase)
+     * Start polling for draw updates
      */
     function startPolling() {
-        if (state.useFirebase) {
-            log('Using Firebase real-time updates, skipping polling');
-            return;
-        }
-
         if (state.pollingTimer) {
             clearInterval(state.pollingTimer);
         }
@@ -271,39 +169,9 @@ const DrawSync = (function() {
      * @param {number} nextDraw - The next draw number
      * @returns {Promise} Promise that resolves when the update is complete
      */
-    async function updateDrawNumbers(currentDraw, nextDraw) {
+    function updateDrawNumbers(currentDraw, nextDraw) {
         log(`Updating draw numbers: current=${currentDraw}, next=${nextDraw}`);
 
-        // Try Firebase first if available
-        if (window.FirebaseDrawManager) {
-            try {
-                const result = await FirebaseDrawManager.updateDrawNumbers(currentDraw, nextDraw);
-                if (result.success) {
-                    state.currentDraw = currentDraw;
-                    state.nextDraw = nextDraw;
-                    state.retryCount = 0;
-
-                    // Trigger event to notify other components
-                    const event = new CustomEvent('drawSync:updated', {
-                        detail: {
-                            currentDraw: currentDraw,
-                            nextDraw: nextDraw,
-                            suppressDrawHeader: false
-                        }
-                    });
-                    document.dispatchEvent(event);
-
-                    // Update the draw numbers in the main UI
-                    updateDrawNumbersInUI(currentDraw, nextDraw);
-
-                    return result;
-                }
-            } catch (error) {
-                log('Firebase update failed, falling back to server:', error);
-            }
-        }
-
-        // Fallback to server update
         const formData = new FormData();
         formData.append('currentDraw', currentDraw);
         formData.append('nextDraw', nextDraw);
@@ -384,24 +252,25 @@ const DrawSync = (function() {
     function updateDrawNumbersInUI(currentDraw, nextDraw) {
         log(`Updating UI with draw numbers: current=${currentDraw}, next=${nextDraw}`);
 
-        // Force the next draw to be 15 if it's showing 1 or 2
-        if (nextDraw === 1 || nextDraw === 2) {
-            nextDraw = 15;
-            log('Forcing next draw to be 15 instead of ' + nextDraw);
+        // Remove hardcoded fallback values - use actual server values
+        // Cap draw numbers at 480 (max draws per day)
+        if (nextDraw > 480) {
+            nextDraw = 480;
+            log('Capped next draw at 480');
         }
-
-        // Force the current draw to be 14 if it's showing 0
-        if (currentDraw === 0) {
-            currentDraw = 14;
-            log('Forcing current draw to be 14 instead of 0');
+        if (currentDraw > 480) {
+            currentDraw = 480;
+            log('Capped current draw at 480');
         }
 
         // Update the next draw number in the main UI
         const nextDrawElement = document.getElementById('next-draw-number');
         if (nextDrawElement) {
             nextDrawElement.textContent = `#${nextDraw}`;
+            console.log('[DrawSync] ✅ Updated next-draw-number element to:', `#${nextDraw}`);
             log('Updated next-draw-number element');
         } else {
+            console.warn('[DrawSync] ⚠️ next-draw-number element not found in DOM');
             log('next-draw-number element not found');
         }
 
@@ -453,10 +322,7 @@ const DrawSync = (function() {
 
         if (config.autoSync) {
             fetchDrawInfo().then(() => {
-                // Only start polling if not using Firebase
-                if (!state.useFirebase) {
-                    startPolling();
-                }
+                startPolling();
             });
         }
 
@@ -473,23 +339,21 @@ const DrawSync = (function() {
         });
     }
 
-    /**
-     * Cleanup Firebase listeners
-     */
-    function cleanup() {
-        if (state.firebaseListener) {
-            if (state.firebaseListener.drawInfoListener) {
-                FirebaseService.unlisten(state.firebaseListener.drawInfoListener);
-            }
-            if (state.firebaseListener.gameStateListener) {
-                FirebaseDrawManager.stopListening();
-            }
-            state.firebaseListener = null;
-        }
-    }
-
     // Initialize on load
-    window.addEventListener('DOMContentLoaded', init);
+    if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', init);
+    } else {
+        // DOM already loaded, initialize immediately
+        setTimeout(init, 100);
+    }
+    
+    // Also try to initialize after a short delay to ensure other scripts are loaded
+    setTimeout(() => {
+        if (!state.isInitialized) {
+            console.log('[DrawSync] Retrying initialization...');
+            init();
+        }
+    }, 2000);
 
     // Public API
     return {
@@ -500,14 +364,13 @@ const DrawSync = (function() {
         advanceToNextDraw: advanceToNextDraw,
         startPolling: startPolling,
         stopPolling: stopPolling,
-        cleanup: cleanup,
         getConfig: () => ({...config}),
         setConfig: (newConfig) => {
             Object.assign(config, newConfig);
             log('Updated configuration', config);
 
-            // Restart polling if interval changed and not using Firebase
-            if (state.pollingTimer && !state.useFirebase) {
+            // Restart polling if interval changed
+            if (state.pollingTimer) {
                 stopPolling();
                 startPolling();
             }

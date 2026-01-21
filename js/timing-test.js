@@ -1,0 +1,1 @@
+console.log('=== COMPLETE BUTTON TIMING TEST ==='); let testStart = Date.now(); setInterval(() => { let elapsed = Date.now() - testStart; if (window.CompleteButtonLifecycleFix) { console.log(`${elapsed}ms: Phase ${window.CompleteButtonLifecycleFix.getCurrentPhase()}, Mode: ${window.CompleteButtonLifecycleFix.isCompleteBetMode()}`); } }, 1000);

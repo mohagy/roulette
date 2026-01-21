@@ -1,0 +1,31 @@
+/**
+ * Bet Display Container Z-Index Fix
+ * Ensures the bet display container appears above the upcoming draws panel
+ */
+
+.bet-display-container {
+  z-index: 2000 !important; /* Higher than upcoming-draws-panel (1500) */
+  position: fixed !important; /* Ensure it's positioned correctly */
+}
+
+/* Ensure all child elements are also above the upcoming draws panel */
+.bet-display-container * {
+  position: relative;
+  z-index: auto;
+}
+
+/* Ensure the header is visible */
+.bet-display-header {
+  z-index: 2001 !important;
+}
+
+/* Ensure the footer is visible */
+.bet-display-footer {
+  z-index: 2002 !important;
+}
+
+/* Ensure the change calculator is visible */
+.change-calculator {
+  z-index: 2003 !important;
+}
+

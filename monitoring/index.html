@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Monitoring Dashboard</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Bootstrap (for some components) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <a href="#" class="navbar-brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <span>Monitoring <span class="brand-accent">Hub</span></span>
+                </a>
+                <div class="d-flex align-items-center gap-4">
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="user-info">
+                            <span id="userDisplay" class="user-name"></span>
+                            <span class="user-status"><i class="fas fa-circle"></i> Online</span>
+                        </div>
+                    </div>
+                    <button onclick="Dashboard.logout()" class="btn-logout">
+                        <i class="fas fa-power-off"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Tab Navigation -->
+    <div class="container">
+        <ul class="nav-tabs">
+            <li><a href="#" class="nav-tab active" data-tab="dashboard">📊 Dashboard</a></li>
+            <li><a href="#" class="nav-tab" data-tab="analytics">📈 Analytics</a></li>
+            <li><a href="#" class="nav-tab" data-tab="draws">⏰ Draw Monitor</a></li>
+            <li><a href="#" class="nav-tab" data-tab="tvPreview">📺 TV Display Preview</a></li>
+            <li><a href="#" class="nav-tab" data-tab="cashiers">👥 Cashiers</a></li>
+            <li><a href="#" class="nav-tab" data-tab="maintenance">🔧 Maintenance</a></li>
+        </ul>
+    </div>
+
+    <!-- Dashboard Tab -->
+    <div id="dashboardTab" class="tab-content active">
+        <div class="container">
+            <!-- Live Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Active Alerts</div>
+                    <div class="stat-value" id="totalAlerts">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Critical Alerts</div>
+                    <div class="stat-value text-danger" id="criticalAlerts">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Today's Payouts</div>
+                    <div class="stat-value" id="todayPayouts">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Shops Monitoring</div>
+                    <div class="stat-value" id="shopsMonitoring">0</div>
+                </div>
+            </div>
+
+            <!-- Live Alerts -->
+            <div class="card">
+                <div class="card-title">🔴 Live Alerts (Real-time)</div>
+                <div id="alertsContainer">
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-primary"></div> Loading alerts...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shop Performance -->
+            <div class="card">
+                <div class="card-title">🏪 Shop Performance (Real-time)</div>
+                <div id="shopsContainer">
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-primary"></div> Loading shop data...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Tab -->
+    <div id="analyticsTab" class="tab-content" style="display:none;">
+        <div class="container">
+            <div class="mb-3">
+                <button onclick="AnalyticsModule.loadAll()" class="btn btn-primary">
+                    <i class="fas fa-sync"></i> Refresh All Data
+                </button>
+            </div>
+            <!-- Server Time & Current Draw -->
+            <div class="card">
+                <div class="card-title">⏰ Server Time & Current Draw</div>
+                <div class="info-grid" id="serverInfo">
+                    <div class="info-card">
+                        <label>Server Time</label>
+                        <div class="value" id="serverTime">Loading...</div>
+                    </div>
+                    <div class="info-card">
+                        <label>Server Timezone</label>
+                        <div class="value" id="serverTimezone">Loading...</div>
+                    </div>
+                    <div class="info-card">
+                        <label>Current Draw Number</label>
+                        <div class="value" id="currentDrawNumber">Loading...</div>
+                    </div>
+                    <div class="info-card">
+                        <label>Next Draw Number</label>
+                        <div class="value" id="nextDrawNumber">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics History -->
+            <div class="card">
+                <div class="card-title">📊 Analytics History (Last 20 Draws)</div>
+                <div id="analyticsLoading" class="text-center py-3">
+                    <div class="spinner-border text-primary"></div> Loading analytics history...
+                </div>
+                <div id="analyticsError" class="alert alert-danger" style="display:none;"></div>
+                <table class="table" id="analyticsTable" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>Draw #</th>
+                            <th>Winning Number</th>
+                            <th>Color</th>
+                            <th>Draw Time</th>
+                            <th>Source</th>
+                            <th>Preset</th>
+                            <th>Pattern</th>
+                        </tr>
+                    </thead>
+                    <tbody id="analyticsBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Preset Schedule -->
+            <div class="card">
+                <div class="card-title">📅 Preset Schedule (Active)</div>
+                <div class="info-grid" id="presetInfo" style="margin-bottom: 20px;">
+                    <div class="info-card">
+                        <label>Active Preset</label>
+                        <div class="value" id="presetStatus">Checking...</div>
+                    </div>
+                    <div class="info-card">
+                        <label>Start Draw #</label>
+                        <div class="value" id="presetStart">-</div>
+                    </div>
+                    <div class="info-card">
+                        <label>End Draw #</label>
+                        <div class="value" id="presetEnd">-</div>
+                    </div>
+                    <div class="info-card">
+                        <label>Total Draws</label>
+                        <div class="value" id="presetTotal">-</div>
+                    </div>
+                </div>
+                <div id="presetLoading" class="text-center py-3">
+                    <div class="spinner-border text-primary"></div> Loading preset schedule...
+                </div>
+                <div id="presetError" class="alert alert-danger" style="display:none;"></div>
+                <div style="max-height: 500px; overflow-y: auto;">
+                    <table class="table" id="presetTable" style="display:none;">
+                        <thead>
+                            <tr>
+                                <th>Draw #</th>
+                                <th>Scheduled Number</th>
+                                <th>Color</th>
+                                <th>Scheduled Time</th>
+                                <th>Pattern</th>
+                            </tr>
+                        </thead>
+                        <tbody id="presetBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Forced Numbers -->
+            <div class="card">
+                <div class="card-title">🎯 Forced Numbers (Next Draw Winning Number)</div>
+                <div id="forcedLoading" class="text-center py-3">
+                    <div class="spinner-border text-primary"></div> Loading forced numbers...
+                </div>
+                <div id="forcedError" class="alert alert-danger" style="display:none;"></div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="table" id="forcedTable" style="display:none;">
+                        <thead>
+                            <tr>
+                                <th>Draw #</th>
+                                <th>Forced Number</th>
+                                <th>Color</th>
+                                <th>Source</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody id="forcedBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Comparison -->
+            <div class="card">
+                <div class="card-title">🔗 Comparison: Analytics vs Preset vs Forced</div>
+                <div class="alert alert-info mb-3">
+                    <strong>ℹ️ Note:</strong> Analytics draw numbers may differ from server-time-based draw numbers.
+                    Preset schedule uses server-time-based numbers (#1-480 per day).
+                    If analytics draw numbers are outside the preset range, they won't match.
+                </div>
+                <div id="comparisonLoading" class="text-center py-3">
+                    <div class="spinner-border text-primary"></div> Loading comparison...
+                </div>
+                <div id="comparisonError" class="alert alert-danger" style="display:none;"></div>
+                <div style="max-height: 500px; overflow-y: auto;">
+                    <table class="table" id="comparisonTable" style="display:none;">
+                        <thead>
+                            <tr>
+                                <th>Draw #</th>
+                                <th>Analytics History</th>
+                                <th>Preset Schedule</th>
+                                <th>Forced Number</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparisonBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Draw Monitor Tab -->
+    <div id="drawsTab" class="tab-content">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Draw Timer & Info -->
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-title">⏰ Draw Timer & Info</div>
+                        <div class="text-center mb-3">
+                            <div style="font-size: 3rem; font-weight: bold; font-family: monospace; color: var(--primary-color);"
+                                id="drawTimer">--:--</div>
+                            <div class="text-muted">Next Draw In</div>
+                        </div>
+                        <div class="info-grid">
+                            <div class="info-card">
+                                <label>Server Time</label>
+                                <div class="value" id="serverTimeDraws">--:--:--</div>
+                            </div>
+                            <div class="info-card">
+                                <label>Current Draw</label>
+                                <div class="value" id="currentDrawDisplay">#---</div>
+                            </div>
+                            <div class="info-card">
+                                <label>Next Draw In</label>
+                                <div class="value" id="nextDrawIn">--:--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Forced Number Checker -->
+                    <div class="card">
+                        <div class="card-title">🎯 Forced Number Checker</div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="autoApplyForcedNumber" checked>
+                            <label class="form-check-label" for="autoApplyForcedNumber">
+                                Auto-Apply from Preset Schedule
+                            </label>
+                        </div>
+                        <button onclick="DrawMonitorModule.checkForcedNumber()"
+                            class="btn btn-primary btn-sm w-100 mb-3">
+                            <i class="fas fa-search"></i> Check Forced Number
+                        </button>
+                        <div id="forcedNumberInfo">
+                            <div class="alert alert-secondary mb-0">
+                                <small>No active forced number detected.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manual Number Control -->
+                    <div class="card">
+                        <div class="card-title">✋ Manual Number Control</div>
+                        <div class="mb-3">
+                            <label class="form-label small">Current Mode:</label>
+                            <div class="d-flex align-items-center">
+                                <span id="currentModeDisplay" class="badge bg-secondary me-2">Auto</span>
+                                <button onclick="DrawMonitorModule.toggleMode()" id="toggleModeBtn"
+                                    class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-toggle-off"></i> Switch to Manual
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="manualNumberInput" class="form-label small">Set Winning Number (0-36):</label>
+                            <input type="number" id="manualNumberInput" class="form-control form-control-sm" min="0"
+                                max="36" value="0" placeholder="Enter number">
+                        </div>
+                        <button onclick="DrawMonitorModule.setManualNumber()" class="btn btn-primary btn-sm w-100 mb-2">
+                            <i class="fas fa-hand-pointer"></i> Set Manual Number
+                        </button>
+                        <div id="manualNumberStatus" class="mt-2"></div>
+                    </div>
+                </div>
+
+                <!-- Preset Schedule -->
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-title">📅 Preset Schedule</div>
+                        <div class="d-flex gap-2 mb-3">
+                            <button onclick="DrawMonitorModule.loadSchedule()" class="btn btn-primary btn-sm">
+                                <i class="fas fa-sync"></i> Refresh Schedule
+                            </button>
+                        </div>
+                        <div style="max-height: 600px; overflow-y: auto;">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>Draw #</th>
+                                        <th>Time</th>
+                                        <th>Number</th>
+                                        <th>Pattern/Puzzle</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="scheduleBody">
+                                    <tr>
+                                        <td colspan="4" class="text-center">Loading schedule...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TV Display Preview Tab -->
+    <div id="tvPreviewTab" class="tab-content" style="display:none;">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Last Winning Number (Animation Result) -->
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-title">🎰 Last Animation Result</div>
+                        <div class="text-center mb-3">
+                            <div class="mb-3">
+                                <div id="tvLastDrawNumber" class="text-muted small mb-2">Draw #---</div>
+                                <div id="tvLastWinningNumber" class="number-circle number-black" style="width: 120px; height: 120px; line-height: 120px; font-size: 3rem; margin: 0 auto; border-radius: 50%; border: 4px solid; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                    --
+                                </div>
+                                <div class="mt-2">
+                                    <span id="tvLastWinningColor" class="badge" style="font-size: 1rem; padding: 0.5rem 1rem;">--</span>
+                                </div>
+                                <div id="tvLastDrawTime" class="text-muted small mt-2">--:--:--</div>
+                            </div>
+                        </div>
+                        <div class="info-grid">
+                            <div class="info-card">
+                                <label>Current Draw</label>
+                                <div class="value" id="tvCurrentDraw">#---</div>
+                            </div>
+                            <div class="info-card">
+                                <label>Next Draw</label>
+                                <div class="value" id="tvNextDraw">#---</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preset Schedule -->
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-title">📅 Preset Schedule (Next 10 Draws)</div>
+                        <div class="d-flex gap-2 mb-3">
+                            <button onclick="TVDisplayPreviewModule.loadAll()" class="btn btn-primary btn-sm">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                        </div>
+                        <div style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>Draw #</th>
+                                        <th>Time</th>
+                                        <th>Number</th>
+                                        <th>Pattern</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tvPresetScheduleBody">
+                                    <tr>
+                                        <td colspan="4" class="text-center">Loading preset schedule...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forced Numbers -->
+            <div class="row g-4 mt-2">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-title">🎯 Forced Numbers (Next 5 Draws)</div>
+                        <div class="d-flex gap-2 mb-3">
+                            <button onclick="TVDisplayPreviewModule.loadForcedNumbers()" class="btn btn-primary btn-sm">
+                                <i class="fas fa-sync"></i> Refresh Forced Numbers
+                            </button>
+                        </div>
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>Draw #</th>
+                                        <th>Time</th>
+                                        <th>Number</th>
+                                        <th>Source</th>
+                                        <th>Reason</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tvForcedNumbersBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center">Loading forced numbers...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cashiers Tab -->
+    <div id="cashiersTab" class="tab-content" style="display:none;">
+        <div class="container">
+            <div class="card">
+                <div class="card-title">👥 Cashier Monitoring & Till Management</div>
+                <div class="mb-3">
+                    <button onclick="CashierModule.loadCashiers()" class="btn btn-primary">
+                        <i class="fas fa-sync"></i> Refresh Cashiers
+                    </button>
+                </div>
+                <div id="cashiersLoading" class="text-center py-3" style="display:none;">
+                    <div class="spinner-border text-primary"></div> Loading cashiers...
+                </div>
+                <div id="cashiersError" class="alert alert-danger" style="display:none;"></div>
+                <div id="cashiersContainer">
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-primary"></div> Loading cashiers...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cashier Alerts & Troubleshooting -->
+            <div class="card">
+                <div class="card-title">⚠️ Cashier Alerts & Issues</div>
+                <div id="cashierAlerts">
+                    <div class="alert alert-info">No alerts. All cashiers operational.</div>
+                </div>
+            </div>
+
+            <!-- Till Balance Health -->
+            <div class="card">
+                <div class="card-title">💰 Till Balance Health</div>
+                <div id="tillBalanceHealth">
+                    <div class="text-muted">Balance health data will appear here after loading cashiers.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Tab -->
+    <div id="maintenanceTab" class="tab-content" style="display:none;">
+        <div class="container">
+            <div class="card">
+                <div class="card-title">🔧 Application Maintenance Checks</div>
+                <div class="mb-3">
+                    <button onclick="MaintenanceModule.runAllChecks()" class="btn btn-primary">
+                        <i class="fas fa-sync"></i> Run All Checks
+                    </button>
+                </div>
+                <div id="maintenanceChecks">
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-primary"></div> Running maintenance checks...
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Information -->
+            <div class="card">
+                <div class="card-title">ℹ️ System Information</div>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <label>Application Version</label>
+                        <div class="value">1.0.0</div>
+                    </div>
+                    <div class="info-card">
+                        <label>Last Update</label>
+                        <div class="value" id="lastUpdate">-</div>
+                    </div>
+                    <div class="info-card">
+                        <label>Firebase Status</label>
+                        <div class="value" id="firebaseStatus">Checking...</div>
+                    </div>
+                    <div class="info-card">
+                        <label>API Base URL</label>
+                        <div class="value small" id="apiBaseUrl">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="config/firebase-config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/draw-monitor.js"></script>
+    <script src="js/tv-display-preview.js"></script>
+    <script src="js/maintenance.js"></script>
+    <script src="js/cashiers.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/dashboard.js"></script>
+
+    <script>
+        // Update user display
+        window.addEventListener('DOMContentLoaded', function () {
+            const user = MonitoringAuth.getCurrentUser();
+            if (user) {
+                document.getElementById('userDisplay').textContent = `${user.name} (${user.role})`;
+            }
+
+            // Update API base URL display
+            document.getElementById('apiBaseUrl').textContent = API_BASE;
+
+            // Update last update time
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+
+            // Check Firebase status
+            if (window.firestore) {
+                document.getElementById('firebaseStatus').innerHTML = '<span class="badge bg-success">Connected</span>';
+            } else {
+                document.getElementById('firebaseStatus').innerHTML = '<span class="badge bg-warning">Not Connected</span>';
+            }
+
+            // Update draw timer
+            setInterval(() => {
+                const now = new Date();
+                const currentMinute = now.getMinutes();
+                const currentSecond = now.getSeconds();
+                const minutesToNext = 3 - (currentMinute % 3);
+                const secondsToNext = (minutesToNext * 60) - currentSecond;
+                const mins = Math.floor(secondsToNext / 60);
+                const secs = secondsToNext % 60;
+                const timerEl = document.getElementById('drawTimer');
+                if (timerEl) {
+                    timerEl.textContent = `${mins}:${String(secs).padStart(2, '0')}`;
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+
+</html>

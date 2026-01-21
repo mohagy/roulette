@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Monitoring collections - allow read/write for development
+    // For production, remove '|| true' and require authentication
+    
+    // Alerts collection
+    match /monitoring_alerts/{alertId} {
+      allow read: if request.auth != null || true; // Allow read if authenticated OR public (for testing)
+      allow write: if request.auth != null || true; // Allow write for testing (restrict in production)
+    }
+    
+    // Shops collection
+    match /monitoring_shops/{shopId} {
+      allow read: if request.auth != null || true; // Allow read if authenticated OR public (for testing)
+      allow write: if request.auth != null || true; // Allow write for testing (restrict in production)
+    }
+    
+    // Stats collection
+    match /monitoring_stats/{document=**} {
+      allow read: if request.auth != null || true; // Allow read if authenticated OR public (for testing)
+      allow write: if request.auth != null || true; // Allow write for testing (restrict in production)
+    }
+    
+    // Payouts collection
+    match /monitoring_payouts/{payoutId} {
+      allow read: if request.auth != null || true; // Allow read if authenticated OR public (for testing)
+      allow write: if request.auth != null || true; // Allow write for testing (restrict in production)
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

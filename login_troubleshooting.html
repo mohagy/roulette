@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Troubleshooting Guide</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #1d3557;
+            border-bottom: 2px solid #1d3557;
+            padding-bottom: 10px;
+        }
+        .step {
+            background: #f1faee;
+            border-left: 4px solid #457b9d;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 5px 5px 0;
+        }
+        .step h2 {
+            margin-top: 0;
+            color: #1d3557;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .button {
+            display: inline-block;
+            background: #457b9d;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .button:hover {
+            background: #1d3557;
+        }
+        .error-box {
+            background: #e63946;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .solution-box {
+            background: #2a9d8f;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Login Troubleshooting Guide</h1>
+    
+    <div class="step">
+        <h2>The Issue: AJAX Error with HTML Response</h2>
+        <p>You're seeing an error like this:</p>
+        <div class="error-box">
+            <code>AJAX Error: parsererror SyntaxError: Unexpected token '&lt;', "<!DOCTYPE "... is not valid JSON</code>
+        </div>
+        <p>This happens because the AJAX request is expecting JSON data, but it's receiving HTML instead. This is a common issue when PHP scripts return HTML instead of the expected JSON format.</p>
+    </div>
+    
+    <div class="step">
+        <h2>Solution 1: Use the Dedicated AJAX Login Endpoint</h2>
+        <p>We've created a dedicated AJAX endpoint that always returns JSON:</p>
+        <div class="solution-box">
+            <p>Use <code>ajax_login.php</code> instead of <code>login.php</code> for AJAX requests.</p>
+        </div>
+        <p>This has been implemented in the updated login.js file.</p>
+    </div>
+    
+    <div class="step">
+        <h2>Solution 2: Try the Simple Login (No AJAX)</h2>
+        <p>If you're still having issues with the AJAX login, you can use the simple login page that doesn't rely on AJAX:</p>
+        <div class="links">
+            <a href="simple_login.php" class="button">Simple Login (No AJAX)</a>
+        </div>
+    </div>
+    
+    <div class="step">
+        <h2>Solution 3: Fix Database Issues</h2>
+        <p>If you're having database-related issues, use the database fix tool:</p>
+        <div class="links">
+            <a href="fix_database.php" class="button">Fix Database</a>
+        </div>
+    </div>
+    
+    <div class="step">
+        <h2>Login Options</h2>
+        <p>Here are all the login options available:</p>
+        <div class="links">
+            <a href="login.html" class="button">Regular Login (AJAX)</a>
+            <a href="simple_login.php" class="button">Simple Login (No AJAX)</a>
+            <a href="direct_login.php" class="button">Direct Login</a>
+        </div>
+    </div>
+    
+    <div class="step">
+        <h2>Default Credentials</h2>
+        <p>Use these credentials to log in:</p>
+        <ul>
+            <li><strong>Username:</strong> 123456789012</li>
+            <li><strong>Password:</strong> 123456</li>
+        </ul>
+    </div>
+    
+    <div class="step">
+        <h2>Additional Troubleshooting</h2>
+        <p>If you're still having issues:</p>
+        <ul>
+            <li>Make sure XAMPP is running with MySQL service active</li>
+            <li>Check that the database connection parameters in the PHP files are correct</li>
+            <li>Try clearing your browser cache or using a different browser</li>
+            <li>Check the PHP error logs in XAMPP for any additional errors</li>
+        </ul>
+    </div>
+</body>
+</html>

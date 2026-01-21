@@ -110,7 +110,34 @@ function getCurrentDrawNumber($conn) {
  * @param int $drawNumber The draw number to analyze
  * @return array The best winning number and reason
  */
-function findBestWinningNumber($conn, $drawNumber) {
+function findBestWinningNumber($conn, $drawNumber, $useSmartSelection = true) {
+    // If smart selection is enabled, use the smart selection logic
+    if ($useSmartSelection) {
+        // Get smart selection settings
+        $timePreset = 'auto';
+        $patternType = 'smart';
+        
+        $stmt = $conn->prepare("
+            SELECT setting_name, setting_value 
+            FROM roulette_settings 
+            WHERE setting_name IN ('smart_time_preset', 'smart_pattern_type')
+        ");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            if ($row['setting_name'] === 'smart_time_preset') {
+                $timePreset = $row['setting_value'];
+            } elseif ($row['setting_name'] === 'smart_pattern_type') {
+                $patternType = $row['setting_value'];
+            }
+        }
+        $stmt->close();
+        
+        // Use smart selection logic (similar to smart_number_selection.php)
+        return findBestWinningNumberSmart($conn, $drawNumber, $timePreset, $patternType);
+    }
+    
+    // Original simple logic (fallback)
     // Initialize array to track potential payouts for each number
     $numberPayouts = array_fill(0, 37, 0); // 0-36
     $numbersWithNoBets = range(0, 36);
@@ -156,6 +183,156 @@ function findBestWinningNumber($conn, $drawNumber) {
     return [
         'number' => $bestNumber,
         'reason' => 'Lowest potential payout: $' . number_format($minPayout, 2)
+    ];
+}
+
+/**
+ * Smart winning number selection with time-based presets and patterns
+ */
+function findBestWinningNumberSmart($conn, $drawNumber, $timePreset = 'auto', $patternType = 'smart') {
+    date_default_timezone_set('America/La_Paz');
+    
+    // Get recent winning numbers for pattern analysis
+    $stmt = $conn->prepare("
+        SELECT winning_number, draw_number, timestamp
+        FROM detailed_draw_results
+        WHERE draw_number < ?
+        ORDER BY draw_number DESC
+        LIMIT 20
+    ");
+    $stmt->bind_param("i", $drawNumber);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $recentNumbers = [];
+    while ($row = $result->fetch_assoc()) {
+        $recentNumbers[] = $row;
+    }
+    $stmt->close();
+    
+    // Get bet distribution
+    $stmt = $conn->prepare("
+        SELECT b.bet_type, b.bet_description, b.bet_amount, b.potential_return
+        FROM betting_slips bs
+        JOIN slip_details sd ON bs.slip_id = sd.slip_id
+        JOIN bets b ON sd.bet_id = b.bet_id
+        WHERE bs.draw_number = ?
+    ");
+    $stmt->bind_param('i', $drawNumber);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $numberPayouts = array_fill(0, 37, 0);
+    $numbersWithNoBets = range(0, 36);
+    
+    while ($bet = $result->fetch_assoc()) {
+        processBet($bet['bet_type'], $bet['bet_description'], $bet['bet_amount'], $bet['potential_return'], $numberPayouts, $numbersWithNoBets);
+    }
+    $stmt->close();
+    
+    // Get current time for time-based presets
+    $now = new DateTime('now', new DateTimeZone('America/La_Paz'));
+    $currentHour = (int)$now->format('H');
+    
+    // Time-based preset logic
+    $timeBasedNumbers = [];
+    if ($timePreset === 'auto' || $timePreset === 'time_based') {
+        if ($currentHour >= 6 && $currentHour < 12) {
+            $timeBasedNumbers = array_merge(range(0, 12), [18, 24, 30, 36]);
+        } elseif ($currentHour >= 12 && $currentHour < 18) {
+            $timeBasedNumbers = array_merge(range(13, 24), [0, 7, 14, 21, 28, 35]);
+        } elseif ($currentHour >= 18 && $currentHour < 24) {
+            $timeBasedNumbers = array_merge(range(25, 36), [0, 6, 12, 18, 24, 30]);
+        } else {
+            $timeBasedNumbers = range(0, 36);
+        }
+    } else {
+        $timeBasedNumbers = range(0, 36);
+    }
+    
+    // Pattern-based selection
+    $patternNumbers = [];
+    if ($patternType === 'smart' && count($recentNumbers) >= 3) {
+        $lastThree = array_slice($recentNumbers, 0, 3);
+        $lastNumbers = array_column($lastThree, 'winning_number');
+        
+        // Pattern: Fibonacci-like
+        if (count($lastNumbers) >= 2) {
+            $diff = abs($lastNumbers[0] - $lastNumbers[1]);
+            $next = ($lastNumbers[0] + $diff) % 37;
+            $patternNumbers[] = $next;
+        }
+        
+        // Pattern: Color alternation (but pick low payout)
+        $lastColor = getNumberColor($lastNumbers[0]);
+        $oppositeColor = ($lastColor === 'red') ? 'black' : (($lastColor === 'black') ? 'red' : 'green');
+        for ($i = 0; $i <= 36; $i++) {
+            if (getNumberColor($i) === $oppositeColor) {
+                $patternNumbers[] = $i;
+            }
+        }
+        
+        // Pattern: Cold numbers
+        $recentNumberSet = array_unique(array_column($recentNumbers, 'winning_number'));
+        $coldNumbers = array_diff(range(0, 36), $recentNumberSet);
+        $patternNumbers = array_merge($patternNumbers, $coldNumbers);
+    } elseif ($patternType === 'cold_numbers') {
+        $recentNumberSet = array_unique(array_column($recentNumbers, 'winning_number'));
+        $patternNumbers = array_diff(range(0, 36), $recentNumberSet);
+    } elseif ($patternType === 'color_alternate' && count($recentNumbers) > 0) {
+        $lastColor = getNumberColor($recentNumbers[0]['winning_number']);
+        $oppositeColor = ($lastColor === 'red') ? 'black' : (($lastColor === 'black') ? 'red' : 'green');
+        for ($i = 0; $i <= 36; $i++) {
+            if (getNumberColor($i) === $oppositeColor) {
+                $patternNumbers[] = $i;
+            }
+        }
+    } else {
+        $patternNumbers = range(0, 36);
+    }
+    
+    // Combine time-based and pattern-based
+    $candidateNumbers = array_intersect($timeBasedNumbers, $patternNumbers);
+    if (empty($candidateNumbers)) {
+        $candidateNumbers = range(0, 36);
+    }
+    
+    // Filter to numbers with no bets or low payouts
+    $bestCandidates = [];
+    $lowPayoutCandidates = [];
+    
+    foreach ($candidateNumbers as $num) {
+        if (in_array($num, $numbersWithNoBets)) {
+            $bestCandidates[] = $num;
+        } elseif ($numberPayouts[$num] < 100) {
+            $lowPayoutCandidates[] = $num;
+        }
+    }
+    
+    // Select best number
+    if (!empty($bestCandidates)) {
+        $selectedNumber = $bestCandidates[array_rand($bestCandidates)];
+        $reason = 'No bets on this number (smart selection: ' . $timePreset . ' + ' . $patternType . ')';
+    } elseif (!empty($lowPayoutCandidates)) {
+        usort($lowPayoutCandidates, function($a, $b) use ($numberPayouts) {
+            return $numberPayouts[$a] <=> $numberPayouts[$b];
+        });
+        $bottom25 = array_slice($lowPayoutCandidates, 0, max(1, floor(count($lowPayoutCandidates) * 0.25)));
+        $selectedNumber = $bottom25[array_rand($bottom25)];
+        $reason = 'Low payout selection (smart: ' . $timePreset . ' + ' . $patternType . ') - $' . number_format($numberPayouts[$selectedNumber], 2);
+    } else {
+        $candidatePayouts = [];
+        foreach ($candidateNumbers as $num) {
+            $candidatePayouts[$num] = $numberPayouts[$num];
+        }
+        asort($candidatePayouts);
+        $lowestPayoutNumbers = array_slice(array_keys($candidatePayouts), 0, 5);
+        $selectedNumber = $lowestPayoutNumbers[array_rand($lowestPayoutNumbers)];
+        $reason = 'Smart selection (' . $timePreset . ' + ' . $patternType . ') - $' . number_format($numberPayouts[$selectedNumber], 2);
+    }
+    
+    return [
+        'number' => $selectedNumber,
+        'reason' => $reason
     ];
 }
 

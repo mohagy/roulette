@@ -31,6 +31,7 @@ desktop.ini
 # IDE files
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
 *~
@@ -73,4 +74,13 @@ __pycache__/
 *.rar
 *.tar
 *.zip
+
+
+
+
+
+
+
+
+
 

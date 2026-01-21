@@ -148,19 +148,23 @@
         sidebar.classList.add('sidebar-showing', 'sidebar-visible');
 
         // Force visibility with direct styles (maximum override)
+        // Position horizontally centered under top-bar
         sidebar.style.setProperty('display', 'flex', 'important');
         sidebar.style.setProperty('visibility', 'visible', 'important');
         sidebar.style.setProperty('opacity', '1', 'important');
         sidebar.style.setProperty('pointer-events', 'auto', 'important');
         sidebar.style.setProperty('position', 'fixed', 'important');
-        sidebar.style.setProperty('top', '50%', 'important');
-        sidebar.style.setProperty('right', '20px', 'important');
-        sidebar.style.setProperty('transform', 'translateY(-50%)', 'important');
-        sidebar.style.setProperty('z-index', '1500', 'important');
-        sidebar.style.setProperty('left', 'auto', 'important');
+        sidebar.style.setProperty('top', '120px', 'important'); // Moved down to avoid header (was 90px)
+        sidebar.style.setProperty('left', '50%', 'important'); // Center horizontally
+        sidebar.style.setProperty('right', 'auto', 'important');
+        sidebar.style.setProperty('transform', 'translateX(-50%)', 'important'); // Center horizontally
+        sidebar.style.setProperty('z-index', '2001', 'important'); // Higher than top-bar
         sidebar.style.setProperty('width', 'auto', 'important');
         sidebar.style.setProperty('height', 'auto', 'important');
         sidebar.style.setProperty('overflow', 'visible', 'important');
+        sidebar.style.setProperty('flex-direction', 'row', 'important'); // Horizontal layout
+        sidebar.style.setProperty('align-items', 'center', 'important');
+        sidebar.style.setProperty('justify-content', 'center', 'important');
 
         // Update toggle control
         rightActionToggle.classList.remove('sidebar-hidden');
@@ -236,13 +240,13 @@
                 isVisible = savedState === 'true';
                 console.log('🎛️ Loaded saved state:', isVisible ? 'visible' : 'hidden');
             } else {
-                // Default to hidden
-                isVisible = false;
-                console.log('🎛️ No saved state found, defaulting to hidden');
+                // Default to VISIBLE so buttons are always accessible
+                isVisible = true;
+                console.log('🎛️ No saved state found, defaulting to visible (buttons should always be accessible)');
             }
         } catch (e) {
             console.warn('🎛️ Error loading saved state:', e);
-            isVisible = false;
+            isVisible = true; // Default to visible so buttons are accessible
         }
     }
 
@@ -394,10 +398,14 @@
             sidebar.style.setProperty('opacity', '1', 'important');
             sidebar.style.setProperty('pointer-events', 'auto', 'important');
             sidebar.style.setProperty('position', 'fixed', 'important');
-            sidebar.style.setProperty('top', '50%', 'important');
-            sidebar.style.setProperty('right', '20px', 'important');
-            sidebar.style.setProperty('transform', 'translateY(-50%)', 'important');
-            sidebar.style.setProperty('z-index', '1500', 'important');
+            sidebar.style.setProperty('top', '90px', 'important'); // Position below top-bar (5rem = 80px + 10px gap)
+            sidebar.style.setProperty('left', '50%', 'important'); // Center horizontally
+            sidebar.style.setProperty('right', 'auto', 'important');
+            sidebar.style.setProperty('transform', 'translateX(-50%)', 'important'); // Center horizontally
+            sidebar.style.setProperty('z-index', '2001', 'important'); // Higher than top-bar
+            sidebar.style.setProperty('flex-direction', 'row', 'important'); // Horizontal layout
+            sidebar.style.setProperty('align-items', 'center', 'important');
+            sidebar.style.setProperty('justify-content', 'center', 'important');
 
             isVisible = true;
 

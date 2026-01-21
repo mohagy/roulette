@@ -384,6 +384,19 @@ function patchBettingSlip() {
 
       // Show the modal
       document.querySelector('.print-slip-modal').classList.add('visible');
+      
+      // Auto-print after a short delay (similar to cashout receipt)
+      setTimeout(() => {
+        if (betTracker && typeof betTracker.autoPrintBettingSlip === 'function') {
+          betTracker.autoPrintBettingSlip(barcodeNumber);
+        } else {
+          // Fallback: trigger the print button click
+          const printButton = document.querySelector('.print-action-button');
+          if (printButton) {
+            printButton.click();
+          }
+        }
+      }, 800);
     };
 
     // Add draggable functionality to the modal

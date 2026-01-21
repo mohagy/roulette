@@ -1,0 +1,23 @@
+/* 
+ * Custom Bet Display CSS
+ * This CSS applies a taller height to the bet display container,
+ * extending it down to the Custom Amount button.
+ */
+
+.bet-display-container {
+  height: 750px !important;
+  max-height: none !important;
+}
+
+.bet-display-body {
+  max-height: calc(750px - 90px) !important; /* Accounting for header and stake control height */
+}
+
+.bet-display-list {
+  max-height: 850px !important;
+}
+
+/* Make sure we can see the whole bet display panel */
+.bet-display-container.bet-display-collapsed {
+  width: 320px !important; /* Keep the same width when collapsed */
+} 

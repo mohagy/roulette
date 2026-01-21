@@ -53,7 +53,13 @@
         // Append to body for floating behavior
         document.body.appendChild(timerElement);
 
-        console.log('🕒 Floating timer display created and added to page');
+        // Force visibility
+        timerElement.style.display = 'block';
+        timerElement.style.visibility = 'visible';
+        timerElement.style.opacity = '1';
+        timerElement.style.zIndex = '99999';
+
+        console.log('🕒 Floating timer display created and added to page', timerElement);
     }
 
     /**
@@ -71,23 +77,29 @@
                 bottom: 20px;
                 left: 50%;
                 transform: translateX(-50%);
-                background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(45, 45, 45, 0.95) 100%);
-                border: 2px solid #FFD700;
-                border-radius: 12px;
-                padding: 12px 20px;
+                background: linear-gradient(135deg, rgba(10, 10, 20, 0.98) 0%, rgba(20, 20, 35, 0.98) 100%);
+                border: 3px solid #FFD700;
+                border-radius: 20px;
+                padding: 20px 35px;
                 text-align: center;
-                box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(10px);
+                box-shadow: 
+                    0 10px 40px rgba(0, 0, 0, 0.7),
+                    0 0 30px rgba(255, 215, 0, 0.4),
+                    inset 0 0 20px rgba(255, 215, 0, 0.1);
+                backdrop-filter: blur(15px);
                 z-index: 9999;
-                min-width: 200px;
-                max-width: 280px;
-                overflow: hidden;
+                min-width: 240px;
+                max-width: 320px;
+                overflow: visible;
                 transition: all 0.3s ease;
             }
 
             .countdown-timer-floating:hover {
                 transform: translateX(-50%) translateY(-5px);
-                box-shadow: 0 12px 40px rgba(255, 215, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.6);
+                box-shadow: 
+                    0 15px 50px rgba(0, 0, 0, 0.8),
+                    0 0 40px rgba(255, 215, 0, 0.5),
+                    inset 0 0 25px rgba(255, 215, 0, 0.15);
                 border-color: #FFA500;
             }
 
@@ -98,8 +110,9 @@
                 left: -100%;
                 width: 100%;
                 height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+                background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.15), transparent);
                 animation: shimmer 4s infinite;
+                border-radius: 20px;
             }
 
             @keyframes shimmer {
@@ -114,35 +127,62 @@
 
             .countdown-label {
                 color: #FFD700;
-                font-size: 12px;
-                font-weight: bold;
-                letter-spacing: 1px;
-                margin-bottom: 6px;
+                font-size: 13px;
+                font-weight: 900;
+                letter-spacing: 2px;
+                margin-bottom: 10px;
                 text-transform: uppercase;
-                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+                text-shadow: 
+                    0 0 10px rgba(255, 215, 0, 0.8),
+                    0 2px 4px rgba(0, 0, 0, 0.9);
+                font-family: 'Arial', sans-serif;
             }
 
             .countdown-time {
-                color: #ffffff;
-                font-size: 28px;
-                font-weight: bold;
-                font-family: 'Orbitron', 'Courier New', monospace;
-                text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.8);
-                margin: 4px 0;
+                color: #FFD700 !important;
+                font-size: 48px !important;
+                font-weight: 900 !important;
+                font-family: 'Orbitron', 'Courier New', 'Digital-7', monospace !important;
+                text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8) !important;
+                margin: 8px 0;
                 transition: all 0.3s ease;
-                letter-spacing: 2px;
+                letter-spacing: 4px;
+                line-height: 1.2;
+                background: transparent !important;
+                -webkit-background-clip: unset !important;
+                -webkit-text-fill-color: #FFD700 !important;
+                background-clip: unset !important;
+                filter: none !important;
+                display: inline-block;
+                padding: 5px 0;
+                -webkit-font-smoothing: antialiased !important;
+                -moz-osx-font-smoothing: grayscale !important;
             }
 
             .countdown-time.warning {
-                color: #ff9800;
-                text-shadow: 0 0 15px rgba(255, 152, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.8);
+                color: #ff9800 !important;
+                background: transparent !important;
+                -webkit-background-clip: unset !important;
+                -webkit-text-fill-color: #ff9800 !important;
+                background-clip: unset !important;
+                text-shadow: 0 1px 1px rgba(0, 0, 0, 1) !important;
+                filter: none !important;
                 animation: pulse 1s infinite;
+                -webkit-font-smoothing: antialiased !important;
+                -moz-osx-font-smoothing: grayscale !important;
             }
 
             .countdown-time.critical {
-                color: #f44336;
-                text-shadow: 0 0 20px rgba(244, 67, 54, 0.9), 0 2px 4px rgba(0, 0, 0, 0.8);
+                color: #f44336 !important;
+                background: transparent !important;
+                -webkit-background-clip: unset !important;
+                -webkit-text-fill-color: #f44336 !important;
+                background-clip: unset !important;
+                text-shadow: 0 1px 1px rgba(0, 0, 0, 1) !important;
+                filter: none !important;
                 animation: pulse 0.5s infinite;
+                -webkit-font-smoothing: antialiased !important;
+                -moz-osx-font-smoothing: grayscale !important;
             }
 
             .countdown-timer-floating.warning {
@@ -196,48 +236,48 @@
             @media (max-width: 768px) {
                 .countdown-timer-floating {
                     bottom: 15px;
-                    min-width: 180px;
-                    max-width: 240px;
-                    padding: 10px 16px;
+                    min-width: 220px;
+                    max-width: 280px;
+                    padding: 16px 28px;
                 }
 
                 .countdown-time {
-                    font-size: 24px;
-                    letter-spacing: 1px;
+                    font-size: 40px !important;
+                    letter-spacing: 3px;
                 }
 
                 .countdown-label {
-                    font-size: 11px;
-                    margin-bottom: 4px;
+                    font-size: 12px;
+                    margin-bottom: 8px;
                 }
 
                 .countdown-sync-indicator {
                     font-size: 9px;
-                    margin-top: 4px;
+                    margin-top: 6px;
                 }
             }
 
             @media (max-width: 480px) {
                 .countdown-timer-floating {
                     bottom: 10px;
-                    min-width: 160px;
-                    max-width: 200px;
-                    padding: 8px 12px;
+                    min-width: 200px;
+                    max-width: 260px;
+                    padding: 14px 24px;
                 }
 
                 .countdown-time {
-                    font-size: 20px;
-                    letter-spacing: 1px;
+                    font-size: 36px !important;
+                    letter-spacing: 2px;
                 }
 
                 .countdown-label {
-                    font-size: 10px;
-                    margin-bottom: 3px;
+                    font-size: 11px;
+                    margin-bottom: 6px;
                 }
 
                 .countdown-sync-indicator {
                     font-size: 8px;
-                    margin-top: 3px;
+                    margin-top: 5px;
                 }
             }
         `;
@@ -263,19 +303,47 @@
         // Update display
         timeElement.textContent = displayText;
 
+        // ✅ FORCE VISIBILITY: Apply inline styles - small but visible
+        timeElement.style.cssText = `
+            color: #FFD700 !important;
+            font-size: 20px !important;
+            font-weight: 700 !important;
+            font-family: 'Orbitron', 'Courier New', monospace !important;
+            text-shadow: 
+                0 0 8px rgba(255, 215, 0, 0.9),
+                0 0 16px rgba(255, 215, 0, 0.5),
+                0 2px 4px rgba(0, 0, 0, 0.9) !important;
+            margin: 4px 0 !important;
+            letter-spacing: 2px !important;
+            line-height: 1.2 !important;
+            display: inline-block !important;
+            padding: 2px 0 !important;
+            background: transparent !important;
+        `;
+
         // Update page title with Georgetown time reference
         document.title = `Roulette - ${displayText} (Georgetown)`;
 
         // Apply warning styles to both time element and container
-        timeElement.className = '';
+        timeElement.className = 'countdown-time';
         timerElement.className = 'countdown-timer-floating';
 
         if (currentCountdown <= 10) {
-            timeElement.className = 'critical';
+            timeElement.className = 'countdown-time critical';
             timerElement.className += ' critical';
+            // Critical state styles - minimal shadow for clarity
+            timeElement.style.color = '#f44336';
+            timeElement.style.textShadow = '0 1px 1px rgba(0, 0, 0, 1)';
         } else if (currentCountdown <= 30) {
-            timeElement.className = 'warning';
+            timeElement.className = 'countdown-time warning';
             timerElement.className += ' warning';
+            // Warning state styles - minimal shadow for clarity
+            timeElement.style.color = '#ff9800';
+            timeElement.style.textShadow = '0 1px 1px rgba(0, 0, 0, 1)';
+        } else {
+            // Normal state - ensure gold color with minimal shadow
+            timeElement.style.color = '#FFD700';
+            timeElement.style.textShadow = '0 1px 1px rgba(0, 0, 0, 0.8)';
         }
 
         // Log countdown progress
@@ -488,6 +556,21 @@
         // DOM is already ready
         setTimeout(initialize, 100);
     }
+    
+    // Force initialization after a delay to ensure it runs
+    setTimeout(() => {
+        const timerEl = document.getElementById('real-time-countdown-timer');
+        if (!timerEl) {
+            console.log('🕒 Timer not found, re-initializing...');
+            initialize();
+        } else {
+            console.log('🕒 Timer element exists:', timerEl);
+            // Force visibility
+            timerEl.style.display = 'block';
+            timerEl.style.visibility = 'visible';
+            timerEl.style.opacity = '1';
+        }
+    }, 2000);
 
     // Global access for debugging
     window.GeorgetownCountdownTimer = {

@@ -24,63 +24,23 @@ const CashManager = (function() {
 
     const loadCashBalance = () => {
         return new Promise((resolve, reject) => {
-            // Try Firebase first if available
-            if (window.FirebaseService && window.FirebaseService.isOnline() && window.FirebaseAuth) {
-                const currentUser = window.FirebaseAuth.getCurrentUser();
-                if (currentUser && currentUser.username) {
-                    // Get cash balance from Firebase users path
-                    window.FirebaseService.read(`users/${currentUser.username}/cash_balance`)
-                        .then(balance => {
-                            if (balance !== null && balance !== undefined) {
-                                cashBalance = parseFloat(balance);
-                                updateCashDisplay();
-                                console.log('Cash balance loaded from Firebase:', cashBalance);
-                                resolve(cashBalance);
-                                return;
-                            } else {
-                                // If no balance in Firebase, use default
-                                cashBalance = 1000.00;
-                                updateCashDisplay();
-                                console.log('No cash balance in Firebase, using default:', cashBalance);
-                                resolve(cashBalance);
-                                return;
-                            }
-                        })
-                        .catch(firebaseError => {
-                            console.log('Firebase load failed, trying PHP fallback:', firebaseError);
-                            // Fall through to PHP fallback
-                        });
-                }
-            }
-
-            // Fallback to PHP API
+            // Fetch cash balance from server
             fetch('get_cash_balance.php')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('PHP endpoint not available');
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
                         cashBalance = parseFloat(data.cash_balance);
                         updateCashDisplay();
-                        console.log('Cash balance loaded from PHP:', cashBalance);
+                        console.log('Cash balance loaded:', cashBalance);
                         resolve(cashBalance);
                     } else {
                         console.error('Error loading cash balance:', data.message);
-                        // Use default if PHP fails
-                        cashBalance = 1000.00;
-                        updateCashDisplay();
-                        resolve(cashBalance);
+                        reject(data.message);
                     }
                 })
                 .catch(error => {
-                    console.error('Error fetching cash balance, using default:', error);
-                    // Use default value if both Firebase and PHP fail
-                    cashBalance = 1000.00;
-                    updateCashDisplay();
-                    resolve(cashBalance);
+                    console.error('Error fetching cash balance:', error);
+                    reject(error);
                 });
         });
     };
@@ -93,42 +53,7 @@ const CashManager = (function() {
                 return;
             }
 
-            const previousBalance = cashBalance;
-            const newBalance = previousBalance + amount;
-
-            // Try Firebase first if available
-            if (window.FirebaseService && window.FirebaseService.isOnline() && window.FirebaseAuth) {
-                const currentUser = window.FirebaseAuth.getCurrentUser();
-                if (currentUser && currentUser.username) {
-                    // Update cash balance in Firebase
-                    window.FirebaseService.write(`users/${currentUser.username}/cash_balance`, newBalance)
-                        .then(() => {
-                            // Also save transaction to Firebase
-                            const transactionData = {
-                                amount: amount,
-                                balance_after: newBalance,
-                                transaction_type: transactionType || 'bet',
-                                reference_id: referenceId || null,
-                                description: description || null,
-                                timestamp: new Date().toISOString()
-                            };
-                            return window.FirebaseService.push('transactions', transactionData);
-                        })
-                        .then(() => {
-                            cashBalance = newBalance;
-                            updateCashDisplay();
-                            console.log(`Cash balance updated in Firebase: ${previousBalance} + ${amount} = ${newBalance}`);
-                            resolve(cashBalance);
-                            return;
-                        })
-                        .catch(firebaseError => {
-                            console.log('Firebase update failed, trying PHP fallback:', firebaseError);
-                            // Fall through to PHP fallback
-                        });
-                }
-            }
-
-            // Fallback to PHP API
+            // Prepare data for the API call
             const data = {
                 amount: amount,
                 transaction_type: transactionType || 'bet',
@@ -136,6 +61,7 @@ const CashManager = (function() {
                 description: description || null
             };
 
+            // Send update request to server
             fetch('update_cash_balance.php', {
                 method: 'POST',
                 headers: {
@@ -143,32 +69,22 @@ const CashManager = (function() {
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('PHP endpoint not available');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
+                    // Update local cash balance
                     cashBalance = parseFloat(data.new_balance);
                     updateCashDisplay();
-                    console.log(`Cash balance updated via PHP: ${data.previous_balance} + ${data.amount} = ${data.new_balance}`);
+                    console.log(`Cash balance updated: ${data.previous_balance} + ${data.amount} = ${data.new_balance}`);
                     resolve(cashBalance);
                 } else {
                     console.error('Error updating cash balance:', data.message);
-                    // Update locally even if PHP fails
-                    cashBalance = newBalance;
-                    updateCashDisplay();
-                    resolve(cashBalance);
+                    reject(data.message);
                 }
             })
             .catch(error => {
-                console.error('Error in API call, updating locally:', error);
-                // Update locally even if API fails
-                cashBalance = newBalance;
-                updateCashDisplay();
-                resolve(cashBalance);
+                console.error('Error in API call:', error);
+                reject(error);
             });
         });
     };

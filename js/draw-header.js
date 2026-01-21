@@ -181,33 +181,8 @@ class DrawHeader {
         localStorage.setItem('drawHeaderHidden', this.isHidden);
     }
     
-    async loadDrawNumbers() {
-        // Use Firebase to get current draw numbers
-        if (window.FirebaseDrawManager && window.FirebaseService) {
-            try {
-                const gameState = await FirebaseDrawManager.getCurrentDrawState();
-                const drawInfo = await FirebaseService.GameState.getDrawInfo();
-                
-                if (gameState && drawInfo) {
-                    const currentDraw = drawInfo.currentDraw || gameState.drawNumber || 1;
-                    const nextDraw = drawInfo.nextDraw || gameState.nextDrawNumber || 2;
-                    
-                    // Generate draw numbers array (current, next, and 8 future draws)
-                    const drawNumbers = [currentDraw];
-                    for (let i = 1; i <= 9; i++) {
-                        drawNumbers.push(currentDraw + i);
-                    }
-                    
-                    this.currentDrawNumber = currentDraw;
-                    this.updateDrawNumbersDisplay(drawNumbers);
-                    return;
-                }
-            } catch (error) {
-                console.error('Error loading draw numbers from Firebase:', error);
-            }
-        }
-        
-        // Fallback to server fetch if Firebase is not available
+    loadDrawNumbers() {
+        // Fetch the current draw numbers from the server
         fetch('draw_header.php?ajax=1')
             .then(response => response.json())
             .then(data => {

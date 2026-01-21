@@ -26,18 +26,44 @@ function logError($message) {
 
 try {
     // Get current draw information
-    $stmt = $conn->prepare("
-        SELECT ra.current_draw_number, 
-               rs.roll_history, 
-               rs.roll_colors, 
-               rs.countdown_time, 
-               rs.last_draw, 
-               rs.next_draw
-        FROM roulette_analytics ra
-        LEFT JOIN roulette_state rs ON rs.id = 1
-        WHERE ra.id = 1
-        LIMIT 1
-    ");
+    // Check if roulette_state has the old columns (roll_history, last_draw) or new structure
+    $checkColumns = $conn->query("SHOW COLUMNS FROM roulette_state LIKE 'roll_history'");
+    $hasOldColumns = ($checkColumns && $checkColumns->num_rows > 0);
+    
+    if ($hasOldColumns) {
+        // Old structure with roll_history, last_draw, etc.
+        $stmt = $conn->prepare("
+            SELECT ra.current_draw_number, 
+                   rs.roll_history, 
+                   rs.roll_colors, 
+                   rs.countdown_time, 
+                   rs.last_draw, 
+                   rs.next_draw
+            FROM roulette_analytics ra
+            LEFT JOIN roulette_state rs ON rs.id = 1
+            WHERE ra.id = 1
+            LIMIT 1
+        ");
+    } else {
+        // New structure - get most recent state record
+        $stmt = $conn->prepare("
+            SELECT ra.current_draw_number,
+                   rs.countdown_time,
+                   NULL as roll_history,
+                   NULL as roll_colors,
+                   CONCAT('#', rs.draw_number) as last_draw,
+                   CONCAT('#', rs.next_draw_number) as next_draw
+            FROM roulette_analytics ra
+            LEFT JOIN (
+                SELECT draw_number, next_draw_number, countdown_time
+                FROM roulette_state
+                ORDER BY created_at DESC
+                LIMIT 1
+            ) rs ON 1=1
+            WHERE ra.id = 1
+            LIMIT 1
+        ");
+    }
     $stmt->execute();
     $result = $stmt->get_result();
     
@@ -93,63 +119,51 @@ try {
     // Get current draw number
     $currentDrawNumber = $drawInfo['current_draw_number'];
     
-    // Check if there's a manual winning number for this draw
-    $stmt = $conn->prepare("
-        SELECT winning_number, source, reason 
-        FROM next_draw_winning_number 
-        WHERE draw_number = ?
-        LIMIT 1
-    ");
-    $stmt->bind_param("i", $currentDrawNumber);
-    $stmt->execute();
-    $manualResult = $stmt->get_result();
-    
-    $manualWinningNumber = null;
+    // Initialize variables
+    $winningNumber = null;
     $winningNumberSource = null;
     $winningNumberReason = null;
     
-    if ($manualResult->num_rows > 0) {
-        $manualData = $manualResult->fetch_assoc();
-        $manualWinningNumber = (int)$manualData['winning_number'];
-        $winningNumberSource = $manualData['source'];
-        $winningNumberReason = $manualData['reason'];
-    }
-    $stmt->close();
-    
-    // Find the best winning number from bet distribution if in automatic mode
-    $bestAutoWinningNumber = null;
-    $bestAutoWinningReason = null;
-    
-    if ($isAutomatic || $manualWinningNumber === null) {
-        // Check if there are any bets for this draw
-        $hasBets = hasBetsForDraw($conn, $currentDrawNumber);
-        
-        if ($hasBets) {
-            // Get bet distribution
-            $bestWinningInfo = findBestWinningNumber($conn, $currentDrawNumber);
-            $bestAutoWinningNumber = $bestWinningInfo['number'];
-            $bestAutoWinningReason = $bestWinningInfo['reason'];
-        } else {
-            // No bets, select a random number
-            $bestAutoWinningNumber = mt_rand(0, 36);
-            $bestAutoWinningReason = "Random selection (no bets)";
-        }
-    }
-    
-    // Determine the winning number based on mode
-    $winningNumber = $isAutomatic ? $bestAutoWinningNumber : $manualWinningNumber;
-    
-    // If we're in manual mode but no manual number is set, use automatic as fallback
-    if (!$isAutomatic && $manualWinningNumber === null) {
-        $winningNumber = $bestAutoWinningNumber;
-        $winningNumberSource = 'automatic (fallback)';
-        $winningNumberReason = $bestAutoWinningReason;
-    }
-    
-    // If we're in automatic mode, use the automatic source and reason
+    // IMPORTANT: In automatic mode, ALWAYS use smart selection (completely ignore manual numbers)
+    // Only check for manual numbers if we're in manual mode
     if ($isAutomatic) {
-        $winningNumberSource = 'automatic';
-        $winningNumberReason = $bestAutoWinningReason;
+        // AUTO MODE: Always use smart selection with time-based presets and patterns
+        // This ignores any manual numbers that might be set
+        $bestWinningInfo = findBestWinningNumber($conn, $currentDrawNumber, true); // true = use smart selection
+        $winningNumber = $bestWinningInfo['number'];
+        $winningNumberSource = 'automatic (smart selection)';
+        $winningNumberReason = $bestWinningInfo['reason'];
+    } else {
+        // MANUAL MODE: Check for manual winning number
+        $stmt = $conn->prepare("
+            SELECT winning_number, source, reason 
+            FROM next_draw_winning_number 
+            WHERE draw_number = ?
+            LIMIT 1
+        ");
+        $stmt->bind_param("i", $currentDrawNumber);
+        $stmt->execute();
+        $manualResult = $stmt->get_result();
+        
+        $manualWinningNumber = null;
+        if ($manualResult->num_rows > 0) {
+            $manualData = $manualResult->fetch_assoc();
+            $manualWinningNumber = (int)$manualData['winning_number'];
+            $winningNumberSource = $manualData['source'];
+            $winningNumberReason = $manualData['reason'];
+        }
+        $stmt->close();
+        
+        if ($manualWinningNumber !== null) {
+            // Manual mode with manual number set
+            $winningNumber = $manualWinningNumber;
+        } else {
+            // Manual mode but no manual number - use smart selection as fallback
+            $bestWinningInfo = findBestWinningNumber($conn, $currentDrawNumber, true);
+            $winningNumber = $bestWinningInfo['number'];
+            $winningNumberSource = 'automatic (fallback - no manual number)';
+            $winningNumberReason = $bestWinningInfo['reason'];
+        }
     }
     
     // Process roll history
@@ -171,11 +185,83 @@ try {
     // Get the countdown time from the database or use a default value
     $countdown = isset($drawInfo['countdown_time']) ? (int)$drawInfo['countdown_time'] : 60;
     
+    // Calculate expected draw number based on time (for validation)
+    // Use Guyana timezone (UTC-4)
+    date_default_timezone_set('America/Guyana');
+    $now = new DateTime('now', new DateTimeZone('America/Guyana'));
+    $currentDate = $now->format('Y-m-d');
+    $currentHour = (int)$now->format('H');
+    $currentMinute = (int)$now->format('i');
+    
+    // Check if we need to reset (new day)
+    $stmt = $conn->prepare("SELECT last_reset_date FROM roulette_analytics WHERE id = 1 LIMIT 1");
+    $stmt->execute();
+    $resetResult = $stmt->get_result();
+    $lastResetDate = null;
+    if ($resetResult->num_rows > 0) {
+        $resetRow = $resetResult->fetch_assoc();
+        $lastResetDate = $resetRow['last_reset_date'];
+    }
+    $stmt->close();
+    
+    // If it's a new day, reset draw number to 1
+    $needsReset = (!$lastResetDate || $lastResetDate < $currentDate);
+    
+    if ($needsReset) {
+        // Reset to draw #1 for new day
+        $expectedDrawNumber = 1;
+        
+        // Update database with reset
+        try {
+            $updateStmt = $conn->prepare("UPDATE roulette_analytics SET current_draw_number = 1, last_reset_date = ? WHERE id = 1");
+            $updateStmt->bind_param("s", $currentDate);
+            $updateStmt->execute();
+            $updateStmt->close();
+            
+            $currentDrawNumber = 1;
+            logError("Reset draw number to 1 for new day: $currentDate");
+        } catch (Exception $e) {
+            logError("Failed to reset draw number: " . $e->getMessage());
+        }
+    } else {
+        // Calculate draw number based on time (480 draws per day, one every 3 minutes)
+        $totalMinutes = ($currentHour * 60) + $currentMinute;
+        $completedIntervals = floor($totalMinutes / 3);
+        $expectedDrawNumber = $completedIntervals + 1;
+        
+        // Ensure draw number doesn't exceed 480 (max draws per day)
+        if ($expectedDrawNumber > 480) {
+            $expectedDrawNumber = 480;
+        }
+        
+        // Auto-update draw number if it's wrong (but only if mismatch is significant)
+        $drawNumberMismatch = ((int)$currentDrawNumber !== (int)$expectedDrawNumber);
+        
+        // If draw number is significantly behind (more than 1 draw), auto-correct it
+        if ($drawNumberMismatch && $expectedDrawNumber > $currentDrawNumber) {
+            try {
+                $oldDrawNumber = $currentDrawNumber;
+                $updateStmt = $conn->prepare("UPDATE roulette_analytics SET current_draw_number = ? WHERE id = 1");
+                $updateStmt->bind_param("i", $expectedDrawNumber);
+                $updateStmt->execute();
+                $updateStmt->close();
+                
+                // Update current draw number variable
+                $currentDrawNumber = $expectedDrawNumber;
+                logError("Auto-corrected draw number from $oldDrawNumber to $expectedDrawNumber");
+            } catch (Exception $e) {
+                logError("Failed to auto-correct draw number: " . $e->getMessage());
+            }
+        }
+    }
+    
     // Prepare the response
     $response = [
         'status' => 'success',
         'data' => [
             'current_draw' => (int)$currentDrawNumber,
+            'expected_draw' => $expectedDrawNumber,
+            'draw_number_match' => !$drawNumberMismatch,
             'last_draw' => $drawInfo['last_draw'],
             'next_draw' => $drawInfo['next_draw'],
             'is_automatic' => $isAutomatic,
@@ -190,6 +276,11 @@ try {
         ],
         'timestamp' => time()
     ];
+    
+    // Add warning if draw number mismatch
+    if ($drawNumberMismatch) {
+        $response['warning'] = "Draw number mismatch: Current=$currentDrawNumber, Expected=$expectedDrawNumber";
+    }
     
 } catch (Exception $e) {
     // Log error for debugging

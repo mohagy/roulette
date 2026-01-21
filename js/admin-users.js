@@ -300,3 +300,12 @@ function closeDeleteUserModal() {
     document.getElementById('deleteUserModal').style.display = 'none';
 }
 
+
+
+
+
+
+
+
+
+

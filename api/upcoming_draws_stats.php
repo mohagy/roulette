@@ -39,7 +39,7 @@ function logUpcomingDraws($message, $type = 'INFO') {
 }
 
 /**
- * Get the last completed draw number
+ * Get the last completed draw number from database
  */
 function getLastCompletedDraw($conn) {
     try {
@@ -102,31 +102,125 @@ function getDrawSlipStats($conn, $drawNumber) {
 }
 
 /**
+ * Get scheduled time for a draw number from preset schedule
+ */
+function getScheduledTimeForDraw($conn, $drawNumber) {
+    try {
+        // Use Guyana timezone (UTC-4)
+        date_default_timezone_set('America/Guyana');
+        $today = date('Y-m-d');
+        
+        // Check if preset schedule exists for today
+        $stmt = $conn->prepare("
+            SELECT schedule_data, start_draw_number, end_draw_number
+            FROM preset_schedule
+            WHERE schedule_date = ? AND is_active = 1
+            LIMIT 1
+        ");
+        $stmt->bind_param("s", $today);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $schedule = $result->fetch_assoc();
+            $startDraw = (int)$schedule['start_draw_number'];
+            $endDraw = (int)$schedule['end_draw_number'];
+            
+            // Check if draw number is in this schedule's range
+            if ($drawNumber >= $startDraw && $drawNumber <= $endDraw) {
+                // Calculate time based on draw number position
+                // Each draw is 3 minutes apart, starting from midnight
+                $drawIndex = $drawNumber - $startDraw;
+                $totalMinutes = $drawIndex * 3;
+                $hours = floor($totalMinutes / 60);
+                $minutes = $totalMinutes % 60;
+                
+                // Create time string
+                $timeString = sprintf('%02d:%02d', $hours, $minutes);
+                
+                $stmt->close();
+                return $timeString;
+            }
+        }
+        $stmt->close();
+    } catch (Exception $e) {
+        logUpcomingDraws("Error getting scheduled time: " . $e->getMessage(), 'ERROR');
+    }
+    
+    // Fallback: Calculate based on draw number (assuming draws start at midnight, every 3 minutes)
+    // Draw #1 = 00:00, Draw #2 = 00:03, etc. (max 480 draws per day)
+    $drawNumberInDay = (($drawNumber - 1) % 480) + 1;
+    $totalMinutes = ($drawNumberInDay - 1) * 3;
+    $hours = floor($totalMinutes / 60) % 24;
+    $minutes = $totalMinutes % 60;
+    return sprintf('%02d:%02d', $hours, $minutes);
+}
+
+/**
  * Generate upcoming draws with statistics
  */
 function generateUpcomingDrawsWithStats($conn, $baseDrawNumber, $count = 10) {
     $upcomingDraws = [];
-    $currentTime = new DateTime();
+    // Use Guyana timezone (UTC-4)
+    date_default_timezone_set('America/Guyana');
+    $currentTime = new DateTime('now', new DateTimeZone('America/Guyana'));
+    $currentDate = $currentTime->format('Y-m-d');
+    
+    // Normalize baseDrawNumber to be within 1-480 (daily draw range)
+    // If baseDrawNumber > 480, it means we're past midnight, so wrap it
+    $baseDrawInDay = (($baseDrawNumber - 1) % 480) + 1;
 
-    for ($i = 1; $i <= $count; $i++) {
-        $drawNumber = $baseDrawNumber + $i;
+    for ($i = 0; $i < $count; $i++) {
+        // Calculate draw number with wrap-around at 480
+        // Start from baseDrawNumber (i=0), then baseDrawNumber+1 (i=1), etc.
+        $rawDrawNumber = $baseDrawInDay + $i;
+        
+        // If we exceed 480, wrap to next day (starts at 1)
+        if ($rawDrawNumber > 480) {
+            $drawNumber = $rawDrawNumber - 480; // Wrap to 1-480 for next day
+            $isNextDay = true;
+        } else {
+            $drawNumber = $rawDrawNumber; // Still in current day (1-480)
+            $isNextDay = false;
+        }
 
-        // Calculate estimated time (every 3 minutes)
-        $estimatedTime = new DateTime();
-        $estimatedTime->add(new DateInterval('PT' . ($i * 3) . 'M'));
+        // Calculate time based on draw number (draw #1 = 00:00, draw #480 = 23:57)
+        $totalMinutes = ($drawNumber - 1) * 3;
+        $hours = floor($totalMinutes / 60) % 24;
+        $minutes = $totalMinutes % 60;
+        $scheduledTime = sprintf('%02d:%02d', $hours, $minutes);
+        
+        // Create scheduled datetime
+        $scheduledDate = $isNextDay ? 
+            (clone $currentTime)->modify('+1 day')->format('Y-m-d') : 
+            $currentDate;
+        $scheduledDateTime = new DateTime($scheduledDate . ' ' . $scheduledTime . ':00', new DateTimeZone('America/Guyana'));
+        
+        // Calculate minutes from now
+        $diff = $currentTime->diff($scheduledDateTime);
+        $minutesFromNow = ($diff->days * 24 * 60) + ($diff->h * 60) + $diff->i;
+        
+        // If negative (in the past), it's at least tomorrow
+        if ($minutesFromNow < 0) {
+            $scheduledDateTime->modify('+1 day');
+            $diff = $currentTime->diff($scheduledDateTime);
+            $minutesFromNow = ($diff->days * 24 * 60) + ($diff->h * 60) + $diff->i;
+        }
 
         // Get betting slip statistics for this draw
+        // Use the actual draw number for database queries (may be > 480 for historical queries)
         $stats = getDrawSlipStats($conn, $drawNumber);
 
         $upcomingDraws[] = [
-            'draw_number' => $drawNumber,
-            'estimated_time' => $estimatedTime->format('H:i'),
-            'estimated_datetime' => $estimatedTime->format('Y-m-d H:i:s'),
+            'draw_number' => $drawNumber, // Always 1-480 for display
+            'estimated_time' => $scheduledTime,
+            'estimated_datetime' => $scheduledDateTime->format('Y-m-d H:i:s'),
             'betting_slips_count' => $stats['betting_slips_count'],
             'total_stake_amount' => $stats['total_stake_amount'],
             'total_potential_payout' => $stats['total_potential_payout'],
-            'is_next' => ($i === 1),
-            'minutes_from_now' => $i * 3
+            'is_next' => ($i === 0), // First draw (i=0) is the next draw
+            'minutes_from_now' => $minutesFromNow,
+            'is_next_day' => $isNextDay
         ];
     }
 
@@ -204,29 +298,73 @@ function getSystemStats($conn) {
 
 try {
     logUpcomingDraws("Upcoming draws stats request received");
-
-    // Get the last completed draw
-    $lastCompletedDraw = getLastCompletedDraw($conn);
-
-    if ($lastCompletedDraw === 0) {
-        logUpcomingDraws("No completed draws found, using default base", 'WARNING');
-        $lastCompletedDraw = 0; // Will generate draws starting from #1
+    
+    // ⏰ CRITICAL: Calculate draw number based on SERVER TIME (Georgetown timezone)
+    // This ensures all devices get the same draw number regardless of their local clock
+    date_default_timezone_set('America/Guyana');
+    $currentTime = new DateTime('now', new DateTimeZone('America/Guyana'));
+    $today = $currentTime->format('Y-m-d');
+    $currentHour = (int)$currentTime->format('H');
+    $currentMinute = (int)$currentTime->format('i');
+    $currentSecond = (int)$currentTime->format('s');
+    
+    // Calculate draw number based on 3-minute intervals starting at midnight
+    // Draw #1 = 00:00-00:02:59, Draw #2 = 00:03-00:05:59, Draw #3 = 00:06-00:08:59, etc. (480 draws per day)
+    // At 7:36, we're at the START of draw #153's time slot, but we want to show draw #152 as current
+    // (the draw that just completed or is completing)
+    $totalMinutesSinceMidnight = ($currentHour * 60) + $currentMinute;
+    
+    // Subtract 1 minute before calculating to get the draw that's ending/completing
+    // At 7:36: floor((456-1)/3) = floor(455/3) = 151, +1 = 152 ✓
+    // At 7:33: floor((453-1)/3) = floor(452/3) = 150, +1 = 151 (but should be 152)
+    // Actually, we need a different approach: if we're at a 3-minute boundary, use previous draw
+    $drawIndex = floor($totalMinutesSinceMidnight / 3);
+    
+    // If we're at the exact start of a draw (minute is divisible by 3 and seconds are low),
+    // show the previous draw as "current" (the one that just completed)
+    if ($currentMinute % 3 == 0 && $currentSecond < 30) {
+        $drawIndex = $drawIndex - 1;
     }
+    
+    $serverTimeBasedDrawNumber = $drawIndex + 1; // Convert to 1-based
+    
+    // Ensure draw number is at least 1
+    if ($serverTimeBasedDrawNumber < 1) {
+        $serverTimeBasedDrawNumber = 1;
+    }
+    
+    // ⚠️ CRITICAL: Cap draw number at 480 (max draws per day)
+    // After 23:57 (draw #480), it should reset to 1 the next day
+    if ($serverTimeBasedDrawNumber > 480) {
+        $serverTimeBasedDrawNumber = 480; // Cap at 480 for safety
+    }
+    
+    // The NEXT draw is the one users should place bets on
+    $currentDrawNumber = $serverTimeBasedDrawNumber;
+    $nextDrawNumber = ($currentDrawNumber >= 480) ? 1 : ($currentDrawNumber + 1);
+    
+    logUpcomingDraws("Server time-based current draw: $currentDrawNumber, next draw: $nextDrawNumber (calculated from server time $currentHour:$currentMinute:$currentSecond)", 'INFO');
 
-    // Generate upcoming draws with statistics
+    // Generate upcoming draws with statistics (starting from NEXT draw, not current)
+    // Users place bets on the NEXT draw, not the current one
     $drawCount = isset($_GET['count']) ? min(20, max(1, (int)$_GET['count'])) : 10;
-    $upcomingDraws = generateUpcomingDrawsWithStats($conn, $lastCompletedDraw, $drawCount);
+    $upcomingDraws = generateUpcomingDrawsWithStats($conn, $nextDrawNumber, $drawCount);
 
     // Get system statistics
     $systemStats = getSystemStats($conn);
 
+    // Get last completed draw for backward compatibility
+    $lastCompletedDraw = getLastCompletedDraw($conn);
+    
     // Prepare successful response
     $response = [
         'status' => 'success',
         'data' => [
             'upcoming_draws' => $upcomingDraws,
-            'base_draw' => $lastCompletedDraw,
-            'next_draw' => $lastCompletedDraw + 1,
+            'current_draw_number' => $currentDrawNumber,
+            'next_draw_number' => $nextDrawNumber,
+            'base_draw' => $nextDrawNumber, // Starting draw for upcoming draws list
+            'last_completed_draw' => $lastCompletedDraw, // Keep for backward compatibility
             'draw_count' => count($upcomingDraws),
             'system_stats' => $systemStats
         ],

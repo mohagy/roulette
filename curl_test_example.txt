@@ -1,0 +1,32 @@
+Example curl command to test the API:
+
+curl -X POST -H "Content-Type: application/json" -d '{
+  "slip_number": "12345678",
+  "bets": [
+    {
+      "type": "straight",
+      "description": "Straight Up on 7",
+      "amount": 10.00,
+      "multiplier": 35,
+      "potentialReturn": 350.00
+    }
+  ],
+  "total_stake": 10.00,
+  "potential_return": 350.00,
+  "draw_number": 1
+}' http://localhost/slippv18/php/save_betting_slip.php
+
+Expected response:
+{
+  "status": "success",
+  "message": "Betting slip saved successfully",
+  "timestamp": "2025-05-26 22:20:15",
+  "data": {
+    "slip_id": 816,
+    "slip_number": "12345678",
+    "bets_saved": 1,
+    "total_stake": 10,
+    "total_potential_payout": 350,
+    "new_balance": "updated_balance"
+  }
+}

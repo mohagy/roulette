@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw Number Monitoring Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .status-card h3 {
+            margin: 0 0 15px 0;
+            color: #ffd700;
+        }
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .metric:last-child {
+            border-bottom: none;
+        }
+        .value {
+            font-weight: bold;
+        }
+        .status-good { color: #4CAF50; }
+        .status-warning { color: #FF9800; }
+        .status-error { color: #F44336; }
+        .recent-draws {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .draw-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .draw-sequential { border-left-color: #4CAF50; }
+        .draw-skipped { border-left-color: #F44336; }
+        .number-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .number-red { background: #ff4444; }
+        .number-black { background: #333; }
+        .number-green { background: #00aa00; }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .btn {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 0;
+        }
+        .log-info { color: #87CEEB; }
+        .log-warning { color: #FFA500; }
+        .log-error { color: #FF6B6B; }
+        .log-success { color: #98FB98; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Draw Number Monitoring Dashboard</h1>
+            <p>Real-time monitoring of draw number progression and gap detection</p>
+        </div>
+
+        <div class="status-grid">
+            <div class="status-card">
+                <h3>📊 Current Status</h3>
+                <div class="metric">
+                    <span>Latest Draw:</span>
+                    <span class="value" id="latest-draw">Loading...</span>
+                </div>
+                <div class="metric">
+                    <span>Next Expected:</span>
+                    <span class="value" id="next-expected">Loading...</span>
+                </div>
+                <div class="metric">
+                    <span>System Status:</span>
+                    <span class="value" id="system-status">Checking...</span>
+                </div>
+                <div class="metric">
+                    <span>Last Update:</span>
+                    <span class="value" id="last-update">Never</span>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <h3>🔍 Gap Analysis</h3>
+                <div class="metric">
+                    <span>Total Gaps:</span>
+                    <span class="value" id="total-gaps">Loading...</span>
+                </div>
+                <div class="metric">
+                    <span>Missing Draws:</span>
+                    <span class="value" id="missing-draws">Loading...</span>
+                </div>
+                <div class="metric">
+                    <span>Sequence Health:</span>
+                    <span class="value" id="sequence-health">Analyzing...</span>
+                </div>
+                <div class="metric">
+                    <span>Last Gap:</span>
+                    <span class="value" id="last-gap">None detected</span>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <h3>⚡ Performance</h3>
+                <div class="metric">
+                    <span>Total Draws:</span>
+                    <span class="value" id="total-draws">Loading...</span>
+                </div>
+                <div class="metric">
+                    <span>Sequential Rate:</span>
+                    <span class="value" id="sequential-rate">Calculating...</span>
+                </div>
+                <div class="metric">
+                    <span>Avg Time Between:</span>
+                    <span class="value" id="avg-time">Calculating...</span>
+                </div>
+                <div class="metric">
+                    <span>Monitor Uptime:</span>
+                    <span class="value" id="monitor-uptime">00:00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="recent-draws">
+            <h3>📈 Recent Draw Progression</h3>
+            <div id="recent-draws-list">
+                Loading recent draws...
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="refreshData()">🔄 Refresh Now</button>
+            <button class="btn" onclick="toggleAutoRefresh()">⏸️ Pause Auto-Refresh</button>
+            <button class="btn" onclick="exportData()">📊 Export Data</button>
+            <button class="btn" onclick="clearLogs()">🗑️ Clear Logs</button>
+        </div>
+
+        <div class="recent-draws">
+            <h3>📝 System Logs</h3>
+            <div class="log-container" id="log-container">
+                <div class="log-entry log-info">System initialized - Starting monitoring...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshEnabled = true;
+        let refreshInterval;
+        let startTime = Date.now();
+        let lastDrawNumber = 0;
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logContainer = document.getElementById('log-container');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            logContainer.insertBefore(logEntry, logContainer.firstChild);
+            
+            // Keep only last 100 log entries
+            while (logContainer.children.length > 100) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+
+        async function fetchDrawData() {
+            try {
+                const response = await fetch('/slipp/fix_draw_skipping.php?action=analyze');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    updateDashboard(data);
+                    
+                    // Check for new draws
+                    const currentLatest = Math.max(...data.current_draws);
+                    if (lastDrawNumber > 0 && currentLatest > lastDrawNumber) {
+                        log(`New draw detected: #${currentLatest}`, 'success');
+                        
+                        // Check if it's sequential
+                        if (currentLatest === lastDrawNumber + 1) {
+                            log(`✅ Sequential progression: ${lastDrawNumber} → ${currentLatest}`, 'success');
+                        } else {
+                            log(`⚠️ Gap detected: ${lastDrawNumber} → ${currentLatest} (skipped ${currentLatest - lastDrawNumber - 1} draws)`, 'error');
+                        }
+                    }
+                    lastDrawNumber = currentLatest;
+                    
+                } else {
+                    log(`Error fetching data: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                log(`Network error: ${error.message}`, 'error');
+            }
+        }
+
+        function updateDashboard(data) {
+            const latestDraw = Math.max(...data.current_draws);
+            const totalGaps = data.missing_draws.length;
+            const totalDraws = data.current_draws.length;
+            const sequentialRate = ((totalDraws - totalGaps) / totalDraws * 100).toFixed(1);
+            
+            // Update status metrics
+            document.getElementById('latest-draw').textContent = `#${latestDraw}`;
+            document.getElementById('next-expected').textContent = `#${data.next_sequential}`;
+            document.getElementById('total-gaps').textContent = totalGaps;
+            document.getElementById('missing-draws').textContent = data.missing_draws.join(', ') || 'None';
+            document.getElementById('total-draws').textContent = totalDraws;
+            document.getElementById('sequential-rate').textContent = `${sequentialRate}%`;
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+            
+            // Update system status
+            const statusElement = document.getElementById('system-status');
+            if (totalGaps === 0) {
+                statusElement.textContent = 'Healthy';
+                statusElement.className = 'value status-good';
+            } else if (totalGaps < 5) {
+                statusElement.textContent = 'Minor Issues';
+                statusElement.className = 'value status-warning';
+            } else {
+                statusElement.textContent = 'Critical Issues';
+                statusElement.className = 'value status-error';
+            }
+            
+            // Update sequence health
+            const healthElement = document.getElementById('sequence-health');
+            if (sequentialRate >= 95) {
+                healthElement.textContent = 'Excellent';
+                healthElement.className = 'value status-good';
+            } else if (sequentialRate >= 80) {
+                healthElement.textContent = 'Good';
+                healthElement.className = 'value status-warning';
+            } else {
+                healthElement.textContent = 'Poor';
+                healthElement.className = 'value status-error';
+            }
+            
+            // Update monitor uptime
+            const uptime = Math.floor((Date.now() - startTime) / 1000);
+            const hours = Math.floor(uptime / 3600).toString().padStart(2, '0');
+            const minutes = Math.floor((uptime % 3600) / 60).toString().padStart(2, '0');
+            const seconds = (uptime % 60).toString().padStart(2, '0');
+            document.getElementById('monitor-uptime').textContent = `${hours}:${minutes}:${seconds}`;
+            
+            updateRecentDraws(data.current_draws);
+        }
+
+        async function updateRecentDraws(draws) {
+            const container = document.getElementById('recent-draws-list');
+            container.innerHTML = '';
+            
+            // Get recent winning numbers
+            try {
+                const response = await fetch('/slipp/load_analytics.php');
+                const analyticsData = await response.json();
+                const allSpins = JSON.parse(analyticsData.all_spins || '[]');
+                
+                // Show last 10 draws
+                const recentDraws = draws.slice(-10).reverse();
+                
+                recentDraws.forEach((drawNumber, index) => {
+                    const winningNumber = allSpins[index] || '?';
+                    const isSequential = index === 0 || drawNumber === recentDraws[index - 1] - 1;
+                    
+                    const drawItem = document.createElement('div');
+                    drawItem.className = `draw-item ${isSequential ? 'draw-sequential' : 'draw-skipped'}`;
+                    
+                    const color = getNumberColor(winningNumber);
+                    
+                    drawItem.innerHTML = `
+                        <div>
+                            <strong>Draw #${drawNumber}</strong>
+                            <small style="opacity: 0.7; margin-left: 10px;">
+                                ${isSequential ? '✅ Sequential' : '⚠️ Gap detected'}
+                            </small>
+                        </div>
+                        <div class="number-circle number-${color}">
+                            ${winningNumber}
+                        </div>
+                    `;
+                    
+                    container.appendChild(drawItem);
+                });
+                
+            } catch (error) {
+                container.innerHTML = '<div style="color: #ff6b6b;">Error loading recent draws</div>';
+            }
+        }
+
+        function getNumberColor(number) {
+            if (number === 0) return 'green';
+            if ([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36].includes(parseInt(number))) return 'red';
+            return 'black';
+        }
+
+        function refreshData() {
+            log('Manual refresh triggered', 'info');
+            fetchDrawData();
+        }
+
+        function toggleAutoRefresh() {
+            autoRefreshEnabled = !autoRefreshEnabled;
+            const button = event.target;
+            
+            if (autoRefreshEnabled) {
+                button.textContent = '⏸️ Pause Auto-Refresh';
+                startAutoRefresh();
+                log('Auto-refresh enabled', 'info');
+            } else {
+                button.textContent = '▶️ Resume Auto-Refresh';
+                clearInterval(refreshInterval);
+                log('Auto-refresh paused', 'warning');
+            }
+        }
+
+        function exportData() {
+            log('Data export requested', 'info');
+            // Implementation for data export
+            alert('Export functionality will be implemented');
+        }
+
+        function clearLogs() {
+            document.getElementById('log-container').innerHTML = '';
+            log('Logs cleared', 'info');
+        }
+
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(() => {
+                if (autoRefreshEnabled) {
+                    fetchDrawData();
+                }
+            }, 5000); // Refresh every 5 seconds
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Dashboard initialized', 'success');
+            fetchDrawData();
+            startAutoRefresh();
+        });
+    </script>
+</body>
+</html>

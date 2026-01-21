@@ -1,0 +1,404 @@
+/**
+ * Component Styles
+ * Bet distribution, draw selection, draw control, preset schedule components
+ */
+
+/* Draw Selection Tabs */
+.draw-selection-tabs {
+    margin-bottom: 20px;
+}
+
+.draw-tabs {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+}
+
+.draw-tab {
+    min-width: 120px;
+    padding: 10px 15px;
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.draw-tab:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.draw-tab.active {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: white;
+}
+
+.draw-tab.current {
+    border-color: var(--success-color);
+}
+
+.draw-tab-number {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.draw-tab-time {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+.draw-tab.active .draw-tab-time {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.draw-tab-stats {
+    font-size: 0.75rem;
+    margin-top: 5px;
+}
+
+/* Draw Info Header */
+.draw-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.draw-info-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.legend-container {
+    display: flex;
+    gap: 20px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.has-bets-legend {
+    background-color: var(--primary-color);
+}
+
+.no-bets-legend {
+    background-color: var(--border-color);
+}
+
+/* Bet Distribution Grid */
+.bet-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 20px 0;
+}
+
+.bet-number-cell {
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.bet-number-cell.has-bets {
+    border-color: var(--primary-color);
+    background: rgba(78, 115, 223, 0.05);
+}
+
+.bet-number-cell.no-bets {
+    opacity: 0.6;
+}
+
+.number-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.number-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark-color);
+}
+
+.number-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.number-color.red {
+    background-color: #e74a3b;
+}
+
+.number-color.black {
+    background-color: #5a5c69;
+}
+
+.number-color.green {
+    background-color: var(--success-color);
+}
+
+.bet-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.bet-stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+}
+
+.bet-stat .label {
+    color: var(--text-muted);
+}
+
+.bet-stat .value {
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+/* Overview Table */
+.upcoming-draws-overview {
+    margin-top: 20px;
+}
+
+.upcoming-draws-overview table {
+    width: 100%;
+}
+
+.upcoming-draws-overview th {
+    background: var(--light-color);
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--dark-color);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.upcoming-draws-overview td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.draw-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.draw-row:hover {
+    background-color: var(--light-color);
+}
+
+.draw-row.current {
+    background-color: rgba(28, 200, 138, 0.1);
+}
+
+/* Draw Control */
+.draw-control-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.draw-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.draw-info-item:last-child {
+    border-bottom: none;
+}
+
+.draw-info-item .label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.draw-info-item .value {
+    font-weight: 700;
+    color: var(--dark-color);
+    font-size: 1rem;
+}
+
+.draw-control-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.current-mode {
+    padding: 8px 16px;
+    background: var(--light-color);
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* Preset Schedule */
+.preset-schedule-section {
+    margin-top: 30px;
+}
+
+.preset-schedule-table {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.preset-schedule-table table {
+    width: 100%;
+}
+
+.preset-schedule-table th {
+    position: sticky;
+    top: 0;
+    background: var(--light-color);
+    z-index: 10;
+}
+
+.number-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    color: white;
+}
+
+.number-badge.red {
+    background-color: #e74a3b;
+}
+
+.number-badge.black {
+    background-color: #5a5c69;
+}
+
+.number-badge.green {
+    background-color: var(--success-color);
+}
+
+/* Forced Number */
+.forced-number-card {
+    background: var(--light-color);
+    border: 2px solid var(--warning-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.forced-number-header h5 {
+    margin: 0 0 15px 0;
+    color: var(--warning-color);
+}
+
+.forced-number-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detail-item .label {
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.detail-item .value {
+    font-weight: 700;
+    color: var(--dark-color);
+}
+
+/* Loading States */
+.loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: var(--text-muted);
+}
+
+.loading-indicator .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3em;
+}
+
+/* Error States */
+.alert {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.alert-danger {
+    background-color: rgba(231, 74, 59, 0.1);
+    border: 1px solid var(--danger-color);
+    color: var(--danger-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .bet-info-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+    
+    .draw-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .draw-info-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .legend-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+

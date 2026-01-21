@@ -18,15 +18,21 @@ $response = [
 
 // Function to log messages
 function logSetWinningNumber($message, $type = 'INFO') {
-    // Create logs directory if it doesn't exist
+    // Create logs directory if it doesn't exist (try multiple paths)
+    $logDir = __DIR__ . '/../logs';
+    if (!file_exists($logDir)) {
+        @mkdir($logDir, 0777, true);
+    }
+    
+    // Also try relative path
     if (!file_exists('../logs')) {
-        mkdir('../logs', 0777, true);
+        @mkdir('../logs', 0777, true);
     }
 
-    $logFile = '../logs/manual_winning_number.log';
+    $logFile = $logDir . '/manual_winning_number.log';
     $timestamp = date('Y-m-d H:i:s');
     $logMessage = "[$timestamp] [$type] $message\n";
-    file_put_contents($logFile, $logMessage, FILE_APPEND);
+    @file_put_contents($logFile, $logMessage, FILE_APPEND);
 
     // Also log to PHP error log for critical issues
     if ($type === 'ERROR') {
@@ -42,38 +48,106 @@ try {
 
     // Parse and validate the number
     $winningNumber = isset($_POST['winning_number']) ? intval($_POST['winning_number']) : intval($_POST['number']);
+    
+    // Check if we should keep automatic mode (for auto-draw functionality)
+    // ⚠️ CRITICAL: Only set to true if explicitly 'true' (string) or true (boolean)
+    // Default to false (manual) if not explicitly set to true
+    $keepAutoMode = false;
+    if (isset($_POST['keep_auto_mode'])) {
+        $keepAutoModeValue = $_POST['keep_auto_mode'];
+        // Only set to true if explicitly 'true' (string) or true (boolean) or '1' (string)
+        // Everything else (including 'false', false, '0', 0, empty string) = false (manual)
+        $keepAutoMode = ($keepAutoModeValue === 'true' || $keepAutoModeValue === true || $keepAutoModeValue === '1' || $keepAutoModeValue === 1);
+    }
+    
+    // ⚠️ ADDITIONAL SAFEGUARD: If keep_auto_mode is explicitly 'false', force it to false
+    if (isset($_POST['keep_auto_mode']) && ($_POST['keep_auto_mode'] === 'false' || $_POST['keep_auto_mode'] === false)) {
+        $keepAutoMode = false;
+    }
 
     // Log the received parameters for debugging
-    logSetWinningNumber("Received parameters: " . json_encode($_POST), 'INFO');
+    logSetWinningNumber("Received parameters: " . json_encode($_POST) . ", keep_auto_mode parsed: " . ($keepAutoMode ? 'true' : 'false'), 'INFO');
 
     if (!isValidRouletteNumber($winningNumber)) {
         throw new Exception("Invalid winning number. Must be between 0 and 36");
     }
 
-    // Get current draw number
-    $stmt = $conn->prepare("
-        SELECT current_draw_number
-        FROM roulette_analytics
-        WHERE id = 1
-        LIMIT 1
-    ");
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows === 0) {
-        throw new Exception("Draw information not found");
-    }
-
-    $drawData = $result->fetch_assoc();
-    $currentDrawNumber = $drawData['current_draw_number'];
-    $stmt->close();
+    // Get draw number - use server-time-based calculation for NEXT draw
+    // ⚠️ CRITICAL: When setting a winning number, it should be for the NEXT draw, not the current one
+    $targetDrawNumber = null;
+    
+    // Check if draw_number is provided in POST (for explicit draw selection)
+    if (isset($_POST['draw_number']) && !empty($_POST['draw_number'])) {
+        $targetDrawNumber = (int)$_POST['draw_number'];
+        logSetWinningNumber("Using draw_number from POST: $targetDrawNumber", 'INFO');
+    } else {
+        // ⏰ CRITICAL: Calculate NEXT draw number based on SERVER TIME
+        // This ensures the winning number is set for the upcoming draw, not the current one
+        date_default_timezone_set('America/Guyana');
+        $now = new DateTime('now', new DateTimeZone('America/Guyana'));
+        $currentHour = (int)$now->format('H');
+        $currentMinute = (int)$now->format('i');
+        $totalMinutesSinceMidnight = ($currentHour * 60) + $currentMinute;
+        $drawIndex = floor($totalMinutesSinceMidnight / 3);
+        $currentDrawNumber = $drawIndex + 1;
+        
+        // Cap current draw at 480
+        if ($currentDrawNumber > 480) {
+            $currentDrawNumber = 480;
+        }
+        
+        // Set for NEXT draw (current + 1)
+        $targetDrawNumber = $currentDrawNumber + 1;
+        
+        // If we're at the last draw of the day (480), next draw should be 1 (next day)
+        // But for safety, cap at 480
+        if ($targetDrawNumber > 480) {
+            $targetDrawNumber = 480;
+        }
+        
+        logSetWinningNumber("Calculated NEXT draw number from server time: $targetDrawNumber (current: $currentDrawNumber, time: " . $now->format('H:i:s') . ")", 'INFO');
+        }
+        
+    // Validate draw number
+    if ($targetDrawNumber === null || $targetDrawNumber === 0 || $targetDrawNumber > 480) {
+        throw new Exception("Invalid draw number: $targetDrawNumber. Draw numbers must be between 1 and 480.");
+                }
+    
+    // Use targetDrawNumber for the rest of the function
+    $currentDrawNumber = $targetDrawNumber;
 
     // Log the current draw number for debugging
     logSetWinningNumber("Current draw number: $currentDrawNumber, Setting winning number: $winningNumber", 'INFO');
 
+    // Ensure next_draw_winning_number table exists
+    $checkTableQuery = "SHOW TABLES LIKE 'next_draw_winning_number'";
+    $tableResult = $conn->query($checkTableQuery);
+    
+    if ($tableResult->num_rows === 0) {
+        logSetWinningNumber("Creating next_draw_winning_number table...", 'INFO');
+        
+        $createTableSQL = "CREATE TABLE IF NOT EXISTS `next_draw_winning_number` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `draw_number` int(11) NOT NULL,
+            `winning_number` int(11) NOT NULL,
+            `source` varchar(50) DEFAULT 'manual',
+            `reason` varchar(255) DEFAULT 'Set by administrator',
+            `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+            `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `unique_draw` (`draw_number`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+        
+        if ($conn->query($createTableSQL)) {
+            logSetWinningNumber("Table next_draw_winning_number created successfully", 'INFO');
+        } else {
+            throw new Exception("Failed to create next_draw_winning_number table: " . $conn->error);
+        }
+    }
+
     // Check if there's already a manual winning number for this draw
     $stmt = $conn->prepare("
-        SELECT id
+        SELECT id, source
         FROM next_draw_winning_number
         WHERE draw_number = ?
         LIMIT 1
@@ -92,22 +166,42 @@ try {
 
     $existingResult = $stmt->get_result();
     $exists = $existingResult->num_rows > 0;
+    $existingSource = null;
 
     if ($exists) {
-        logSetWinningNumber("Found existing record for draw #$currentDrawNumber", 'INFO');
+        $existingRow = $existingResult->fetch_assoc();
+        $existingSource = $existingRow['source'] ?? null;
+        logSetWinningNumber("Found existing record for draw #$currentDrawNumber with source='{$existingSource}'", 'INFO');
     } else {
         logSetWinningNumber("No existing record found for draw #$currentDrawNumber, will create new", 'INFO');
     }
 
     $stmt->close();
 
+    // Determine source and reason based on keep_auto_mode
+    // ⚠️ CRITICAL: Default to 'manual' unless explicitly set to automatic
+    // This ensures manual settings are never accidentally saved as automatic
+    $source = ($keepAutoMode === true) ? 'automatic' : 'manual';
+    $reason = ($keepAutoMode === true) ? 'Auto-selected by smart system' : 'Set by administrator';
+    
+    // ⚠️ CRITICAL PROTECTION: If there's an existing manual entry, NEVER overwrite it with automatic
+    // Manual entries should only be overwritten by another manual entry (user explicitly changing it)
+    if ($exists && $existingSource === 'manual' && $source === 'automatic') {
+        logSetWinningNumber("⚠️ PROTECTION: Attempted to overwrite manual entry with automatic - BLOCKED. Keeping existing manual entry.", 'WARNING');
+        $source = 'manual'; // Force to manual to protect existing manual entry
+        $reason = 'Set by administrator'; // Keep original reason
+    }
+    
+    // Log the decision
+    logSetWinningNumber("Source decision: keepAutoMode=" . ($keepAutoMode ? 'true' : 'false') . ", source='{$source}', reason='{$reason}'", 'INFO');
+    
     if ($exists) {
         // Update the existing record
         $stmt = $conn->prepare("
             UPDATE next_draw_winning_number
             SET winning_number = ?,
-                source = 'manual',
-                reason = 'Set by administrator',
+                source = ?,
+                reason = ?,
                 updated_at = NOW()
             WHERE draw_number = ?
         ");
@@ -116,22 +210,22 @@ try {
             throw new Exception("Failed to prepare update statement: " . $conn->error);
         }
 
-        $stmt->bind_param("ii", $winningNumber, $currentDrawNumber);
-        logSetWinningNumber("Updating record with winning number $winningNumber for draw #$currentDrawNumber", 'INFO');
+        $stmt->bind_param("issi", $winningNumber, $source, $reason, $currentDrawNumber);
+        logSetWinningNumber("Updating record with winning number $winningNumber for draw #$currentDrawNumber (source: $source)", 'INFO');
     } else {
         // Insert a new record
         $stmt = $conn->prepare("
             INSERT INTO next_draw_winning_number
             (draw_number, winning_number, source, reason, created_at, updated_at)
-            VALUES (?, ?, 'manual', 'Set by administrator', NOW(), NOW())
+            VALUES (?, ?, ?, ?, NOW(), NOW())
         ");
 
         if (!$stmt) {
             throw new Exception("Failed to prepare insert statement: " . $conn->error);
         }
 
-        $stmt->bind_param("ii", $currentDrawNumber, $winningNumber);
-        logSetWinningNumber("Inserting new record with winning number $winningNumber for draw #$currentDrawNumber", 'INFO');
+        $stmt->bind_param("iiss", $currentDrawNumber, $winningNumber, $source, $reason);
+        logSetWinningNumber("Inserting new record with winning number $winningNumber for draw #$currentDrawNumber (source: $source)", 'INFO');
     }
 
     $success = $stmt->execute();
@@ -141,86 +235,6 @@ try {
     }
 
     logSetWinningNumber(($exists ? "Updated" : "Inserted") . " winning number record successfully", 'INFO');
-    $stmt->close();
-
-    if (!$success) {
-        throw new Exception("Failed to set winning number: " . $conn->error);
-    }
-
-    // Also turn off automatic mode if it's currently on
-    // Check if automatic_mode column exists
-    $checkColumnQuery = "SHOW COLUMNS FROM roulette_settings LIKE 'automatic_mode'";
-    $columnResult = $conn->query($checkColumnQuery);
-    $hasAutomaticModeColumn = ($columnResult->num_rows > 0);
-
-    logSetWinningNumber("Turning off automatic mode", 'INFO');
-
-    // First check if automatic mode is already off
-    $isAutomatic = true;
-
-    if ($hasAutomaticModeColumn) {
-        $checkStmt = $conn->prepare("SELECT automatic_mode FROM roulette_settings WHERE id = 1 LIMIT 1");
-        $checkStmt->execute();
-        $modeResult = $checkStmt->get_result();
-
-        if ($modeResult->num_rows > 0) {
-            $modeSetting = $modeResult->fetch_assoc();
-            $isAutomatic = (int)$modeSetting['automatic_mode'] === 1;
-        }
-        $checkStmt->close();
-    } else {
-        $checkStmt = $conn->prepare("SELECT setting_value FROM roulette_settings WHERE setting_name = 'automatic_mode' LIMIT 1");
-        $checkStmt->execute();
-        $modeResult = $checkStmt->get_result();
-
-        if ($modeResult->num_rows > 0) {
-            $modeSetting = $modeResult->fetch_assoc();
-            $isAutomatic = (int)$modeSetting['setting_value'] === 1;
-        }
-        $checkStmt->close();
-    }
-
-    if ($isAutomatic) {
-        logSetWinningNumber("Automatic mode is currently ON, turning it OFF", 'INFO');
-
-        if ($hasAutomaticModeColumn) {
-            // Using direct column approach
-            $stmt = $conn->prepare("
-                UPDATE roulette_settings
-                SET automatic_mode = 0,
-                    updated_at = NOW()
-                WHERE id = 1
-            ");
-        } else {
-            // Using setting_name/setting_value approach
-            $stmt = $conn->prepare("
-                UPDATE roulette_settings
-                SET setting_value = '0',
-                    updated_at = NOW()
-                WHERE setting_name = 'automatic_mode'
-            ");
-        }
-
-        if (!$stmt) {
-            throw new Exception("Failed to prepare automatic mode update statement: " . $conn->error);
-        }
-
-        $modeSuccess = $stmt->execute();
-
-        if (!$modeSuccess) {
-            throw new Exception("Failed to turn off automatic mode: " . $stmt->error);
-        }
-
-        logSetWinningNumber("Successfully turned off automatic mode", 'INFO');
-        $stmt->close();
-    } else {
-        logSetWinningNumber("Automatic mode is already OFF, no need to update", 'INFO');
-    }
-
-    // Log the action
-    logSetWinningNumber("Winning number set to $winningNumber for draw #$currentDrawNumber", 'INFO');
-
-    // Get winning number color
     $winningColor = getNumberColor($winningNumber);
 
     // Prepare success response
@@ -231,9 +245,9 @@ try {
             'draw_number' => $currentDrawNumber,
             'winning_number' => $winningNumber,
             'winning_color' => $winningColor,
-            'source' => 'manual',
-            'reason' => 'Set by administrator',
-            'is_automatic' => false
+            'source' => $keepAutoMode ? 'automatic' : 'manual',
+            'reason' => $keepAutoMode ? 'Auto-selected by smart system' : 'Set by administrator',
+            'is_automatic' => $keepAutoMode
         ],
         'timestamp' => time()
     ];

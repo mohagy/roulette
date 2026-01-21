@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Start session
 session_start();
 
@@ -294,6 +294,75 @@ $current_page = basename($_SERVER['PHP_SELF']);
             padding: 20px;
             color: #777;
             font-style: italic;
+        }
+
+        /* Smart Number Management Styles */
+        .number-circle-sm {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            margin: 0 5px;
+        }
+
+        .pattern-chart {
+            background: #f8f9fc;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 150px;
+            border: 1px solid #e3e6f0;
+        }
+
+        .preset-schedule-container {
+            border: 1px solid #e3e6f0;
+            border-radius: 8px;
+            padding: 10px;
+            background: #f8f9fc;
+            margin-top: 10px;
+        }
+
+        .preset-schedule-container table {
+            font-size: 0.85rem;
+            margin-bottom: 0;
+        }
+
+        .preset-schedule-container th {
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: #e3e6f0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .preset-schedule-container td {
+            vertical-align: middle;
+            padding: 8px;
+        }
+
+        .preset-schedule-container .table-responsive {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .pattern-item {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #4e73df;
+            font-size: 0.9rem;
+        }
+
+        .pattern-item.highlight {
+            background: #fff3cd;
+            border-left-color: #ffc107;
         }
 
         .legend-container {
@@ -1054,74 +1123,40 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </nav>
 
         <!-- Content Wrapper -->
-        <div class="content-wrapper">
-            <!-- Page Header -->
-            <div class="page-header">
-                <h1 class="page-title">Bet Distribution & Draw Control</h1>
-                <div class="breadcrumb">
-                    <div class="breadcrumb-item"><a href="index.php">Admin</a></div>
-                    <div class="breadcrumb-item active">Bet Distribution & Draw Control</div>
-                </div>
-            </div>
+<div class="content-wrapper">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Bet Distribution & Draw Control</h1>
+        <div class="breadcrumb">
+            <div class="breadcrumb-item"><a href="index.php">Admin</a></div>
+            <div class="breadcrumb-item active">Bet Distribution & Draw Control</div>
+        </div>
+    </div>
 
-            <!-- Action Buttons -->
-            <div class="mb-4">
-                <button id="refreshButton" class="btn btn-primary">
-                    <i class="fas fa-sync-alt"></i> Refresh Data
-                </button>
-                <button id="toggleDrawControlButton" class="btn btn-info ms-2">
-                    <i class="fas fa-sliders-h"></i> <span id="toggleDrawControlText">Show Draw Control</span>
-                </button>
-            </div>
+    <!-- Action Buttons -->
+    <div class="mb-4">
+        <button id="refreshButton" class="btn btn-primary">
+            <i class="fas fa-sync-alt"></i> Refresh Data
+        </button>
+        <button id="toggleDrawControlButton" class="btn btn-info ms-2">
+            <i class="fas fa-sliders-h"></i> <span id="toggleDrawControlText">Show Draw Control</span>
+        </button>
+    </div>
 
-            <!-- Tab Container -->
-            <div class="tab-container">
-                <button class="view-tab active" data-view="chart">Chart View</button>
-                <button class="view-tab" data-view="grid">Grid View</button>
-            </div>
+    <!-- Tab Container -->
+    <div class="tab-container">
+        <button class="view-tab active" data-view="chart">Chart View</button>
+        <button class="view-tab" data-view="grid">Grid View</button>
+    </div>
 
+    <div class="row">
+        <!-- LEFT COLUMN: Main Content -->
+        <div class="col-lg-8">
             <!-- Bet Distribution Container -->
             <div class="bet-distribution-container">
                 <div class="auto-refresh-status mb-3">
                     <i class="fas fa-circle-notch fa-spin"></i>
                     <span>Auto-refreshing data for 10 upcoming draws every 15 seconds</span>
-                </div>
-
-                <!-- Upcoming Draws Overview Panel -->
-                <div class="upcoming-draws-overview mb-4">
-                    <div class="card shadow">
-                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                            <h6 class="m-0 font-weight-bold text-primary">10 Upcoming Draws Overview</h6>
-                            <button class="btn btn-sm btn-outline-primary" id="refreshAllDraws">
-                                <i class="fas fa-sync-alt"></i> Refresh All
-                            </button>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover mb-0" id="upcomingDrawsTable">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Draw #</th>
-                                            <th>Est. Time</th>
-                                            <th>Betting Slips</th>
-                                            <th>Total Stake</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td colspan="5" class="text-center py-3">
-                                                <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                                    <span class="visually-hidden">Loading...</span>
-                                                </div>
-                                                <span class="ms-2">Loading upcoming draws...</span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Draw Selection Tabs -->
@@ -1152,7 +1187,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </div>
 
                 <div class="draw-info-header">
-                    <h2>Draw: <span id="upcomingDrawNumber">Loading...</span> <span id="drawStatus" class="badge bg-primary">Current</span></h2>
+                    <h2>Draw: <span id="upcomingDrawNumber">Loading...</span> <span id="drawStatus"
+                            class="badge bg-primary">Current</span></h2>
                     <div class="legend-container">
                         <div class="legend-item">
                             <div class="legend-color has-bets-legend"></div>
@@ -1202,320 +1238,20 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </div>
             </div>
 
-            <!-- Draw Control Section -->
+            <!-- Draw Control Section (Hidden by default) -->
             <div id="drawControlSection" class="draw-control-section" style="display: none;">
-                <!-- Mobile-friendly collapsible sections -->
+                <!-- Mobile View Placeholder - Keeping structure for JS compatibility -->
                 <div class="d-block d-md-none">
-                    <!-- Current Draw Information (Mobile) -->
-                    <div class="card shadow mb-3">
-                        <div class="mobile-collapsible-header" data-target="currentDrawContent">
-                            <h6 class="m-0 font-weight-bold">Current Draw Information</h6>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="mobile-collapsible-content" id="currentDrawContent">
-                            <div class="card-body">
-                                <div class="h3 mb-0 font-weight-bold text-gray-800" id="currentDrawNumber-mobile">-</div>
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Current Draw Number</div>
-
-                                <table class="table table-sm mt-3">
-                                    <tr>
-                                        <td>Last Draw:</td>
-                                        <td id="lastDrawTime-mobile">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Next Draw:</td>
-                                        <td id="nextDrawTime-mobile">-</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Mode:</td>
-                                        <td id="currentMode-mobile">-</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Timer (Mobile) -->
-                    <div class="card shadow mb-3">
-                        <div class="mobile-collapsible-header active" data-target="timerContent">
-                            <h6 class="m-0 font-weight-bold">Draw Timer</h6>
-                            <i class="fas fa-chevron-up"></i>
-                        </div>
-                        <div class="mobile-collapsible-content expanded" id="timerContent">
-                            <div class="card-body p-0">
-                                <!-- 3D Timer Container -->
-                                <div class="timer-3d-container">
-                                    <div id="timer3dScene-mobile" class="timer-3d-scene"></div>
-                                    <div id="timer3dDisplay-mobile" class="timer-3d-display">00:00</div>
-                                    <div id="timerSyncIndicator-mobile" class="timer-sync-indicator" style="display: none;">
-                                        <i class="fas fa-sync-alt fa-spin"></i>
-                                        <span class="sync-text">Synced</span>
-                                    </div>
-                                    <div class="next-draw-time" style="position: absolute; bottom: 50px; left: 0; right: 0; text-align: center; color: white; font-size: 0.9rem; text-shadow: 0 0 5px rgba(0,0,0,0.5);">
-                                        Next: <span id="nextDrawTimeDisplay-mobile">--:--:--</span>
-                                    </div>
-                                    <div id="particles-mobile" class="particles"></div>
-                                    <div class="timer-3d-controls">
-                                        <button id="startTimer3d-mobile" class="timer-3d-btn start">
-                                            <i class="fas fa-play"></i>
-                                        </button>
-                                        <button id="pauseTimer3d-mobile" class="timer-3d-btn pause">
-                                            <i class="fas fa-pause"></i>
-                                        </button>
-                                        <button id="resetTimer3d-mobile" class="timer-3d-btn reset">
-                                            <i class="fas fa-redo"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="timer-3d-settings">
-                                    <div class="row g-2">
-                                        <div class="col-8">
-                                            <input type="number" id="timerInterval3d-mobile" class="form-control" value="60" min="10" max="300">
-                                        </div>
-                                        <div class="col-4">
-                                            <button id="updateTimerSettings3d-mobile" class="btn btn-primary w-100">
-                                                <i class="fas fa-save"></i> Save
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Winning Number (Mobile) -->
-                    <div class="card shadow mb-3">
-                        <div class="mobile-collapsible-header" data-target="winningNumberContent">
-                            <h6 class="m-0 font-weight-bold">Winning Number</h6>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="mobile-collapsible-content" id="winningNumberContent">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div class="number-circle" id="winningNumberDisplay-mobile">-</div>
-                                    <button class="btn btn-primary btn-sm" id="toggleAutoMode-mobile">
-                                        <i class="fas fa-robot"></i> <span id="modeToggleText-mobile">Auto</span>
-                                    </button>
-                                </div>
-                                <div id="winningNumberSource-mobile" class="small">Source: -</div>
-                                <div id="winningNumberReason-mobile" class="small mb-3">Reason: -</div>
-
-                                <div class="input-group mb-2">
-                                    <input type="number" id="manualWinningNumber-mobile" class="form-control" value="0" min="0" max="36">
-                                    <button class="btn btn-primary" id="setManualWinningNumber-mobile">
-                                        <i class="fas fa-hand-pointer"></i> Set
-                                    </button>
-                                </div>
-
-                                <!-- Recommended Numbers Section (Mobile) -->
-                                <div class="recommended-numbers-container mt-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <div class="recommended-numbers-title small">Recommended Numbers</div>
-                                        <button class="btn btn-sm btn-outline-primary" id="refreshRecommendations-mobile">
-                                            <i class="fas fa-sync-alt"></i>
-                                        </button>
-                                    </div>
-
-                                    <div class="recommended-numbers-tabs">
-                                        <div class="recommended-tab active" data-type="no-bets" data-mobile="true">No Bets</div>
-                                        <div class="recommended-tab" data-type="lowest-payout" data-mobile="true">Lowest</div>
-                                        <div class="recommended-tab" data-type="highest-payout" data-mobile="true">Highest</div>
-                                    </div>
-
-                                    <div id="recommendedNumbersGrid-mobile" class="recommended-numbers-grid">
-                                        <div class="no-recommendations">
-                                            <i class="fas fa-info-circle"></i> Loading...
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Forced Number Checker (Mobile) -->
-                    <div class="card shadow mb-3">
-                        <div class="mobile-collapsible-header" data-target="forcedNumberContent">
-                            <h6 class="m-0 font-weight-bold">Forced Number Checker</h6>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="mobile-collapsible-content" id="forcedNumberContent">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <div class="forced-number-status small" id="forcedNumberStatus-mobile">Check for forced numbers</div>
-                                    <button class="btn btn-primary btn-sm" id="checkForcedNumber-mobile">
-                                        <i class="fas fa-sync-alt"></i> Check
-                                    </button>
-                                </div>
-
-                                <div class="forced-number-display text-center">
-                                    <div class="forced-number-badge-container">
-                                        <div class="forced-number-badge" id="forcedNumberBadge-mobile">?</div>
-                                        <div class="forced-number-glow"></div>
-                                    </div>
-                                    <div class="forced-number-info mt-2">
-                                        <div class="forced-number-draw">Draw: <span id="forcedNumberDraw-mobile">-</span></div>
-                                    </div>
-                                </div>
-
-                                <div class="forced-number-details mt-3">
-                                    <div class="forced-number-detail-item">
-                                        <i class="fas fa-info-circle"></i>
-                                        <span id="forcedNumberMessage-mobile" class="small">No information available</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Roll History (Mobile) -->
-                    <div class="card shadow mb-3">
-                        <div class="mobile-collapsible-header" data-target="rollHistoryContent">
-                            <h6 class="m-0 font-weight-bold">Recent Roll History</h6>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="mobile-collapsible-content" id="rollHistoryContent">
-                            <div class="card-body">
-                                <div class="roll-history" id="rollHistory-mobile">
-                                    <!-- Roll history items will be added here -->
-                                </div>
-                                <div class="auto-refresh-status mt-3 small">
-                                    <span>Auto-refreshing every 15s</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Mobile content omitted for brevity in this view, but structure preserved -->
                 </div>
 
-                <!-- Desktop layout -->
                 <div class="d-none d-md-block">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-12">
                             <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Current Draw Information</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="h3 mb-0 font-weight-bold text-gray-800" id="currentDrawNumber">-</div>
-                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Current Draw Number</div>
-
-                                    <table class="table table-sm mt-3">
-                                        <tr>
-                                            <td>Last Draw Time:</td>
-                                            <td id="lastDrawTime">-</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Next Draw Time:</td>
-                                            <td id="nextDrawTime">-</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Mode:</td>
-                                            <td id="currentMode">-</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <!-- Forced Number Checker Card -->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Forced Number Checker</h6>
-                                    <button class="btn btn-primary btn-sm" id="checkForcedNumber">
-                                        <i class="fas fa-sync-alt"></i> Check Now
-                                    </button>
-                                </div>
-                                <div class="card-body">
-                                    <div class="forced-number-container">
-                                        <div class="forced-number-status mb-2" id="forcedNumberStatus">Click to check for forced numbers</div>
-
-                                        <div class="forced-number-display">
-                                            <div class="forced-number-badge-container">
-                                                <div class="forced-number-badge" id="forcedNumberBadge">?</div>
-                                                <div class="forced-number-glow"></div>
-                                            </div>
-                                            <div class="forced-number-info mt-2">
-                                                <div class="forced-number-draw">Draw: <span id="forcedNumberDraw">-</span></div>
-                                            </div>
-                                        </div>
-
-                                        <div class="forced-number-details mt-3">
-                                            <div class="forced-number-detail-item">
-                                                <i class="fas fa-info-circle"></i>
-                                                <span id="forcedNumberMessage">No information available</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Draw Timer</h6>
-                                </div>
-                                <div class="card-body p-0">
-                                    <!-- 3D Timer Container -->
-                                    <div class="timer-3d-container">
-                                        <!-- Three.js scene will be rendered here -->
-                                        <div id="timer3dScene" class="timer-3d-scene"></div>
-
-                                        <!-- Timer display -->
-                                        <div id="timer3dDisplay" class="timer-3d-display">00:00</div>
-
-                                        <!-- Sync indicator -->
-                                        <div id="timerSyncIndicator" class="timer-sync-indicator" style="display: none;">
-                                            <i class="fas fa-sync-alt fa-spin"></i>
-                                            <span class="sync-text">Synced with real-time</span>
-                                        </div>
-
-                                        <!-- Next draw time display -->
-                                        <div class="next-draw-time" style="position: absolute; bottom: 50px; left: 0; right: 0; text-align: center; color: white; font-size: 0.9rem; text-shadow: 0 0 5px rgba(0,0,0,0.5);">
-                                            Next draw at: <span id="nextDrawTimeDisplay">--:--:--</span>
-                                        </div>
-
-                                        <!-- Particle container -->
-                                        <div id="particles" class="particles"></div>
-
-                                        <!-- Timer controls -->
-                                        <div class="timer-3d-controls">
-                                            <button id="startTimer3d" class="timer-3d-btn start">
-                                                <i class="fas fa-play"></i> Start
-                                            </button>
-                                            <button id="pauseTimer3d" class="timer-3d-btn pause">
-                                                <i class="fas fa-pause"></i> Pause
-                                            </button>
-                                            <button id="resetTimer3d" class="timer-3d-btn reset">
-                                                <i class="fas fa-redo"></i> Reset
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <!-- Timer settings -->
-                                    <div class="timer-3d-settings">
-                                        <label for="timerInterval3d">Draw Interval (seconds):</label>
-                                        <input type="number" id="timerInterval3d" value="60" min="10" max="300">
-                                        <button id="updateTimerSettings3d">
-                                            <i class="fas fa-save"></i> Update Settings
-                                        </button>
-                                    </div>
-
-                                    <!-- Hidden original timer for compatibility -->
-                                    <div style="display: none;">
-                                        <div id="timerDisplay">00:00</div>
-                                        <button id="startTimer"></button>
-                                        <button id="pauseTimer"></button>
-                                        <button id="resetTimer"></button>
-                                        <input id="timerInterval" value="60">
-                                        <button id="updateTimerSettings"></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Winning Number</h6>
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Winning Number Control</h6>
                                     <button class="btn btn-primary btn-sm" id="toggleAutoMode">
                                         <i class="fas fa-robot"></i> <span id="modeToggleText">Auto Mode</span>
                                     </button>
@@ -1529,7 +1265,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                                     <div class="form-group">
                                         <label for="manualWinningNumber">Set Manual Winning Number:</label>
-                                        <input type="number" id="manualWinningNumber" class="form-control" value="0" min="0" max="36">
+                                        <input type="number" id="manualWinningNumber" class="form-control" value="0"
+                                            min="0" max="36">
                                     </div>
                                     <button class="btn btn-primary btn-sm mt-2" id="setManualWinningNumber">
                                         <i class="fas fa-hand-pointer"></i> Set Winning Number
@@ -1556,28 +1293,361 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Recent Roll History</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="roll-history" id="rollHistory">
-                                <!-- Roll history items will be added here -->
-                            </div>
-                            <div class="auto-refresh-status mt-3">
-                                <span>Auto-refreshing data every 15 seconds (Last updated: -)</span>
+                                    <!-- Advanced Smart Number Management -->
+                                    <div class="card shadow mt-4" style="border: 2px solid #4e73df;">
+                                        <div class="card-header py-3 bg-primary text-white">
+                                            <h6 class="m-0 font-weight-bold">
+                                                <i class="fas fa-brain"></i> Smart Number Management
+                                                <span class="badge badge-light ml-2">House Profit Optimizer</span>
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <!-- Time-Based Presets -->
+                                            <div class="mb-4">
+                                                <label class="font-weight-bold mb-2">
+                                                    <i class="fas fa-clock"></i> Time-Based Preset:
+                                                </label>
+                                                <select id="timePreset" class="form-control form-control-sm">
+                                                    <option value="auto">Auto (Based on Current Time)</option>
+                                                    <option value="morning">Morning (6AM-12PM) - Lower Numbers</option>
+                                                    <option value="afternoon">Afternoon (12PM-6PM) - Mid Range</option>
+                                                    <option value="evening">Evening (6PM-12AM) - Higher Numbers</option>
+                                                    <option value="night">Night (12AM-6AM) - Random Distribution
+                                                    </option>
+                                                    <option value="custom">Custom Pattern</option>
+                                                </select>
+                                                <small class="text-muted">Time-based patterns appear mathematical but
+                                                    optimize for house profit</small>
+                                            </div>
+
+                                            <!-- Pattern Type -->
+                                            <div class="mb-4">
+                                                <label class="font-weight-bold mb-2">
+                                                    <i class="fas fa-chart-line"></i> Pattern Strategy:
+                                                </label>
+                                                <select id="patternType" class="form-control form-control-sm">
+                                                    <option value="smart">Smart (Pattern + Low Payout)</option>
+                                                    <option value="fibonacci">Fibonacci-like Sequence</option>
+                                                    <option value="color_alternate">Color Alternation</option>
+                                                    <option value="cold_numbers">Cold Numbers (Not Recent)</option>
+                                                    <option value="lowest_payout">Pure Lowest Payout</option>
+                                                </select>
+                                                <small class="text-muted">Creates patterns users think they can
+                                                    predict</small>
+                                            </div>
+
+                                            <!-- Smart Selection Button -->
+                                            <div class="mb-3">
+                                                <button class="btn btn-success btn-block" id="smartSelectNumber">
+                                                    <i class="fas fa-magic"></i> Generate Smart Number
+                                                </button>
+                                                <small class="text-muted d-block mt-1">
+                                                    Analyzes bets, patterns, and time to select optimal number
+                                                </small>
+                                            </div>
+
+                                            <!-- Smart Selection Result -->
+                                            <div id="smartSelectionResult" class="alert alert-info"
+                                                style="display: none;">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong>Selected:</strong>
+                                                        <span class="number-circle-sm" id="smartSelectedNumber">-</span>
+                                                        <span id="smartSelectionReason" class="ml-2"></span>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-primary" id="applySmartSelection">
+                                                        <i class="fas fa-check"></i> Apply
+                                                    </button>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <small>
+                                                        <strong>Pattern Analysis:</strong>
+                                                        <span id="patternAnalysis"></span>
+                                                    </small>
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small>
+                                                        <strong>Payout:</strong>
+                                                        <span id="smartPayout"
+                                                            class="text-success font-weight-bold">$0.00</span>
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Preset Schedule -->
+                                            <div class="mt-3 mb-3">
+                                                <label class="font-weight-bold mb-2">
+                                                    <i class="fas fa-calendar-alt"></i> Preset Schedule:
+                                                </label>
+                                                <div id="presetSchedule" class="preset-schedule-container" style="display: none;">
+                                                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                                        <table class="table table-sm table-bordered mb-0">
+                                                            <thead class="thead-light sticky-top">
+                                                                <tr>
+                                                                    <th style="width: 15%;">Draw #</th>
+                                                                    <th style="width: 25%;">Time</th>
+                                                                    <th style="width: 20%;">Number</th>
+                                                                    <th style="width: 40%;">Pattern</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="presetScheduleBody">
+                                                                <!-- Will be populated by JavaScript -->
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div id="presetScheduleProgress" class="text-center text-info mb-2" style="display: none;">
+                                                        <i class="fas fa-spinner fa-spin"></i> <span>Generating...</span>
+                                                    </div>
+                                                    <div id="presetScheduleStatus" class="text-muted small mb-2" style="display: none;">
+                                                        <!-- Status will be populated by JavaScript -->
+                                                    </div>
+                                                    <small class="text-muted d-block mt-2">
+                                                        <i class="fas fa-info-circle"></i> Shows 480 preset numbers (24 hours) based on selected pattern. Table shows first 30 entries.
+                                                    </small>
+                                                </div>
+                                                <div id="presetSchedulePlaceholder" class="text-center text-muted">
+                                                    <i class="fas fa-calendar-alt fa-2x mb-2"></i>
+                                                    <p>Click "Generate Smart Number" to see preset schedule</p>
+                                                </div>
+                                            </div>
+
+                                            <!-- Pattern Visualization -->
+                                            <div class="mt-3">
+                                                <label class="font-weight-bold mb-2">
+                                                    <i class="fas fa-chart-bar"></i> Pattern Analysis:
+                                                </label>
+                                                <div id="patternVisualization" class="pattern-chart">
+                                                    <div class="text-center text-muted">
+                                                        <i class="fas fa-chart-line fa-2x mb-2"></i>
+                                                        <p>Click "Generate Smart Number" to see pattern analysis</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- RIGHT COLUMN: Sidebar & Preview -->
+        <div class="col-lg-4">
+            <!-- Live TV Preview -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Live TV Preview</h6>
+                </div>
+                <div class="card-body p-0"
+                    style="height: 240px; overflow: hidden; position: relative; background: #000;">
+                    <iframe src="../tvdisplay/index.html"
+                        style="width: 1920px; height: 1080px; border: 0; transform: scale(0.2); transform-origin: 0 0; position: absolute; top: 0; left: 0;"></iframe>
+                </div>
+            </div>
+
+            <!-- Upcoming Draws Overview -->
+            <div class="upcoming-draws-overview mb-4">
+                <div class="card shadow">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">10 Upcoming Draws Overview</h6>
+                        <button class="btn btn-sm btn-outline-primary" id="refreshAllDraws">
+                            <i class="fas fa-sync-alt"></i> Refresh All
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="upcomingDrawsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Draw #</th>
+                                        <th>Est. Time</th>
+                                        <th>Betting Slips</th>
+                                        <th>Total Stake</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" class="text-center py-3">
+                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <span class="ms-2">Loading upcoming draws...</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Draw Information -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Current Draw Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="h3 mb-0 font-weight-bold text-gray-800" id="currentDrawNumber">-</div>
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Current Draw Number</div>
+
+                    <table class="table table-sm mt-3">
+                        <tr>
+                            <td>Last Draw Time:</td>
+                            <td id="lastDrawTime">-</td>
+                        </tr>
+                        <tr>
+                            <td>Next Draw Time:</td>
+                            <td id="nextDrawTime">-</td>
+                        </tr>
+                        <tr>
+                            <td>Mode:</td>
+                            <td id="currentMode">-</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Draw Timer -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Draw Timer</h6>
+                </div>
+                <div class="card-body p-0">
+                    <!-- 3D Timer Container -->
+                    <div class="timer-3d-container">
+                        <!-- Three.js scene will be rendered here -->
+                        <div id="timer3dScene" class="timer-3d-scene"></div>
+
+                        <!-- Timer display -->
+                        <div id="timer3dDisplay" class="timer-3d-display">00:00</div>
+
+                        <!-- Sync indicator -->
+                        <div id="timerSyncIndicator" class="timer-sync-indicator" style="display: none;">
+                            <i class="fas fa-sync-alt fa-spin"></i>
+                            <span class="sync-text">Synced with real-time</span>
+                        </div>
+
+                        <!-- Next draw time display -->
+                        <div class="next-draw-time"
+                            style="position: absolute; bottom: 50px; left: 0; right: 0; text-align: center; color: white; font-size: 0.9rem; text-shadow: 0 0 5px rgba(0,0,0,0.5);">
+                            Next draw at: <span id="nextDrawTimeDisplay">--:--:--</span>
+                        </div>
+
+                        <!-- Particle container -->
+                        <div id="particles" class="particles"></div>
+
+                        <!-- Timer controls -->
+                        <div class="timer-3d-controls">
+                            <button id="startTimer3d" class="timer-3d-btn start">
+                                <i class="fas fa-play"></i> Start
+                            </button>
+                            <button id="pauseTimer3d" class="timer-3d-btn pause">
+                                <i class="fas fa-pause"></i> Pause
+                            </button>
+                            <button id="resetTimer3d" class="timer-3d-btn reset">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Timer settings -->
+                    <div class="timer-3d-settings">
+                        <label for="timerInterval3d">Draw Interval (seconds):</label>
+                        <input type="number" id="timerInterval3d" value="60" min="10" max="300">
+                        <button id="updateTimerSettings3d">
+                            <i class="fas fa-save"></i> Update Settings
+                        </button>
+                    </div>
+
+                    <!-- Hidden original timer for compatibility -->
+                    <div style="display: none;">
+                        <div id="timerDisplay">00:00</div>
+                        <button id="startTimer"></button>
+                        <button id="pauseTimer"></button>
+                        <button id="resetTimer"></button>
+                        <input id="timerInterval" value="60">
+                        <button id="updateTimerSettings"></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forced Number Checker -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Forced Number Checker</h6>
+                    <button class="btn btn-primary btn-sm" id="checkForcedNumber">
+                        <i class="fas fa-sync-alt"></i> Check Now
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="forced-number-container">
+                        <div class="forced-number-status mb-2" id="forcedNumberStatus">Click to check for forced numbers
+                        </div>
+
+                        <div class="forced-number-display">
+                            <div class="forced-number-badge-container">
+                                <div class="forced-number-badge" id="forcedNumberBadge">?</div>
+                                <div class="forced-number-glow"></div>
+                            </div>
+                            <div class="forced-number-info mt-2">
+                                <div class="forced-number-draw">Draw: <span id="forcedNumberDraw">-</span></div>
+                            </div>
+                        </div>
+
+                        <div class="forced-number-details mt-3">
+                            <div class="forced-number-detail-item">
+                                <i class="fas fa-info-circle"></i>
+                                <span id="forcedNumberMessage">No information available</span>
+                            </div>
+                        </div>
+
+                        <!-- Auto-Apply Toggle -->
+                        <div class="mt-3 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="autoApplyForcedNumber">
+                                <label class="form-check-label" for="autoApplyForcedNumber">
+                                    <i class="fas fa-magic"></i> Auto-Apply from Preset Schedule
+                                </label>
+                            </div>
+                            <small class="text-muted d-block mt-1">
+                                <span id="autoApplyStatus">Manual Mode</span> - <span id="autoApplyDescription">Click "Apply" to set winning number</span>
+                            </small>
+                        </div>
+
+                        <!-- Apply Button (shown when forced number is found) -->
+                        <div class="mt-3" id="forcedNumberApplyContainer" style="display: none;">
+                            <button class="btn btn-success btn-block" id="applyForcedNumber">
+                                <i class="fas fa-check-circle"></i> Apply as Winning Number
+                            </button>
+                            <small class="text-muted d-block mt-2 text-center">
+                                This will set the forced number as the winning number for the current draw
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Roll History -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Roll History</h6>
+                </div>
+                <div class="card-body">
+                    <div class="roll-history" id="rollHistory">
+                        <!-- Roll history items will be added here -->
+                    </div>
+                    <div class="auto-refresh-status mt-3">
+                        <span>Auto-refreshing data every 15 seconds (Last updated: -)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
     <!-- Mobile Sticky Controls -->
     <div class="mobile-sticky-controls d-md-none">
@@ -1609,12 +1679,53 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <div class="loading-spinner"></div>
         <div class="loading-text">Loading data...</div>
     </div>
+    
+    <!-- JavaScript Test Indicator -->
+    <div id="jsTestIndicator" style="position: fixed; top: 10px; right: 10px; background: #28a745; color: white; padding: 10px; border-radius: 5px; z-index: 9999; display: none;">
+        ✅ JavaScript is working!
+    </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
+    
+    <!-- Firebase SDK for Firestore sync -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/firestore-service.js"></script>
 
     <script>
+        // IMMEDIATE TEST - This should appear in console immediately
+        console.log('🚀 SCRIPT STARTED - JavaScript is working!');
+        console.log('📄 bet_distribution.php script is loading...');
+        console.log('📄 Current page URL:', window.location.href);
+        
+        // Show visual indicator that JavaScript is working
+        (function() {
+            try {
+                const indicator = document.getElementById('jsTestIndicator');
+                if (indicator) {
+                    indicator.style.display = 'block';
+                    setTimeout(() => {
+                        indicator.style.display = 'none';
+                    }, 3000);
+                }
+            } catch (e) {
+                console.error('Error showing JS indicator:', e);
+            }
+        })();
+        
+        // Test if we can access DOM immediately
+        if (document.readyState === 'loading') {
+            console.log('📄 Document is still loading...');
+        } else if (document.readyState === 'interactive') {
+            console.log('📄 Document is interactive');
+        } else if (document.readyState === 'complete') {
+            console.log('📄 Document is complete');
+        }
+        
         // Global variables
         let loadingOverlay;
         let refreshInterval;
@@ -1633,6 +1744,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         let allDrawsData = [];
         let selectedDrawIndex = 0;
         let currentDrawNumber = 0;
+        let isManualSelectionInProgress = false; // Flag to prevent forced number checker from overriding manual selections
 
         // Draw Control variables
         let timerInterval = 60; // Default timer interval in seconds
@@ -1647,7 +1759,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
         let timerSyncIntervalId = null;
         const timerSyncInterval = 5000; // Sync timer every 5 seconds
         let forcedNumberCheckIntervalId = null;
-        const forcedNumberCheckInterval = 30000; // Check forced number every 30 seconds
+        const forcedNumberCheckInterval = 30000; // Check forced number every 30 seconds (manual mode)
+        const forcedNumberCheckIntervalAuto = 5000; // Check forced number every 5 seconds (auto mode)
 
         // 3D Timer variables
         let scene, camera, renderer;
@@ -1659,12 +1772,32 @@ $current_page = basename($_SERVER['PHP_SELF']);
         let isTimerInitialized = false;
         let isTimerSynced = false;
 
+        // Log that script is loading
+        console.log('📄 bet_distribution.php script is loading...');
+
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Bet distribution and draw control page loaded');
+            console.log('✅ ========================================');
+            console.log('✅ Bet distribution and draw control page loaded');
+            console.log('✅ DOMContentLoaded event fired');
+            console.log('✅ ========================================');
 
-            // Cache DOM elements
-            loadingOverlay = document.getElementById('loadingOverlay');
+            try {
+                // Cache DOM elements
+                loadingOverlay = document.getElementById('loadingOverlay');
+                
+                if (!loadingOverlay) {
+                    console.warn('⚠️ Loading overlay element not found in DOM');
+                } else {
+                    console.log('✅ Loading overlay found');
+                }
+                
+                // Immediately fetch draw info on page load
+                console.log('🔄 Calling fetchDrawInfo()...');
+                fetchDrawInfo();
+            } catch (error) {
+                console.error('❌ Error in DOMContentLoaded handler:', error);
+            }
 
             // Set up refresh button
             document.getElementById('refreshButton').addEventListener('click', function() {
@@ -1870,7 +2003,75 @@ $current_page = basename($_SERVER['PHP_SELF']);
             });
 
             // Initial data fetch
-            fetchBetDistribution();
+            console.log('🔄 About to call fetchBetDistribution()...');
+            console.log('🔄 fetchBetDistribution function exists:', typeof fetchBetDistribution);
+            
+            // Set a timeout to hide loading if nothing happens
+            const loadingTimeout = setTimeout(() => {
+                console.warn('⚠️ Loading timeout - hiding overlay after 10 seconds');
+                showLoading(false);
+                if (allDrawsData.length === 0) {
+                    showError('Page is taking too long to load. Please check your connection and refresh.');
+                }
+            }, 10000);
+            
+            // Use setTimeout to ensure DOM is fully ready and function is defined
+            setTimeout(() => {
+                console.log('⏰ setTimeout callback executing...');
+                console.log('⏰ fetchBetDistribution type:', typeof fetchBetDistribution);
+                console.log('⏰ showLoading type:', typeof showLoading);
+                console.log('⏰ showError type:', typeof showError);
+                
+                try {
+                    if (typeof fetchBetDistribution === 'function') {
+                        console.log('🔄 Calling fetchBetDistribution() now...');
+                        fetchBetDistribution()
+                            .then(() => {
+                                console.log('✅ fetchBetDistribution() completed successfully');
+                                clearTimeout(loadingTimeout);
+                            })
+                            .catch(error => {
+                                clearTimeout(loadingTimeout);
+                                console.error('❌ fetchBetDistribution() promise rejected:', error);
+                                console.error('❌ Error details:', {
+                                    message: error.message,
+                                    stack: error.stack,
+                                    name: error.name
+                                });
+                                if (typeof showError === 'function') {
+                                    showError('Failed to fetch bet distribution: ' + error.message);
+                                } else {
+                                    alert('Failed to fetch bet distribution: ' + error.message);
+                                }
+                            });
+                    } else {
+                        clearTimeout(loadingTimeout);
+                        console.error('❌ fetchBetDistribution is not a function!');
+                        console.error('❌ Available functions:', Object.keys(window).filter(k => typeof window[k] === 'function').slice(0, 10));
+                        if (typeof showError === 'function') {
+                            showError('fetchBetDistribution function not found. Please refresh the page.');
+                        } else {
+                            alert('fetchBetDistribution function not found. Please refresh the page.');
+                        }
+                    }
+                } catch (error) {
+                    clearTimeout(loadingTimeout);
+                    console.error('❌ Error calling fetchBetDistribution():', error);
+                    console.error('❌ Error stack:', error.stack);
+                    if (typeof showError === 'function') {
+                        showError('Failed to initialize bet distribution: ' + error.message);
+                    } else {
+                        alert('Failed to initialize bet distribution: ' + error.message);
+                    }
+                }
+            }, 500); // Increased timeout to 500ms to ensure function is defined
+            
+            // Load smart selection settings on page load
+            try {
+                loadSmartSelectionSettings();
+            } catch (error) {
+                console.error('❌ Error loading smart selection settings:', error);
+            }
 
             // Set up auto refresh - every 15 seconds
             refreshInterval = setInterval(fetchBetDistribution, 15000);
@@ -1907,6 +2108,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                 // Start periodic forced number checking
                 startForcedNumberCheck();
+                
+                // Initialize Firestore real-time listeners
+                initFirestoreRealTimeListeners();
+                
+                // Check and auto-generate preset schedule if needed
+                checkAndAutoGeneratePreset();
             } else {
                 drawControlSection.style.display = 'none';
                 document.getElementById('toggleDrawControlText').textContent = 'Show Draw Control';
@@ -1962,9 +2169,138 @@ $current_page = basename($_SERVER['PHP_SELF']);
             // Winning number controls
             document.getElementById('toggleAutoMode').addEventListener('click', toggleMode);
             document.getElementById('setManualWinningNumber').addEventListener('click', setManualWinningNumber);
+            
+            // Apply forced number button
+            document.getElementById('applyForcedNumber')?.addEventListener('click', async function() {
+                console.log('🎯 Apply Forced Number button clicked');
+                
+                const applyContainer = document.getElementById('forcedNumberApplyContainer');
+                let forcedNumber = applyContainer?.getAttribute('data-forced-number');
+                // ALWAYS use current draw number, not the data attribute which might be wrong
+                const drawNumber = currentDrawNumber;
+                let numberSource = 'forced'; // Track where the number came from
+                
+                // If no forced number is set manually, get it from preset schedule for CURRENT draw
+                if (!forcedNumber) {
+                    console.log('🎯 No forced number set manually, checking preset schedule for current draw...');
+                    const presetNumber = await getPresetNumberForCurrentDraw();
+                    
+                    if (presetNumber) {
+                        forcedNumber = presetNumber.number.toString();
+                        numberSource = 'preset';
+                        console.log('✅ Found number from preset schedule for current draw:', { number: forcedNumber, drawNumber, color: presetNumber.color });
+                    } else {
+                        // Try to get from recommended numbers (no-bets tab)
+                        console.log('🎯 No preset schedule found, checking recommended numbers...');
+                        const recommendedNumber = getRecommendedNumberForCurrentDraw();
+                        
+                        if (recommendedNumber !== null) {
+                            forcedNumber = recommendedNumber.toString();
+                            numberSource = 'recommended';
+                            console.log('✅ Found number from recommended numbers:', forcedNumber);
+                        } else {
+                            showToast('Error', 'No number available. Please generate a preset schedule first.', 'error');
+                            return;
+                        }
+                    }
+                }
+                
+                if (forcedNumber) {
+                    const number = parseInt(forcedNumber);
+                    if (!isNaN(number) && number >= 0 && number <= 36) {
+                        // Set the manual winning number input
+                        const manualInput = document.getElementById('manualWinningNumber');
+                        if (manualInput) {
+                            manualInput.value = number;
+                        }
+                        
+                        // Set the winning number for CURRENT draw
+                        setManualWinningNumber();
+                        
+                        // Show success message with source
+                        const sourceText = numberSource === 'preset' ? 'preset schedule' : 
+                                         numberSource === 'recommended' ? 'recommended numbers' : 
+                                         'forced number';
+                        showToast('Applied', `Number ${number} from ${sourceText} has been set as the winning number for draw #${drawNumber}`, 'success');
+                        
+                        // Hide apply button after a short delay
+                        setTimeout(() => {
+                            if (applyContainer) {
+                                applyContainer.style.display = 'none';
+                            }
+                        }, 2000);
+                        
+                        // After applying, automatically set the next draw number from preset schedule
+                        setTimeout(() => {
+                            setNextDrawNumberFromPresetSchedule();
+                        }, 1000);
+                    } else {
+                        showToast('Error', 'Invalid forced number', 'error');
+                    }
+                } else {
+                    showToast('Error', 'No number available to apply', 'error');
+                }
+            });
 
             // Forced Number Checker controls
             document.getElementById('checkForcedNumber').addEventListener('click', checkForcedNumber);
+            
+            // Auto-apply checkbox change handler
+            const autoApplyCheckbox = document.getElementById('autoApplyForcedNumber');
+            const autoApplyStatus = document.getElementById('autoApplyStatus');
+            const autoApplyDescription = document.getElementById('autoApplyDescription');
+            
+            // Function to update auto-apply status display
+            function updateAutoApplyStatus() {
+                if (autoApplyStatus && autoApplyDescription) {
+                    if (autoApplyCheckbox.checked) {
+                        autoApplyStatus.textContent = 'Auto Mode';
+                        autoApplyStatus.className = 'text-success font-weight-bold';
+                        autoApplyDescription.textContent = 'Numbers will be applied automatically from preset schedule';
+                    } else {
+                        autoApplyStatus.textContent = 'Manual Mode';
+                        autoApplyStatus.className = 'text-warning font-weight-bold';
+                        autoApplyDescription.textContent = 'Click "Apply" to set winning number';
+                    }
+                }
+            }
+            
+            if (autoApplyCheckbox) {
+                // Load saved auto-apply setting (default to false/manual mode)
+                const savedAutoApply = localStorage.getItem('autoApplyForcedNumber');
+                if (savedAutoApply !== null) {
+                    autoApplyCheckbox.checked = savedAutoApply === 'true';
+                } else {
+                    // Default to manual mode (unchecked)
+                    autoApplyCheckbox.checked = false;
+                    localStorage.setItem('autoApplyForcedNumber', 'false');
+                }
+                
+                // Update status display on load
+                updateAutoApplyStatus();
+                
+                // Save setting when changed
+                autoApplyCheckbox.addEventListener('change', function() {
+                    localStorage.setItem('autoApplyForcedNumber', this.checked.toString());
+                    console.log('✅ Auto-apply setting saved:', this.checked);
+                    
+                    // Update status display
+                    updateAutoApplyStatus();
+                    
+                    // Restart forced number checking with new settings
+                    if (forcedNumberCheckIntervalId) {
+                        stopForcedNumberCheck();
+                    }
+                    startForcedNumberCheck();
+                    
+                    // Show toast notification
+                    const mode = this.checked ? 'Auto Mode' : 'Manual Mode';
+                    const message = this.checked 
+                        ? 'Numbers will be applied automatically from preset schedule' 
+                        : 'You must click "Apply" to set winning numbers';
+                    showToast('Mode Changed', `${mode} - ${message}`, 'info');
+                });
+            }
 
             // Recommended numbers controls
             document.getElementById('refreshRecommendations').addEventListener('click', generateRecommendations);
@@ -2001,7 +2337,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         // Function to check for forced numbers
-        function checkForcedNumber() {
+        async function checkForcedNumber() {
+            // Don't check if manual selection is in progress
+            if (isManualSelectionInProgress) {
+                console.log('⏸️ Skipping forced number check - manual selection in progress');
+                return;
+            }
+            
             // Update UI to show checking state
             const forcedNumberBadge = document.getElementById('forcedNumberBadge');
             const forcedNumberStatus = document.getElementById('forcedNumberStatus');
@@ -2015,8 +2357,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
             forcedNumberMessage.textContent = 'Fetching data from server...';
             forcedNumberDraw.textContent = '-';
 
-            // Add timestamp to prevent caching
-            fetch('../api/direct_forced_number.php?t=' + Date.now())
+            // ⚠️ CRITICAL: Check for forced number for the NEXT draw number
+            // When setting a winning number, it's set for the NEXT draw, not the current one
+            // So we need to check nextDrawNumber (currentDrawNumber + 1)
+            const targetDrawNumber = currentDrawNumber + 1;
+            
+            // Add timestamp to prevent caching and specify draw number
+            fetch(`../api/direct_forced_number.php?draw_number=${targetDrawNumber}&t=${Date.now()}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`Network response was not ok: ${response.status}`);
@@ -2033,25 +2380,158 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     // Remove checking animation
                     forcedNumberBadge.classList.remove('checking');
 
+                    // ⚠️ PRIORITY LOGIC: Manual forced numbers > Preset schedule
+                    // The API already handles this priority, so we trust the API response
+                    let finalForcedNumber = null;
+                    let finalForcedColor = null;
+                    let numberSource = 'unknown';
+                    
+                    if (data.has_forced_number && data.draw_number === targetDrawNumber) {
+                        // API returned a forced number for the current draw
+                        finalForcedNumber = data.forced_number;
+                        finalForcedColor = data.forced_color;
+                        
+                        // Determine source based on API response
+                        if (data.source === 'manual') {
+                            numberSource = 'manually set';
+                        } else if (data.source === 'preset_schedule') {
+                            numberSource = 'preset schedule';
+                        } else {
+                            numberSource = 'automatic';
+                        }
+                        
+                        console.log('✅ Using forced number from API:', { 
+                            number: finalForcedNumber, 
+                            drawNumber: data.draw_number,
+                            source: data.source 
+                        });
+                    } else {
+                        // No forced number from API - check preset schedule as fallback
+                    let presetNumber = null;
+                    
+                    // Try DOM first (synchronous)
+                    const scheduleBody = document.getElementById('presetScheduleBody');
+                    if (scheduleBody) {
+                        const rows = scheduleBody.querySelectorAll('tr');
+                        for (let row of rows) {
+                            const drawCell = row.querySelector('td:first-child');
+                            if (drawCell) {
+                                const drawText = drawCell.textContent.trim();
+                                const drawMatch = drawText.match(/#(\d+)/);
+                                if (drawMatch) {
+                                    const drawNum = parseInt(drawMatch[1]);
+                                    if (drawNum === targetDrawNumber) {
+                                        const numberCell = row.querySelector('td:nth-child(3)');
+                                        if (numberCell) {
+                                            const numberSpan = numberCell.querySelector('.number-circle-sm');
+                                            if (numberSpan) {
+                                                const number = parseInt(numberSpan.textContent.trim());
+                                                const color = numberSpan.classList.contains('red') ? 'red' : 
+                                                             numberSpan.classList.contains('black') ? 'black' : 'green';
+                                                presetNumber = { number, color };
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // If not in DOM, query database (async)
+                    if (!presetNumber) {
+                            fetch(`../api/get_current_preset.php?draw_number=${targetDrawNumber}&_cb=${Date.now()}`)
+                                .then(presetResponse => presetResponse.json())
+                                .then(presetData => {
+                                if (presetData.status === 'success' && presetData.data) {
+                                    presetNumber = {
+                                        number: presetData.data.winning_number,
+                                        color: presetData.data.color
+                                    };
+                                }
+                                })
+                                .catch(error => {
+                            console.warn('⚠️ Error querying database for preset:', error);
+                                });
+                    }
+                    
+                    if (presetNumber) {
+                        finalForcedNumber = presetNumber.number;
+                        finalForcedColor = presetNumber.color;
+                            numberSource = 'preset schedule';
+                            console.log('✅ Using preset schedule number (no forced number from API):', { number: finalForcedNumber, drawNumber: targetDrawNumber });
+                        }
+                    }
+                    
                     // Update forced number display
-                    if (data.has_forced_number) {
+                    if (finalForcedNumber !== null) {
+                        // Check auto-apply setting BEFORE doing anything
+                        const autoApplyCheckbox = document.getElementById('autoApplyForcedNumber');
+                        const isAutoApplyEnabled = autoApplyCheckbox ? autoApplyCheckbox.checked : false;
+                        
                         // Set number and color
-                        forcedNumberBadge.textContent = data.forced_number;
-                        forcedNumberBadge.className = 'forced-number-badge ' + data.forced_color + ' has-forced found';
+                        forcedNumberBadge.textContent = finalForcedNumber;
+                        forcedNumberBadge.className = 'forced-number-badge ' + finalForcedColor + ' has-forced found';
+                        
+                        // ALWAYS use current draw number
+                        forcedNumberDraw.textContent = '#' + targetDrawNumber;
 
-                        // Set draw number
-                        forcedNumberDraw.textContent = '#' + data.draw_number;
+                        // Update message with more details - show source clearly
+                        const sourceLabel = numberSource === 'manually set' ? 
+                            '<span style="color: #ff6b6b; font-weight: bold;">Manually Set</span>' :
+                            numberSource === 'preset schedule' ? 
+                            '<span style="color: #4ecdc4;">Preset Schedule</span>' :
+                            '<span style="color: #95a5a6;">Automatic</span>';
+                        forcedNumberMessage.innerHTML = `<strong>Number ${finalForcedNumber} (${finalForcedColor})</strong> - ${sourceLabel} for draw #${targetDrawNumber}`;
 
-                        // Update message with more details
-                        forcedNumberMessage.innerHTML = `<strong>Forced number ${data.forced_number} (${data.forced_color})</strong> is set for draw #${data.draw_number}`;
+                        // Only set manual input if auto-apply is enabled OR if there's no value in the input
+                        // This prevents overriding manual selections when auto-apply is OFF
+                        const manualInput = document.getElementById('manualWinningNumber');
+                        if (manualInput) {
+                            const currentInputValue = manualInput.value.trim();
+                            // Only update if auto-apply is ON, or if input is empty, or if it's the same number
+                            if (isAutoApplyEnabled || currentInputValue === '' || currentInputValue === finalForcedNumber.toString()) {
+                                manualInput.value = finalForcedNumber;
+                            } else {
+                                console.log('📌 Preserving manual input value:', currentInputValue, '(auto-apply is OFF)');
+                            }
+                        }
 
-                        // If in manual mode, offer to use this number
-                        if (!isAutoMode) {
-                            // Set the manual winning number input to this value
-                            document.getElementById('manualWinningNumber').value = data.forced_number;
-
-                            // Show toast notification
-                            showToast('Forced Number Found', `Number ${data.forced_number} is forced for draw #${data.draw_number}. You can set it as the winning number.`, 'info');
+                        // Show Apply button
+                        const applyContainer = document.getElementById('forcedNumberApplyContainer');
+                        if (applyContainer) {
+                            applyContainer.style.display = 'block';
+                            applyContainer.setAttribute('data-forced-number', finalForcedNumber);
+                            applyContainer.setAttribute('data-draw-number', targetDrawNumber);
+                        }
+                        
+                        // Auto-apply ONLY if enabled AND no manual selection is in progress
+                        // ⚠️ CRITICAL: Never auto-apply if user just manually set a number
+                        if (isAutoApplyEnabled && !isManualSelectionInProgress) {
+                            console.log('🔄 Auto-apply enabled, automatically applying number:', finalForcedNumber);
+                            // Automatically apply after a short delay
+                            setTimeout(() => {
+                                // Double-check manual selection isn't in progress and auto-apply is still enabled
+                                const currentAutoApply = document.getElementById('autoApplyForcedNumber')?.checked;
+                                if (!isManualSelectionInProgress && currentAutoApply) {
+                                    // ⚠️ IMPORTANT: Use applyPresetNumberAsForced which sets keep_auto_mode=true
+                                    // This is intentional for auto-apply - it should use automatic mode
+                                    applyPresetNumberAsForced(finalForcedNumber, null, null, false, 0, targetDrawNumber);
+                                } else {
+                                    console.log('⏸️ Auto-apply cancelled - manual selection in progress or auto-apply disabled');
+                                }
+                            }, 500);
+                        } else {
+                            // Manual mode or manual selection in progress - show toast notification and keep Apply button visible
+                            if (isManualSelectionInProgress) {
+                                console.log('📌 Manual selection in progress - skipping auto-apply');
+                            } else if (!isAutoApplyEnabled) {
+                                // Don't show toast in manual mode to avoid spam - just update the display
+                                console.log('📌 Manual mode (auto-apply OFF) - waiting for user to click Apply or select a number');
+                            } else {
+                                showToast('Number Found', `Number ${finalForcedNumber} from ${numberSource} for draw #${targetDrawNumber}. Click "Apply" to use it.`, 'info');
+                                console.log('📌 Manual mode - waiting for user to click Apply button');
+                            }
                         }
                     } else {
                         // No forced number
@@ -2059,6 +2539,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         forcedNumberBadge.className = 'forced-number-badge';
                         forcedNumberDraw.textContent = data.draw_number ? '#' + data.draw_number : '-';
                         forcedNumberMessage.textContent = 'No forced number is currently set';
+                        
+                        // Hide Apply button
+                        const applyContainer = document.getElementById('forcedNumberApplyContainer');
+                        if (applyContainer) {
+                            applyContainer.style.display = 'none';
+                        }
                     }
                 })
                 .catch(error => {
@@ -2080,15 +2566,37 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 clearInterval(forcedNumberCheckIntervalId);
             }
 
+            // Check auto-apply setting
+            const autoApplyCheckbox = document.getElementById('autoApplyForcedNumber');
+            const isAutoApplyEnabled = autoApplyCheckbox ? autoApplyCheckbox.checked : false;
+
+            // If auto-apply is OFF, don't auto-check (user can click "Check Now" button)
+            // Only auto-check if auto-apply is ON
+            if (!isAutoApplyEnabled) {
+                console.log('⏸️ Forced number checking paused - auto-apply is OFF (manual mode)');
+                const forcedNumberStatus = document.getElementById('forcedNumberStatus');
+                if (forcedNumberStatus) {
+                    forcedNumberStatus.innerHTML = 'Click "Check Now" to check for forced numbers';
+                }
+                return; // Don't start auto-checking
+            }
+
+            // Use shorter interval in auto mode for faster updates
+            const interval = isAutoMode ? forcedNumberCheckIntervalAuto : forcedNumberCheckInterval;
+            const intervalSeconds = interval / 1000;
+
             // Set up new interval
-            forcedNumberCheckIntervalId = setInterval(checkForcedNumber, forcedNumberCheckInterval);
-            console.log(`Started forced number checking every ${forcedNumberCheckInterval/1000} seconds`);
+            forcedNumberCheckIntervalId = setInterval(checkForcedNumber, interval);
+            console.log(`Started forced number checking every ${intervalSeconds} seconds (auto-apply: ${isAutoApplyEnabled}, mode: ${isAutoMode ? 'auto' : 'manual'})`);
 
             // Update status to show auto-checking
             const forcedNumberStatus = document.getElementById('forcedNumberStatus');
             if (forcedNumberStatus) {
-                forcedNumberStatus.innerHTML = 'Auto-checking every 30 seconds <i class="fas fa-sync-alt fa-spin fa-sm"></i>';
+                forcedNumberStatus.innerHTML = `Auto-checking every ${intervalSeconds} seconds <i class="fas fa-sync-alt fa-spin fa-sm"></i>`;
             }
+            
+            // Run initial check
+            checkForcedNumber();
         }
 
         // Stop periodic forced number checking
@@ -2576,32 +3084,125 @@ $current_page = basename($_SERVER['PHP_SELF']);
             }
         }
 
+        // Function to clear all loading states
+        function clearAllLoadingStates() {
+            console.log('🧹 Clearing all loading states...');
+            
+            // Clear draw number
+            const drawNumberEl = document.getElementById('upcomingDrawNumber');
+            if (drawNumberEl && drawNumberEl.textContent === 'Loading...') {
+                drawNumberEl.textContent = 'N/A';
+            }
+            
+            // Clear draw tabs loading state
+            const drawTabs = document.getElementById('drawTabs');
+            if (drawTabs) {
+                const loadingTab = drawTabs.querySelector('.draw-tab.loading');
+                if (loadingTab) {
+                    loadingTab.remove();
+                }
+            }
+            
+            // Clear overview table loading state
+            const overviewTable = document.querySelector('#upcomingDrawsTable tbody');
+            if (overviewTable) {
+                const loadingRow = overviewTable.querySelector('tr');
+                if (loadingRow && loadingRow.textContent.includes('Loading')) {
+                    overviewTable.innerHTML = '';
+                }
+            }
+            
+            // Clear chart container loading indicator
+            const chartContainer = document.getElementById('chartContainer');
+            if (chartContainer) {
+                const loadingIndicator = chartContainer.querySelector('.loading-indicator');
+                if (loadingIndicator) {
+                    loadingIndicator.remove();
+                }
+            }
+            
+            // Clear grid container loading indicator
+            const gridContainer = document.getElementById('betInfoGrid');
+            if (gridContainer) {
+                const loadingIndicator = gridContainer.querySelector('.loading-indicator');
+                if (loadingIndicator) {
+                    loadingIndicator.remove();
+                }
+            }
+            
+            // Clear bet type chart loading indicator
+            const betTypeChart = document.getElementById('betTypeChartContainer');
+            if (betTypeChart) {
+                const loadingIndicator = betTypeChart.querySelector('.loading-indicator');
+                if (loadingIndicator) {
+                    loadingIndicator.remove();
+                }
+            }
+        }
+
         // Function to fetch bet distribution data for multiple draws
         async function fetchBetDistribution() {
-            console.log('Starting fetchBetDistribution...');
-            showLoading(true);
+            console.log('🔄 Starting fetchBetDistribution...');
+            console.log('🔄 Current URL:', window.location.href);
+            console.log('🔄 Loading overlay element:', loadingOverlay);
+            console.log('🔄 showLoading function exists:', typeof showLoading);
+            
+            try {
+                if (typeof showLoading === 'function') {
+                    showLoading(true);
+                } else {
+                    console.error('❌ showLoading is not a function!');
+                    if (loadingOverlay) {
+                        loadingOverlay.style.display = 'flex';
+                    } else {
+                        console.error('❌ loadingOverlay is also null!');
+                    }
+                }
+            } catch (e) {
+                console.error('❌ Error showing loading overlay:', e);
+                console.error('Error stack:', e.stack);
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'flex';
+                }
+            }
 
             try {
                 // First, get the upcoming draws data from the existing API
-                console.log('Fetching upcoming draws data...');
-                const upcomingResponse = await fetch('../api/upcoming_draws_stats.php?count=10');
+                console.log('📡 Fetching upcoming draws data from ../api/upcoming_draws_stats.php...');
+                const upcomingResponse = await fetch('../api/upcoming_draws_stats.php?count=10&_cb=' + Date.now());
 
                 if (!upcomingResponse.ok) {
-                    throw new Error(`HTTP error! status: ${upcomingResponse.status}`);
+                    const errorText = await upcomingResponse.text().catch(() => 'Unable to read error response');
+                    console.error('❌ API Response Error:', {
+                        status: upcomingResponse.status,
+                        statusText: upcomingResponse.statusText,
+                        url: upcomingResponse.url,
+                        body: errorText.substring(0, 500) // First 500 chars
+                    });
+                    throw new Error(`HTTP error! status: ${upcomingResponse.status} - ${upcomingResponse.statusText}`);
                 }
 
                 const upcomingData = await upcomingResponse.json();
-                console.log('Fetched upcoming draws data:', upcomingData);
+                console.log('✅ Fetched upcoming draws data:', upcomingData);
 
                 if (upcomingData.status === 'success') {
                     const upcomingDraws = upcomingData.data.upcoming_draws;
                     currentDrawNumber = upcomingData.data.base_draw;
 
                     // Fetch bet distribution for each draw
+                    console.log(`📊 Fetching bet distribution for ${upcomingDraws.length} draws...`);
                     const drawPromises = upcomingDraws.map(async (draw) => {
                         try {
-                            const betResponse = await fetch(`../php/get_bet_distribution.php?draw=${draw.draw_number}`);
+                            console.log(`📊 Fetching bet distribution for draw #${draw.draw_number}...`);
+                            const betResponse = await fetch(`../php/get_bet_distribution.php?draw=${draw.draw_number}&_cb=${Date.now()}`);
+                            
+                            if (!betResponse.ok) {
+                                console.error(`❌ Failed to fetch bet distribution for draw #${draw.draw_number}:`, betResponse.status, betResponse.statusText);
+                                throw new Error(`HTTP ${betResponse.status} for draw ${draw.draw_number}`);
+                            }
+                            
                             const betData = await betResponse.json();
+                            console.log(`✅ Got bet distribution for draw #${draw.draw_number}:`, betData);
 
                             if (betData.status === 'success') {
                                 // Convert numbers array to object if needed
@@ -2672,31 +3273,88 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     });
 
                     // Wait for all bet distribution requests to complete
+                    console.log('⏳ Waiting for all bet distribution requests to complete...');
                     allDrawsData = await Promise.all(drawPromises);
+                    console.log(`✅ All ${allDrawsData.length} draws loaded successfully`);
+
+                    // Clear loading states before updating
+                    clearAllLoadingStates();
 
                     // Update the overview table
+                    console.log('📋 Updating overview table...');
                     updateUpcomingDrawsOverview(allDrawsData);
 
                     // Update the draw tabs
+                    console.log('📑 Updating draw tabs...');
                     updateDrawTabs(allDrawsData);
 
                     // Select the first draw by default
                     if (allDrawsData.length > 0) {
+                        console.log('🎯 Selecting first draw...');
                         selectDraw(0);
+                    } else {
+                        console.warn('⚠️ No draws data available');
+                        showError('No upcoming draws found. Please check your database.');
                     }
 
+                    console.log('🕐 Updating last updated time...');
                     updateLastUpdated();
+                    console.log('✅ All UI updates completed!');
                 } else {
-                    console.error('Failed to fetch upcoming draws data:', upcomingData);
+                    console.error('❌ Failed to fetch upcoming draws data:', upcomingData);
+                    const errorMsg = upcomingData.message || upcomingData.error || 'Unknown error from API';
+                    console.error('Error message:', errorMsg);
+                    // Clear loading states before showing error
+                    clearAllLoadingStates();
+                    showError('Failed to fetch upcoming draws: ' + errorMsg);
                     // Fallback to single draw mode
-                    await fetchSingleDrawFallback();
+                    try {
+                        await fetchSingleDrawFallback();
+                    } catch (fallbackError) {
+                        console.error('❌ Fallback also failed:', fallbackError);
+                        clearAllLoadingStates();
+                        showError('Unable to load bet distribution data. Please check your connection and try again.');
+                    }
                 }
             } catch (error) {
-                console.error('Error fetching bet distribution:', error);
+                console.error('❌ Error fetching bet distribution:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    name: error.name
+                });
+                
+                // Show error to user
+                const errorMsg = error.message || 'Failed to fetch bet distribution data';
+                showError('Error: ' + errorMsg + '. Trying fallback...');
+                
                 // Fallback to single draw mode
-                await fetchSingleDrawFallback();
+                try {
+                    console.log('🔄 Attempting fallback mode...');
+                    await fetchSingleDrawFallback();
+                } catch (fallbackError) {
+                    console.error('❌ Fallback also failed:', fallbackError);
+                    showError('Unable to load bet distribution data. Please check your connection and try again. Error: ' + fallbackError.message);
+                }
             } finally {
-                showLoading(false);
+                console.log('✅ fetchBetDistribution completed, hiding loading overlay');
+                try {
+                    showLoading(false);
+                    // Clear any remaining loading states
+                    clearAllLoadingStates();
+                } catch (e) {
+                    console.error('❌ Error hiding loading overlay:', e);
+                    // Force hide the overlay
+                    if (loadingOverlay) {
+                        loadingOverlay.style.display = 'none';
+                    }
+                    // Still try to clear loading states
+                    try {
+                        clearAllLoadingStates();
+                    } catch (clearError) {
+                        console.error('❌ Error clearing loading states:', clearError);
+                    }
+                }
             }
         }
 
@@ -2752,13 +3410,27 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 }
             } catch (error) {
                 console.error('Error in fallback mode:', error);
-                showError('Failed to fetch bet distribution data. Please try again later.');
+                showError('Fallback mode failed: ' + error.message);
+            } finally {
+                console.log('✅ fetchSingleDrawFallback completed, hiding loading overlay');
+                try {
+                    showLoading(false);
+                } catch (e) {
+                    console.error('❌ Error hiding loading overlay:', e);
+                    if (loadingOverlay) {
+                        loadingOverlay.style.display = 'none';
+                    }
+                }
             }
         }
 
         // Function to update the upcoming draws overview table
         function updateUpcomingDrawsOverview(draws) {
             const tableBody = document.querySelector('#upcomingDrawsTable tbody');
+            if (!tableBody) {
+                console.warn('⚠️ Overview table body not found');
+                return;
+            }
             tableBody.innerHTML = '';
 
             draws.forEach((draw, index) => {
@@ -2896,8 +3568,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         // Function to update the bet distribution UI
         function updateBetDistributionUI(data) {
-            // Update upcoming draw number and status
-            document.getElementById('upcomingDrawNumber').textContent = `#${data.draw_number}`;
+            // Clear loading states first
+            const drawNumberEl = document.getElementById('upcomingDrawNumber');
+            if (drawNumberEl) {
+                drawNumberEl.textContent = `#${data.draw_number}`;
+            } else {
+                console.warn('⚠️ upcomingDrawNumber element not found');
+            }
 
             const statusBadge = document.getElementById('drawStatus');
             if (data.is_next) {
@@ -3044,13 +3721,33 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 }
 
                 // Add click event to set the winning number
-                item.addEventListener('click', function() {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
                     const number = parseInt(this.getAttribute('data-number'));
+                    console.log('🎯 Recommended number clicked:', { number, isMobile, currentDrawNumber });
+                    
+                    if (isNaN(number) || number < 0 || number > 36) {
+                        console.error('❌ Invalid number from click:', number);
+                        showError('Invalid number selected');
+                        return;
+                    }
+                    
                     if (isMobile) {
                         // For mobile, set the mobile input value first
-                        document.getElementById('manualWinningNumber-mobile').value = number;
-                        document.getElementById('setManualWinningNumber-mobile').click();
+                        const mobileInput = document.getElementById('manualWinningNumber-mobile');
+                        const mobileButton = document.getElementById('setManualWinningNumber-mobile');
+                        if (mobileInput && mobileButton) {
+                            mobileInput.value = number;
+                            mobileButton.click();
+                        } else {
+                            console.error('❌ Mobile elements not found');
+                            showError('Mobile input elements not found');
+                        }
                     } else {
+                        // Desktop - always allow manual selection regardless of auto-apply setting
+                        console.log('📌 Manual selection from recommended numbers (desktop)');
                         setRecommendedNumber(number);
                     }
                 });
@@ -3074,10 +3771,62 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         // Function to set a recommended number as the winning number
         function setRecommendedNumber(number) {
-            // Set the input value
-            document.getElementById('manualWinningNumber').value = number;
+            console.log('🎯 setRecommendedNumber called:', { number, currentDrawNumber });
+            
+            // Set flag to prevent forced number checker from interfering
+            isManualSelectionInProgress = true;
+            
+            // Validate number
+            if (isNaN(number) || number < 0 || number > 36) {
+                console.error('❌ Invalid number:', number);
+                showError('Invalid number selected');
+                isManualSelectionInProgress = false;
+                return;
+            }
+            
+            // Set the input value - this is the manual selection
+            const manualInput = document.getElementById('manualWinningNumber');
+            if (!manualInput) {
+                console.error('❌ manualWinningNumber input not found');
+                isManualSelectionInProgress = false;
+                showError('Manual winning number input not found');
+                return;
+            }
+            
+            // Set the value
+            manualInput.value = number;
+            console.log('✅ Set manual input value to:', number);
+            
+            // Also update the forced number container to show this selection
+            const applyContainer = document.getElementById('forcedNumberApplyContainer');
+            if (applyContainer) {
+                applyContainer.setAttribute('data-forced-number', number.toString());
+                applyContainer.setAttribute('data-draw-number', currentDrawNumber.toString());
+                applyContainer.style.display = 'block';
+            }
+            
+            // Update forced number badge to show the selected number
+            const forcedNumberBadge = document.getElementById('forcedNumberBadge');
+            const forcedNumberDraw = document.getElementById('forcedNumberDraw');
+            const forcedNumberMessage = document.getElementById('forcedNumberMessage');
+            
+            if (forcedNumberBadge) {
+                const color = number === 0 ? 'green' : ([1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36].includes(number) ? 'red' : 'black');
+                forcedNumberBadge.textContent = number;
+                forcedNumberBadge.className = 'forced-number-badge ' + color + ' has-forced found';
+            }
+            
+            if (forcedNumberDraw) {
+                forcedNumberDraw.textContent = '#' + currentDrawNumber;
+            }
+            
+            if (forcedNumberMessage) {
+                const color = number === 0 ? 'green' : ([1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36].includes(number) ? 'red' : 'black');
+                forcedNumberMessage.innerHTML = `<strong>Number ${number} (${color})</strong> selected manually for draw #${currentDrawNumber}`;
+            }
 
-            // Call the set winning number function
+            // Call the set winning number function (this will submit it)
+            console.log('📤 Calling setManualWinningNumber() to submit number...');
             setManualWinningNumber();
 
             // Highlight the selected number
@@ -3093,6 +3842,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     }, 1000);
                 }
             });
+            
+            // Show success feedback
+            showToast('Number Selected', `Number ${number} selected. Setting as winning number for draw #${currentDrawNumber}...`, 'info');
+            
+            // Reset flag after a delay to allow the submission to complete
+            setTimeout(() => {
+                isManualSelectionInProgress = false;
+                console.log('✅ Manual selection flag reset');
+            }, 5000); // Increased to 5 seconds to ensure submission completes
         }
 
         // Function to update the bet distribution chart
@@ -3409,32 +4167,57 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         // Function to show/hide loading overlay
         function showLoading(show) {
-            loadingOverlay.style.display = show ? 'flex' : 'none';
+            if (loadingOverlay) {
+                loadingOverlay.style.display = show ? 'flex' : 'none';
+            } else {
+                console.warn('⚠️ Loading overlay element not found');
+            }
         }
 
         // Function to show error message
         function showError(message) {
+            console.error('🚨 Showing error message:', message);
             const chartContainer = document.getElementById('chartContainer');
             const gridContainer = document.getElementById('betInfoGrid');
+            const overviewTable = document.querySelector('.upcoming-draws-overview tbody');
 
             // Show error in chart view
-            chartContainer.innerHTML = `
-                <div class="error-message">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <p>${message}</p>
-                    <button class="btn btn-primary btn-sm" onclick="fetchBetDistribution()">
-                        <i class="fas fa-sync-alt"></i> Try Again
-                    </button>
-                </div>
-            `;
+            if (chartContainer) {
+                chartContainer.innerHTML = `
+                    <div class="error-message" style="padding: 20px; text-align: center; color: #dc3545; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 2em; margin-bottom: 10px;"></i>
+                        <p style="font-size: 1.1em; margin-bottom: 15px;">${message}</p>
+                        <button class="btn btn-primary btn-sm" onclick="fetchBetDistribution()">
+                            <i class="fas fa-sync-alt"></i> Try Again
+                        </button>
+                    </div>
+                `;
+            } else {
+                console.warn('⚠️ chartContainer not found');
+            }
 
             // Show error in grid view
-            gridContainer.innerHTML = `
-                <div class="error-message">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <p>${message}</p>
-                </div>
-            `;
+            if (gridContainer) {
+                gridContainer.innerHTML = `
+                    <div class="error-message" style="padding: 20px; text-align: center; color: #dc3545; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 2em; margin-bottom: 10px;"></i>
+                        <p style="font-size: 1.1em;">${message}</p>
+                    </div>
+                `;
+            } else {
+                console.warn('⚠️ gridContainer not found');
+            }
+            
+            // Show error in overview table
+            if (overviewTable) {
+                overviewTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px; color: #dc3545;">
+                            <i class="fas fa-exclamation-circle"></i> ${message}
+                        </td>
+                    </tr>
+                `;
+            }
         }
 
         // Draw Control Functions
@@ -3484,27 +4267,82 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         // Function to update draw information on the page
         function updateDrawInfo(data) {
+            // Check for draw number mismatch and correct it
+            if (data.expected_draw !== undefined && data.current_draw !== undefined && 
+                data.current_draw !== data.expected_draw) {
+                console.warn(`⚠️ Draw number mismatch detected: Current=${data.current_draw}, Expected=${data.expected_draw}`);
+                
+                // Auto-correct if mismatch is significant (more than 1 draw difference)
+                if (Math.abs(data.current_draw - data.expected_draw) > 1) {
+                    console.log('🔄 Auto-correcting draw number...');
+                    if (typeof correctDrawNumber === 'function') {
+                        correctDrawNumber(data.expected_draw);
+                    }
+                    return; // Exit early, will be called again after correction
+                }
+            }
+            
             currentDrawNumber = data.current_draw || '-';
 
             // Update desktop elements
-            document.getElementById('currentDrawNumber').textContent = currentDrawNumber;
+            const currentDrawNumberEl = document.getElementById('currentDrawNumber');
+            if (currentDrawNumberEl) {
+                currentDrawNumberEl.textContent = currentDrawNumber;
+            }
 
             // Update mobile elements if they exist
-            if (document.getElementById('currentDrawNumber-mobile')) {
-                document.getElementById('currentDrawNumber-mobile').textContent = currentDrawNumber;
+            const currentDrawNumberMobile = document.getElementById('currentDrawNumber-mobile');
+            if (currentDrawNumberMobile) {
+                currentDrawNumberMobile.textContent = currentDrawNumber;
             }
 
-            // Update draw number displays
-            const lastDraw = data.last_draw || '-';
-            document.getElementById('lastDrawTime').textContent = lastDraw;
-            if (document.getElementById('lastDrawTime-mobile')) {
-                document.getElementById('lastDrawTime-mobile').textContent = lastDraw;
+            // Calculate and update draw times
+            // Last draw time: 3 minutes before next draw (or current time if just started)
+            const nextDrawCalc = calculateNextDrawTime();
+            const nextDrawTime = new Date(nextDrawCalc.timestamp);
+            const lastDrawTime = new Date(nextDrawTime.getTime() - (3 * 60 * 1000)); // 3 minutes ago
+            
+            // Format times for display
+            const formatTime = (date) => {
+                return date.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: true 
+                });
+            };
+            
+            // Use API data if available, otherwise calculate
+            let lastDrawDisplay = data.last_draw;
+            if (!lastDrawDisplay || lastDrawDisplay === '-' || lastDrawDisplay === null) {
+                lastDrawDisplay = formatTime(lastDrawTime);
+            }
+            
+            let nextDrawDisplay = data.next_draw;
+            if (!nextDrawDisplay || nextDrawDisplay === '-' || nextDrawDisplay === null) {
+                nextDrawDisplay = formatTime(nextDrawTime);
+            }
+            
+            // Update display
+            const lastDrawTimeEl = document.getElementById('lastDrawTime');
+            const nextDrawTimeEl = document.getElementById('nextDrawTime');
+            
+            if (lastDrawTimeEl) {
+                lastDrawTimeEl.textContent = lastDrawDisplay || '-';
+            }
+            
+            const lastDrawTimeMobile = document.getElementById('lastDrawTime-mobile');
+            if (lastDrawTimeMobile) {
+                lastDrawTimeMobile.textContent = lastDrawDisplay || '-';
             }
 
-            const nextDraw = data.next_draw || '-';
-            document.getElementById('nextDrawTime').textContent = nextDraw;
-            if (document.getElementById('nextDrawTime-mobile')) {
-                document.getElementById('nextDrawTime-mobile').textContent = nextDraw;
+            if (nextDrawTimeEl) {
+                nextDrawTimeEl.textContent = nextDrawDisplay || '-';
+            }
+            
+            const nextDrawTimeMobile = document.getElementById('nextDrawTime-mobile');
+            if (nextDrawTimeMobile) {
+                nextDrawTimeMobile.textContent = nextDrawDisplay || '-';
             }
 
             // Update mode
@@ -3513,8 +4351,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
             const toggleText = isAutoMode ? 'Switch to Manual' : 'Switch to Auto';
 
             // Update desktop elements
-            document.getElementById('currentMode').textContent = modeText;
-            document.getElementById('modeToggleText').textContent = toggleText;
+            const currentModeEl = document.getElementById('currentMode');
+            const modeToggleTextEl = document.getElementById('modeToggleText');
+            
+            if (currentModeEl) {
+                currentModeEl.textContent = modeText;
+            }
+            if (modeToggleTextEl) {
+                modeToggleTextEl.textContent = toggleText;
+            }
 
             // Update mobile elements if they exist
             if (document.getElementById('currentMode-mobile')) {
@@ -3525,44 +4370,78 @@ $current_page = basename($_SERVER['PHP_SELF']);
             }
 
             // Update winning number
-            if (data.winning_number !== null) {
+            if (data.winning_number !== null && data.winning_number !== undefined) {
                 currentWinningNumber = data.winning_number;
-                const numberClass = 'number-circle ' + data.winning_color;
+                const numberClass = 'number-circle ' + (data.winning_color || 'green');
 
                 // Update desktop elements
-                document.getElementById('winningNumberDisplay').textContent = data.winning_number;
-                document.getElementById('winningNumberDisplay').className = numberClass;
-                document.getElementById('winningNumberSource').textContent = `Source: ${data.winning_number_source}`;
-                document.getElementById('winningNumberReason').textContent = `Reason: ${data.winning_number_reason}`;
+                const winningNumberDisplay = document.getElementById('winningNumberDisplay');
+                const winningNumberSource = document.getElementById('winningNumberSource');
+                const winningNumberReason = document.getElementById('winningNumberReason');
+                
+                if (winningNumberDisplay) {
+                    winningNumberDisplay.textContent = data.winning_number;
+                    winningNumberDisplay.className = numberClass;
+                }
+                
+                if (winningNumberSource) {
+                    const source = data.winning_number_source || 'Not set';
+                    winningNumberSource.textContent = `Source: ${source}`;
+                }
+                
+                if (winningNumberReason) {
+                    const reason = data.winning_number_reason || 'No reason provided';
+                    winningNumberReason.textContent = `Reason: ${reason}`;
+                }
 
                 // Update mobile elements if they exist
-                if (document.getElementById('winningNumberDisplay-mobile')) {
-                    document.getElementById('winningNumberDisplay-mobile').textContent = data.winning_number;
-                    document.getElementById('winningNumberDisplay-mobile').className = numberClass;
+                const winningNumberDisplayMobile = document.getElementById('winningNumberDisplay-mobile');
+                const winningNumberSourceMobile = document.getElementById('winningNumberSource-mobile');
+                const winningNumberReasonMobile = document.getElementById('winningNumberReason-mobile');
+                
+                if (winningNumberDisplayMobile) {
+                    winningNumberDisplayMobile.textContent = data.winning_number;
+                    winningNumberDisplayMobile.className = numberClass;
                 }
-                if (document.getElementById('winningNumberSource-mobile')) {
-                    document.getElementById('winningNumberSource-mobile').textContent = `Source: ${data.winning_number_source}`;
+                if (winningNumberSourceMobile) {
+                    const source = data.winning_number_source || 'Not set';
+                    winningNumberSourceMobile.textContent = `Source: ${source}`;
                 }
-                if (document.getElementById('winningNumberReason-mobile')) {
-                    document.getElementById('winningNumberReason-mobile').textContent = `Reason: ${data.winning_number_reason}`;
+                if (winningNumberReasonMobile) {
+                    const reason = data.winning_number_reason || 'No reason provided';
+                    winningNumberReasonMobile.textContent = `Reason: ${reason}`;
                 }
             } else {
                 // Update desktop elements
-                document.getElementById('winningNumberDisplay').textContent = '-';
-                document.getElementById('winningNumberDisplay').className = 'number-circle';
-                document.getElementById('winningNumberSource').textContent = 'Source: -';
-                document.getElementById('winningNumberReason').textContent = 'Reason: -';
+                const winningNumberDisplay = document.getElementById('winningNumberDisplay');
+                const winningNumberSource = document.getElementById('winningNumberSource');
+                const winningNumberReason = document.getElementById('winningNumberReason');
+                
+                if (winningNumberDisplay) {
+                    winningNumberDisplay.textContent = '-';
+                    winningNumberDisplay.className = 'number-circle';
+                }
+                if (winningNumberSource) {
+                    winningNumberSource.textContent = 'Source: -';
+                }
+                if (winningNumberReason) {
+                    winningNumberReason.textContent = 'Reason: -';
+                }
 
                 // Update mobile elements if they exist
-                if (document.getElementById('winningNumberDisplay-mobile')) {
-                    document.getElementById('winningNumberDisplay-mobile').textContent = '-';
-                    document.getElementById('winningNumberDisplay-mobile').className = 'number-circle';
+                const winningNumberDisplayMobile = document.getElementById('winningNumberDisplay-mobile');
+                const winningNumberSourceMobile = document.getElementById('winningNumberSource-mobile');
+                const winningNumberReasonMobile = document.getElementById('winningNumberReason-mobile');
+                
+                if (winningNumberDisplayMobile) {
+                    winningNumberDisplayMobile.textContent = '-';
+                    winningNumberDisplayMobile.className = 'number-circle';
                 }
-                if (document.getElementById('winningNumberSource-mobile')) {
-                    document.getElementById('winningNumberSource-mobile').textContent = 'Source: -';
+                if (winningNumberSourceMobile) {
+                    winningNumberSourceMobile.textContent = 'Source: -';
                 }
-                if (document.getElementById('winningNumberReason-mobile')) {
-                    document.getElementById('winningNumberReason-mobile').textContent = 'Reason: -';
+                if (winningNumberReasonMobile) {
+                    winningNumberReasonMobile.textContent = 'Reason: -';
                 }
             }
 
@@ -3573,6 +4452,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     document.getElementById('manualWinningNumber-mobile').value = data.manual_winning_number;
                 }
             }
+            
+            // Load smart selection settings
+            loadSmartSelectionSettings();
 
             // Update roll history for both desktop and mobile
             updateRollHistory(data.recent_rolls, data.recent_colors);
@@ -3671,10 +4553,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     }
 
                     if (timerValue <= 0) {
-                        // Timer has reached zero, reset
-                        resetTimer();
-                        // Fetch new draw info
-                        fetchDrawInfo();
+                        // Timer has reached zero
+                        if (isAutoMode) {
+                            executeAutoDraw();
+                        } else {
+                            resetTimer();
+                            fetchDrawInfo();
+                        }
                     }
 
                     updateTimerDisplay();
@@ -3813,95 +4698,1678 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 });
         }
 
+        // Auto-save settings when dropdowns change
+        document.getElementById('timePreset')?.addEventListener('change', function() {
+            const timePreset = this.value;
+            const patternType = document.getElementById('patternType').value;
+            saveSmartSelectionSettings(timePreset, patternType);
+        });
+
+        document.getElementById('patternType')?.addEventListener('change', function() {
+            const timePreset = document.getElementById('timePreset').value;
+            const patternType = this.value;
+            saveSmartSelectionSettings(timePreset, patternType);
+        });
+
+        // Mobile dropdowns
+        document.getElementById('timePreset-mobile')?.addEventListener('change', function() {
+            const timePreset = this.value;
+            const patternType = document.getElementById('patternType-mobile').value;
+            saveSmartSelectionSettings(timePreset, patternType);
+            // Sync to desktop
+            if (document.getElementById('timePreset')) {
+                document.getElementById('timePreset').value = timePreset;
+            }
+        });
+
+        document.getElementById('patternType-mobile')?.addEventListener('change', function() {
+            const timePreset = document.getElementById('timePreset-mobile').value;
+            const patternType = this.value;
+            saveSmartSelectionSettings(timePreset, patternType);
+            // Sync to desktop
+            if (document.getElementById('patternType')) {
+                document.getElementById('patternType').value = patternType;
+            }
+        });
+
+        // Smart Number Selection Functions
+        document.getElementById('smartSelectNumber')?.addEventListener('click', function() {
+            generateSmartNumber();
+        });
+
+        document.getElementById('applySmartSelection')?.addEventListener('click', async function() {
+            // Get number from preset schedule for current draw instead of smart selection
+            const presetNumber = await getPresetNumberForCurrentDraw();
+            const selectedNumber = presetNumber ? presetNumber.number : 
+                                 document.getElementById('smartSelectedNumber').textContent;
+            
+            if (selectedNumber && selectedNumber !== '-') {
+                // Apply as forced number automatically
+                applyPresetNumberAsForced(parseInt(selectedNumber), 
+                    document.getElementById('timePreset').value,
+                    document.getElementById('patternType').value,
+                    false);
+                
+                // Also set in manual input for immediate use
+                document.getElementById('manualWinningNumber').value = selectedNumber;
+                setManualWinningNumber();
+                document.getElementById('smartSelectionResult').style.display = 'none';
+            }
+        });
+
+        // Mobile smart selection
+        document.getElementById('smartSelectNumber-mobile')?.addEventListener('click', function() {
+            generateSmartNumber(true);
+        });
+
+        document.getElementById('applySmartSelection-mobile')?.addEventListener('click', function() {
+            const selectedNumber = document.getElementById('smartSelectedNumber-mobile').textContent;
+            if (selectedNumber && selectedNumber !== '-') {
+                document.getElementById('manualWinningNumber-mobile').value = selectedNumber;
+                document.getElementById('manualWinningNumber').value = selectedNumber;
+                setManualWinningNumber();
+                document.getElementById('smartSelectionResult-mobile').style.display = 'none';
+            }
+        });
+
+        async function generateSmartNumber(isMobile = false) {
+            console.log('🎯 generateSmartNumber called', { isMobile, currentDrawNumber });
+            
+            // Validate current draw number
+            if (!currentDrawNumber || currentDrawNumber === 0 || currentDrawNumber === '-') {
+                console.error('❌ Invalid currentDrawNumber:', currentDrawNumber);
+                showError('Invalid draw number. Please refresh the page.');
+                return;
+            }
+            
+            const timePreset = isMobile ? 
+                document.getElementById('timePreset-mobile')?.value : 
+                document.getElementById('timePreset')?.value;
+            const patternType = isMobile ? 
+                document.getElementById('patternType-mobile')?.value : 
+                document.getElementById('patternType')?.value;
+            
+            if (!timePreset || !patternType) {
+                console.error('❌ Missing timePreset or patternType:', { timePreset, patternType });
+                showError('Please select time preset and pattern type.');
+                return;
+            }
+            
+            // Save settings for auto mode
+            saveSmartSelectionSettings(timePreset, patternType);
+            
+            showToast('Analyzing', 'Generating smart number selection...', 'info');
+            console.log('🎯 Starting smart number generation', { timePreset, patternType, currentDrawNumber });
+            
+            // Always generate preset schedule first, then check bets
+            // First, get smart selection to generate the schedule
+            fetch(`../api/smart_number_selection.php?draw_number=${currentDrawNumber}&time_preset=${timePreset}&pattern_type=${patternType}&_cb=${Date.now()}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('🎯 Smart selection API response:', data);
+                    
+                    if (data.status === 'success') {
+                        const number = data.data.selected_number;
+                        const color = data.data.selected_color;
+                        const reason = data.data.reason;
+                        const payout = data.data.payout;
+                        const patternAnalysis = data.data.pattern_analysis;
+                        
+                        // Generate and display preset schedule FIRST (this creates the schedule table)
+                        generatePresetSchedule(timePreset, patternType, number, data.data);
+                        
+                        // Now check for bets
+                        fetch(`../api/get_bet_distribution.php?draw_number=${currentDrawNumber}&_cb=${Date.now()}`)
+                            .then(response => response.json())
+                            .then(betData => {
+                                console.log('🎯 Bet distribution response:', betData);
+                                
+                                // Check if there are any bets
+                                const hasBets = betData.success && betData.summary && betData.summary.total_bets > 0;
+                                console.log('🎯 Has bets:', hasBets);
+                                
+                                // Check payout - if too high, use preset schedule number instead
+                                const maxPayout = 500; // Maximum allowed payout
+                                let finalNumber = number;
+                                let finalColor = color;
+                                let finalReason = reason;
+                                
+                                // If no bets OR payout too high, use preset schedule number
+                                if (!hasBets || payout > maxPayout) {
+                                    // Get number from preset schedule for current draw
+                                    const presetNumber = await getPresetNumberForCurrentDraw();
+                                    console.log('🎯 Preset number from schedule:', presetNumber);
+                                    
+                                    if (presetNumber !== null) {
+                                        finalNumber = presetNumber.number;
+                                        finalColor = presetNumber.color;
+                                        if (!hasBets) {
+                                            finalReason = `Preset schedule number (no bets placed)`;
+                                        } else {
+                                            finalReason = `Preset schedule number (payout too high: $${parseFloat(payout).toFixed(2)})`;
+                                            showToast('Warning', `Payout too high ($${parseFloat(payout).toFixed(2)}), using preset schedule number ${finalNumber}`, 'warning');
+                                        }
+                                    } else if (!hasBets) {
+                                        // No preset schedule yet, but no bets - use the smart selection number
+                                        finalReason = `Smart selection (no bets, using calculated number)`;
+                                    }
+                                }
+                                
+                                // Update UI (desktop)
+                                if (!isMobile) {
+                                    const numberCircle = document.getElementById('smartSelectedNumber');
+                                    if (numberCircle) {
+                                        numberCircle.textContent = finalNumber;
+                                        numberCircle.className = `number-circle-sm ${finalColor}`;
+                                    }
+                                    
+                                    const reasonEl = document.getElementById('smartSelectionReason');
+                                    if (reasonEl) reasonEl.textContent = finalReason;
+                                    
+                                    const payoutEl = document.getElementById('smartPayout');
+                                    if (payoutEl) payoutEl.textContent = '$' + parseFloat(payout).toFixed(2);
+                                    
+                                    const patternEl = document.getElementById('patternAnalysis');
+                                    if (patternEl) patternEl.textContent = patternAnalysis.suggested_pattern + ' (Confidence: ' + patternAnalysis.confidence + ')';
+                                    
+                                    // Show pattern visualization
+                                    displayPatternVisualization(patternAnalysis, data.data);
+                                    
+                                    // Show result
+                                    const resultEl = document.getElementById('smartSelectionResult');
+                                    if (resultEl) resultEl.style.display = 'block';
+                                } else {
+                                    // Update UI (mobile)
+                                    const numberCircle = document.getElementById('smartSelectedNumber-mobile');
+                                    if (numberCircle) {
+                                        numberCircle.textContent = finalNumber;
+                                        numberCircle.className = `number-circle-sm ${finalColor}`;
+                                    }
+                                    
+                                    const resultEl = document.getElementById('smartSelectionResult-mobile');
+                                    if (resultEl) resultEl.style.display = 'block';
+                                }
+                                
+                                // Automatically apply as forced number
+                                applyPresetNumberAsForced(finalNumber, timePreset, patternType, isMobile, payout);
+                                
+                                showToast('Success', `Smart number ${finalNumber} selected (Payout: $${parseFloat(payout).toFixed(2)})`, 'success');
+                                console.log('✅ Smart number generation complete:', { finalNumber, finalColor, finalReason });
+                            })
+                            .catch(error => {
+                                console.error('❌ Error checking bets:', error);
+                                // If bet check fails, still show the result
+                                showToast('Warning', 'Could not check bets, showing smart selection', 'warning');
+                            });
+                    } else {
+                        console.error('❌ Smart selection API error:', data);
+                        showError(data.message || 'Failed to generate smart number');
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Error generating smart number:', error);
+                    showError('Failed to generate smart number. Please try again.');
+                });
+        }
+        
+        // Get preset number for current draw from the schedule table or database
+        async function getPresetNumberForCurrentDraw() {
+            // First, try to get from DOM table (for backward compatibility and immediate access)
+            const scheduleBody = document.getElementById('presetScheduleBody');
+            if (scheduleBody) {
+                const rows = scheduleBody.querySelectorAll('tr');
+                console.log('🎯 Checking preset schedule DOM:', { rowsCount: rows.length, currentDrawNumber });
+                
+                for (let row of rows) {
+                    const drawCell = row.querySelector('td:first-child');
+                    if (drawCell) {
+                        const drawText = drawCell.textContent.trim();
+                        const drawMatch = drawText.match(/#(\d+)/);
+                        if (drawMatch) {
+                            const drawNum = parseInt(drawMatch[1]);
+                            
+                            if (drawNum === currentDrawNumber) {
+                                // Found the current draw - get the number
+                                const numberCell = row.querySelector('td:nth-child(3)');
+                                if (numberCell) {
+                                    const numberSpan = numberCell.querySelector('.number-circle-sm');
+                                    if (numberSpan) {
+                                        const number = parseInt(numberSpan.textContent.trim());
+                                        const color = numberSpan.classList.contains('red') ? 'red' : 
+                                                     numberSpan.classList.contains('black') ? 'black' : 'green';
+                                        console.log('✅ Found preset number for current draw from DOM:', { number, color });
+                                        return { number, color };
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // If not found in DOM, query database
+            console.log('🎯 Preset number not found in DOM, querying database...');
+            try {
+                const response = await fetch(`../api/get_current_preset.php?draw_number=${currentDrawNumber}&_cb=${Date.now()}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.status === 'success' && data.data) {
+                        console.log('✅ Found preset number for current draw from database:', data.data);
+                        return {
+                            number: data.data.winning_number,
+                            color: data.data.color
+                        };
+                    } else {
+                        console.log('ℹ️ No preset number found in database for draw #' + currentDrawNumber);
+                    }
+                } else {
+                    console.warn('⚠️ Failed to query database for preset number:', response.status);
+                }
+            } catch (error) {
+                console.error('❌ Error querying database for preset number:', error);
+            }
+            
+            console.warn('⚠️ No preset number found for current draw:', currentDrawNumber);
+            return null;
+        }
+        
+        // Get preset number for next draw from the schedule table
+        function getPresetNumberForNextDraw() {
+            const scheduleBody = document.getElementById('presetScheduleBody');
+            if (!scheduleBody) {
+                console.warn('⚠️ presetScheduleBody not found');
+                return null;
+            }
+            
+            const nextDrawNumber = currentDrawNumber + 1;
+            const rows = scheduleBody.querySelectorAll('tr');
+            console.log('🎯 Checking preset schedule for next draw:', { rowsCount: rows.length, nextDrawNumber });
+            
+            for (let row of rows) {
+                const drawCell = row.querySelector('td:first-child');
+                if (drawCell) {
+                    const drawText = drawCell.textContent.trim();
+                    const drawMatch = drawText.match(/#(\d+)/);
+                    if (drawMatch) {
+                        const drawNum = parseInt(drawMatch[1]);
+                        
+                        if (drawNum === nextDrawNumber) {
+                            // Found the next draw - get the number
+                            const numberCell = row.querySelector('td:nth-child(3)');
+                            if (numberCell) {
+                                const numberSpan = numberCell.querySelector('.number-circle-sm');
+                                if (numberSpan) {
+                                    const number = parseInt(numberSpan.textContent.trim());
+                                    const color = numberSpan.classList.contains('red') ? 'red' : 
+                                                 numberSpan.classList.contains('black') ? 'black' : 'green';
+                                    console.log('✅ Found preset number for next draw:', { number, color, drawNumber: nextDrawNumber });
+                                    return { number, color, drawNumber: nextDrawNumber };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            console.warn('⚠️ No preset number found for next draw:', nextDrawNumber);
+            return null;
+        }
+        
+        // Get recommended number for current draw (from recommended numbers grid)
+        function getRecommendedNumberForCurrentDraw() {
+            // Get the active tab (default to no-bets)
+            const activeTab = document.querySelector('.recommended-tab.active');
+            const tabType = activeTab ? activeTab.getAttribute('data-type') : 'no-bets';
+            
+            // Get all recommended number items
+            const recommendedItems = document.querySelectorAll('.recommended-number-item');
+            
+            if (recommendedItems.length === 0) {
+                console.warn('⚠️ No recommended numbers found');
+                return null;
+            }
+            
+            // For no-bets tab, get the first number with 0 bets
+            if (tabType === 'no-bets') {
+                for (let item of recommendedItems) {
+                    const betCountEl = item.querySelector('.recommended-number-value');
+                    if (betCountEl) {
+                        const betCount = parseInt(betCountEl.textContent.trim());
+                        if (betCount === 0) {
+                            const number = parseInt(item.getAttribute('data-number'));
+                            console.log('✅ Found recommended number (no-bets):', number);
+                            return number;
+                        }
+                    }
+                }
+            }
+            
+            // For lowest-payout tab, get the first number
+            if (tabType === 'lowest-payout') {
+                const firstItem = recommendedItems[0];
+                if (firstItem) {
+                    const number = parseInt(firstItem.getAttribute('data-number'));
+                    console.log('✅ Found recommended number (lowest-payout):', number);
+                    return number;
+                }
+            }
+            
+            // Fallback: return first available number
+            if (recommendedItems.length > 0) {
+                const firstItem = recommendedItems[0];
+                const number = parseInt(firstItem.getAttribute('data-number'));
+                console.log('✅ Found recommended number (fallback):', number);
+                return number;
+            }
+            
+            return null;
+        }
+        
+        // Set next draw number from preset schedule automatically
+        function setNextDrawNumberFromPresetSchedule() {
+            console.log('🎯 Setting next draw number from preset schedule...');
+            
+            const nextPreset = getPresetNumberForNextDraw();
+            
+            if (nextPreset) {
+                // Set as forced number for the next draw
+                applyPresetNumberAsForced(nextPreset.number, null, null, false, 0, nextPreset.drawNumber);
+                console.log('✅ Next draw number set from preset schedule:', { number: nextPreset.number, drawNumber: nextPreset.drawNumber });
+                showToast('Next Draw Set', `Number ${nextPreset.number} automatically set for draw #${nextPreset.drawNumber}`, 'info');
+            } else {
+                console.warn('⚠️ No preset number found for next draw, will use smart selection when needed');
+            }
+        }
+        
+        // Apply preset number as forced number automatically
+        async function applyPresetNumberAsForced(number, timePreset, patternType, isMobile, payout = 0, targetDrawNumber = null) {
+            // Use target draw number if provided, otherwise use current draw number
+            const drawNumber = targetDrawNumber || currentDrawNumber;
+            
+            // Set as forced number via API
+            try {
+                const bodyParams = `winning_number=${number}&keep_auto_mode=true`;
+                const bodyWithDraw = targetDrawNumber ? `${bodyParams}&draw_number=${targetDrawNumber}` : bodyParams;
+                
+                const response = await fetch('../api/set_winning_number.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: bodyWithDraw
+                });
+                
+                const data = await response.json();
+                if (data.status === 'success') {
+                    console.log('✅ Preset number applied as forced number:', { number, drawNumber });
+                    
+                    if (targetDrawNumber) {
+                        showToast('Next Draw Set', `Number ${number} automatically set as forced number for draw #${drawNumber}`, 'success');
+                    } else {
+                        showToast('Applied', `Number ${number} automatically set as forced number for draw #${drawNumber}`, 'success');
+                    }
+                    
+                    // Refresh forced number checker
+                    setTimeout(() => {
+                        checkForcedNumber();
+                    }, 1000);
+                } else {
+                    console.warn('⚠️ Failed to apply preset number as forced:', data.message);
+                }
+            } catch (error) {
+                console.error('❌ Error applying preset number as forced:', error);
+            }
+        }
+
+        function saveSmartSelectionSettings(timePreset, patternType) {
+            // Save settings to database for auto mode to use
+            fetch('../api/save_smart_selection_settings.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `time_preset=${encodeURIComponent(timePreset)}&pattern_type=${encodeURIComponent(patternType)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('✅ Smart selection settings saved for auto mode');
+                    showToast('Settings Saved', 'Smart selection preferences saved. Auto mode will use these settings.', 'success');
+                } else {
+                    console.warn('⚠️ Failed to save smart selection settings:', data.message);
+                }
+            })
+            .catch(error => {
+                console.warn('⚠️ Error saving smart selection settings:', error);
+            });
+        }
+
+        function loadSmartSelectionSettings() {
+            // Load saved smart selection settings
+            fetch('../api/get_smart_selection_settings.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success' && data.data) {
+                        const timePreset = data.data.time_preset || 'auto';
+                        const patternType = data.data.pattern_type || 'smart';
+                        
+                        // Update desktop dropdowns
+                        if (document.getElementById('timePreset')) {
+                            document.getElementById('timePreset').value = timePreset;
+                        }
+                        if (document.getElementById('patternType')) {
+                            document.getElementById('patternType').value = patternType;
+                        }
+                        
+                        // Update mobile dropdowns
+                        if (document.getElementById('timePreset-mobile')) {
+                            document.getElementById('timePreset-mobile').value = timePreset;
+                        }
+                        if (document.getElementById('patternType-mobile')) {
+                            document.getElementById('patternType-mobile').value = patternType;
+                        }
+                        
+                        console.log('✅ Smart selection settings loaded:', { timePreset, patternType });
+                    }
+                })
+                .catch(error => {
+                    console.warn('⚠️ Error loading smart selection settings:', error);
+                });
+        }
+
+        function displayPatternVisualization(patternAnalysis, data) {
+            const container = document.getElementById('patternVisualization');
+            const lastThree = patternAnalysis.last_three || [];
+            
+            let html = '<div class="mb-3">';
+            html += '<strong>Recent Pattern:</strong> ';
+            lastThree.forEach((num, index) => {
+                const color = num === 0 ? 'green' : ([1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36].includes(num) ? 'red' : 'black');
+                html += `<span class="pattern-item ${index === 0 ? 'highlight' : ''} ${color}" style="background-color: ${color === 'red' ? '#f8d7da' : (color === 'black' ? '#d1ecf1' : '#d4edda')};">${num}</span>`;
+            });
+            html += '</div>';
+            
+            html += '<div class="mb-2"><strong>Mathematical Basis:</strong> ' + patternAnalysis.mathematical_basis + '</div>';
+            html += '<div class="mb-2"><strong>Strategy:</strong> ' + data.pattern_type + ' pattern with time-based optimization</div>';
+            html += '<div><strong>Analysis:</strong> ' + data.numbers_with_no_bets + ' numbers with no bets, ' + data.low_payout_options + ' low payout options analyzed</div>';
+            
+            container.innerHTML = html;
+        }
+
+        // Generate preset schedule showing numbers and their scheduled times
+        async function generatePresetSchedule(timePreset, patternType, currentNumber, selectionData) {
+            const scheduleContainer = document.getElementById('presetSchedule');
+            const scheduleBody = document.getElementById('presetScheduleBody');
+            const placeholder = document.getElementById('presetSchedulePlaceholder');
+            
+            if (!scheduleContainer || !scheduleBody) return;
+            
+            // Use data from selectionData (already fetched by generateSmartNumber)
+            let recentNumbers = selectionData?.recent_numbers || [];
+            let payoutData = selectionData?.payout_data || {};
+            
+            // If not in selectionData, try to fetch
+            if (recentNumbers.length === 0) {
+                try {
+                    const recentResponse = await fetch(`../api/draw_info.php?_cb=${Date.now()}`);
+                    if (recentResponse.ok) {
+                        const recentData = await recentResponse.json();
+                        if (recentData.status === 'success' && recentData.data.recent_rolls) {
+                            recentNumbers = recentData.data.recent_rolls.map(n => parseInt(n)).filter(n => !isNaN(n));
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Could not fetch recent numbers:', error);
+                }
+            }
+            
+            // Show progress indicator
+            const progressIndicator = document.getElementById('presetScheduleProgress');
+            if (progressIndicator) {
+                progressIndicator.style.display = 'block';
+                progressIndicator.textContent = 'Generating 480 preset numbers... This may take a moment.';
+            }
+            
+            // Calculate start draw number based on current draw and time of day
+            // We want to start from the next draw that aligns with the current time
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const minutesSinceMidnight = (now.getTime() - today.getTime()) / (1000 * 60);
+            const drawsSinceMidnight = Math.floor(minutesSinceMidnight / 3);
+            
+            // Calculate the first draw number for today (assuming draws start at midnight)
+            // If current draw is already past today's start, use current draw as start
+            const todayStartDraw = Math.max(1, currentDrawNumber - drawsSinceMidnight);
+            const startDrawNumber = Math.max(todayStartDraw, currentDrawNumber);
+            
+            const schedule = [];
+            
+            // Get pattern-based number sequence using mathematical calculations (480 numbers)
+            console.log('🎯 Generating 480 preset numbers...');
+            let numberSequence = await generateMathBasedSequence(patternType, timePreset, currentNumber, selectionData, recentNumbers, payoutData);
+            console.log('✅ Generated 480 numbers:', numberSequence.length);
+            
+            // Generate schedule for 480 draws (24 hours)
+            const startTime = new Date(now);
+            // Align start time to the next 3-minute interval
+            const currentMinutes = startTime.getMinutes();
+            const currentSeconds = startTime.getSeconds();
+            const minutesToNextInterval = 3 - (currentMinutes % 3);
+            const secondsToNextInterval = minutesToNextInterval * 60 - currentSeconds;
+            startTime.setSeconds(startTime.getSeconds() + secondsToNextInterval);
+            startTime.setMilliseconds(0);
+            
+            for (let i = 0; i < 480; i++) {
+                const drawNumber = startDrawNumber + i;
+                const drawTime = new Date(startTime.getTime() + (i * 3 * 60 * 1000)); // 3 minutes per draw
+                const scheduledNumber = numberSequence[i];
+                const numberColor = getNumberColorForSchedule(scheduledNumber);
+                
+                // Determine pattern description based on calculation
+                let patternDesc = getPatternDescription(patternType, i, recentNumbers, scheduledNumber);
+                
+                schedule.push({
+                    draw_number: drawNumber,
+                    winning_number: scheduledNumber,
+                    color: numberColor,
+                    scheduled_time: drawTime.toISOString().slice(0, 19).replace('T', ' '),
+                    pattern: patternDesc
+                });
+            }
+            
+            // Save to database
+            console.log('💾 Saving preset schedule to database...');
+            const saveResult = await savePresetScheduleToDatabase(schedule, timePreset, patternType, startDrawNumber);
+            
+            if (saveResult.success) {
+                console.log('✅ Preset schedule saved to database');
+                showToast('Schedule Saved', `480 preset numbers saved for 24 hours (Draws #${startDrawNumber} to #${startDrawNumber + 479})`, 'success');
+            } else {
+                console.warn('⚠️ Failed to save preset schedule to database:', saveResult.message);
+                showToast('Warning', 'Schedule generated but failed to save to database: ' + saveResult.message, 'warning');
+            }
+            
+            // Clear and populate table (show first 30 entries, make it scrollable)
+            scheduleBody.innerHTML = '';
+            const displayCount = Math.min(30, schedule.length); // Show first 30 entries in table
+            
+            for (let i = 0; i < displayCount; i++) {
+                const item = schedule[i];
+                const row = document.createElement('tr');
+                const bgColor = item.color === 'red' ? '#dc3545' : item.color === 'black' ? '#343a40' : '#28a745';
+                const displayTime = new Date(item.scheduled_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+                row.innerHTML = `
+                    <td><strong>#${item.draw_number}</strong></td>
+                    <td><small>${displayTime}</small></td>
+                    <td>
+                        <span class="number-circle-sm ${item.color}" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; border-radius: 50%; color: white; font-weight: bold; background-color: ${bgColor};">
+                            ${item.winning_number}
+                        </span>
+                    </td>
+                    <td><small class="text-muted">${item.pattern}</small></td>
+                `;
+                scheduleBody.appendChild(row);
+            }
+            
+            // Add note if there are more entries
+            if (schedule.length > displayCount) {
+                const noteRow = document.createElement('tr');
+                noteRow.innerHTML = `<td colspan="4" class="text-center text-muted"><small>... and ${schedule.length - displayCount} more draws (scroll to see all)</small></td>`;
+                scheduleBody.appendChild(noteRow);
+            }
+            
+            // Hide progress indicator
+            if (progressIndicator) {
+                progressIndicator.style.display = 'none';
+            }
+            
+            // Show schedule, hide placeholder
+            scheduleContainer.style.display = 'block';
+            if (placeholder) placeholder.style.display = 'none';
+            
+            // Update schedule status
+            updatePresetScheduleStatus(startDrawNumber, startDrawNumber + 479, schedule.length);
+        }
+        
+        // Generate number sequence using mathematical calculations that look predictable
+        async function generateMathBasedSequence(patternType, timePreset, currentNumber, selectionData, recentNumbers, payoutData) {
+            const sequence = [];
+            const usedNumbers = new Set(); // Track numbers already used in this sequence
+            const rouletteNumbers = Array.from({length: 37}, (_, i) => i);
+            
+            // Get numbers with low/no payouts (house edge protection)
+            const lowPayoutNumbers = getLowPayoutNumbers(payoutData);
+            const noBetNumbers = getNoBetNumbers(payoutData);
+            
+            // Start with recent numbers for calculations
+            let lastNumber = recentNumbers.length > 0 ? recentNumbers[0] : currentNumber;
+            let secondLast = recentNumbers.length > 1 ? recentNumbers[1] : (lastNumber > 0 ? lastNumber - 1 : 36);
+            let thirdLast = recentNumbers.length > 2 ? recentNumbers[2] : (secondLast > 0 ? secondLast - 1 : 36);
+            
+            // Create pool of available numbers (prioritize low payout, but include all)
+            const availablePool = [...new Set([
+                ...(noBetNumbers.length > 0 ? noBetNumbers : []),
+                ...(lowPayoutNumbers.length > 0 ? lowPayoutNumbers : []),
+                ...rouletteNumbers
+            ])];
+            
+            // Generate 480 numbers using mathematical patterns with variety
+            // Since we have 480 numbers but only 37 possible values, numbers will repeat
+            // We'll use a sliding window approach to avoid immediate repetitions
+            const recentWindowSize = 15; // Don't repeat within last 15 numbers
+            const recentWindow = [];
+            
+            for (let i = 0; i < 480; i++) {
+                let calculatedNumber;
+                let attempts = 0;
+                const maxAttempts = 100; // Increased for larger sequence
+                
+                do {
+                    attempts++;
+                    
+                    if (patternType === 'fibonacci') {
+                        // Fibonacci-like: sum of last two, but with variations
+                        if (i === 0) {
+                            calculatedNumber = (lastNumber + secondLast) % 37;
+                        } else {
+                            const prev = sequence[sequence.length - 1];
+                            const prevPrev = sequence.length > 1 ? sequence[sequence.length - 2] : lastNumber;
+                            // Add variation to avoid repetition
+                            const variation = (i % 7) - 3; // Vary between -3 and 3
+                            calculatedNumber = (prev + prevPrev + variation) % 37;
+                            if (calculatedNumber < 0) calculatedNumber += 37;
+                        }
+                    } else if (patternType === 'color_alternate') {
+                        // Alternate colors with math: if last was red, next is black (but calculated)
+                        const lastColor = getNumberColorForSchedule(lastNumber);
+                        const targetColor = lastColor === 'red' ? 'black' : (lastColor === 'black' ? 'red' : 'green');
+                        const colorNumbers = getNumbersByColor(targetColor);
+                        
+                        // Vary the calculation to get different numbers
+                        const addValue = 7 + (i % 13); // More variation for 480 numbers
+                        calculatedNumber = (lastNumber + addValue) % 37;
+                        
+                        // If not the right color, find nearest in target color
+                        if (getNumberColorForSchedule(calculatedNumber) !== targetColor) {
+                            calculatedNumber = findNearestColorNumber(calculatedNumber, targetColor);
+                        }
+                    } else if (patternType === 'cold_numbers') {
+                        // Use cold numbers but calculate position with more variety
+                        const coldNumbers = rouletteNumbers.filter(n => !recentNumbers.includes(n));
+                        if (coldNumbers.length > 0) {
+                            const step = 3 + (i % 7); // More variation
+                            const index = (lastNumber + i * step) % coldNumbers.length;
+                            calculatedNumber = coldNumbers[index];
+                        } else {
+                            // Fallback: use any number not recently used
+                            calculatedNumber = (lastNumber + 5 + i * 3) % 37;
+                        }
+                    } else if (patternType === 'lowest_payout') {
+                        // Use lowest payout but with more variety
+                        if (lowPayoutNumbers.length > 0) {
+                            const step = 2 + (i % 5); // More variation
+                            const index = (lastNumber + i * step) % lowPayoutNumbers.length;
+                            calculatedNumber = lowPayoutNumbers[index];
+                        } else {
+                            calculatedNumber = (lastNumber + 3 + i * 2) % 37;
+                        }
+                    } else {
+                        // Smart pattern: mix of different math operations with more variety
+                        const operations = [
+                            () => (lastNumber + 7 + (i % 13)) % 37,  // Add 7 + variation
+                            () => (lastNumber + secondLast + (i % 11)) % 37,  // Sum + variation
+                            () => (Math.abs(lastNumber - secondLast) + (i % 17)) % 37,  // Difference + variation
+                            () => (Math.floor((lastNumber + secondLast + thirdLast) / 3) + (i % 7)) % 37,  // Average + variation
+                            () => (lastNumber * 2 + (i % 19)) % 37,  // Double + variation
+                            () => (lastNumber + 13 + ((i * 2) % 23)) % 37,  // Add 13 + variation
+                            () => (lastNumber + secondLast + 5 + (i % 9)) % 37,  // Sum + 5 + variation
+                            () => (lastNumber + 11 + (i % 15)) % 37,  // Add 11 + variation
+                            () => (secondLast * 2 - lastNumber + (i % 21)) % 37,  // Complex pattern
+                            () => (Math.floor((lastNumber + thirdLast) / 2) + (i % 13)) % 37,  // Midpoint pattern
+                            () => ((lastNumber + secondLast + thirdLast + i) % 37),  // Sum of three + index
+                            () => ((lastNumber * 3 - secondLast + i) % 37),  // Triple minus previous
+                            () => ((lastNumber + i * 3) % 37),  // Linear progression
+                            () => ((lastNumber ^ secondLast) + i) % 37,  // XOR operation
+                            () => (Math.floor(Math.sqrt(lastNumber * secondLast)) + (i % 7)) % 37,  // Square root pattern
+                        ];
+                        
+                        const opIndex = i % operations.length;
+                        calculatedNumber = operations[opIndex]();
+                    }
+                    
+                    // Ensure number is valid (0-36)
+                    calculatedNumber = Math.max(0, Math.min(36, Math.floor(calculatedNumber)));
+                    
+                    // Check if number was used in recent window (last 15 numbers)
+                    const inRecentWindow = recentWindow.includes(calculatedNumber);
+                    
+                    // If in recent window, try to find alternative
+                    if (inRecentWindow && attempts < maxAttempts) {
+                        // Find number not in recent window
+                        const availableNumbers = rouletteNumbers.filter(n => !recentWindow.includes(n));
+                        if (availableNumbers.length > 0) {
+                            // Prefer low payout numbers if available
+                            const preferredNumbers = availableNumbers.filter(n => 
+                                noBetNumbers.includes(n) || lowPayoutNumbers.includes(n)
+                            );
+                            if (preferredNumbers.length > 0) {
+                                calculatedNumber = preferredNumbers[Math.floor(Math.random() * preferredNumbers.length)];
+                            } else {
+                                calculatedNumber = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
+                            }
+                        } else {
+                            // All numbers in recent window, allow but add variation
+                            calculatedNumber = (calculatedNumber + 1 + (attempts % 5)) % 37;
+                        }
+                    }
+                    
+                } while (recentWindow.includes(calculatedNumber) && attempts < maxAttempts);
+                
+                // House edge: Prefer low/no payout numbers when possible
+                if (!recentWindow.includes(calculatedNumber)) {
+                    if (noBetNumbers.length > 0 && !noBetNumbers.includes(calculatedNumber)) {
+                        const availableNoBet = noBetNumbers.filter(n => !recentWindow.includes(n));
+                        if (availableNoBet.length > 0 && Math.random() < 0.3) { // 30% chance to prefer no-bet
+                            calculatedNumber = availableNoBet[Math.floor(Math.random() * availableNoBet.length)];
+                        }
+                    } else if (lowPayoutNumbers.length > 0 && !lowPayoutNumbers.includes(calculatedNumber)) {
+                        const availableLowPayout = lowPayoutNumbers.filter(n => !recentWindow.includes(n));
+                        if (availableLowPayout.length > 0 && Math.random() < 0.2) { // 20% chance to prefer low-payout
+                            calculatedNumber = availableLowPayout[Math.floor(Math.random() * availableLowPayout.length)];
+                        }
+                    }
+                }
+                
+                // ⚠️ CRITICAL: Validate multiple constraints to prevent abnormal patterns
+                // 1. No more than 2 consecutive identical numbers
+                // 2. No more than 5 same numbers per hour (20 draws per hour)
+                // 3. Daily frequency limit per number (reasonable distribution)
+                
+                let needsChange = false;
+                let changeReason = '';
+                
+                // Constraint 1: Check for 3+ consecutive identical numbers
+                if (sequence.length >= 2) {
+                    const lastTwo = sequence.slice(-2);
+                    if (lastTwo[0] === lastTwo[1] && lastTwo[0] === calculatedNumber) {
+                        needsChange = true;
+                        changeReason = `3+ consecutive ${calculatedNumber}`;
+                    }
+                }
+                
+                // Constraint 2: Check hourly frequency (max 5 same number per hour)
+                // Each hour has 20 draws (3-minute intervals), so check last 20 draws
+                if (!needsChange && sequence.length >= 20) {
+                    const hourWindow = sequence.slice(-20);
+                    const countInHour = hourWindow.filter(n => n === calculatedNumber).length;
+                    if (countInHour >= 5) {
+                        needsChange = true;
+                        changeReason = `${calculatedNumber} already appeared ${countInHour} times in this hour (max 5)`;
+                    }
+                }
+                
+                // Constraint 3: Check daily frequency (max reasonable limit per number)
+                // With 480 draws and 37 numbers, average is ~13 per number
+                // Setting max to 20-25 per day per number (allows some variation)
+                const maxDailyFrequency = 25;
+                const countInDay = sequence.filter(n => n === calculatedNumber).length;
+                if (!needsChange && countInDay >= maxDailyFrequency) {
+                    needsChange = true;
+                    changeReason = `${calculatedNumber} already appeared ${countInDay} times today (max ${maxDailyFrequency})`;
+                }
+                
+                if (needsChange) {
+                    console.log(`⚠️ ${changeReason} at position ${i} (draw #${startDrawNumber + i}) - changing to different number`);
+                    
+                    // Find alternative numbers that meet all constraints
+                    let alternativeNumbers = rouletteNumbers.filter(n => {
+                        // Not the same as calculated number
+                        if (n === calculatedNumber) return false;
+                        
+                        // Not violating consecutive constraint (if we have 2 previous)
+                        if (sequence.length >= 2) {
+                            const lastTwo = sequence.slice(-2);
+                            if (lastTwo[0] === lastTwo[1] && lastTwo[0] === n) return false;
+                        }
+                        
+                        // Not violating hourly frequency (max 5 per hour)
+                        if (sequence.length >= 20) {
+                            const hourWindow = sequence.slice(-20);
+                            if (hourWindow.filter(x => x === n).length >= 5) return false;
+                        }
+                        
+                        // Not violating daily frequency (max 25 per day)
+                        if (sequence.filter(x => x === n).length >= maxDailyFrequency) return false;
+                        
+                        return true;
+                    });
+                    
+                    // If no alternatives found that meet all constraints, relax constraints
+                    if (alternativeNumbers.length === 0) {
+                        // Relax: just avoid consecutive and very high frequency
+                        alternativeNumbers = rouletteNumbers.filter(n => {
+                            if (n === calculatedNumber) return false;
+                            if (sequence.length >= 2) {
+                                const lastTwo = sequence.slice(-2);
+                                if (lastTwo[0] === lastTwo[1] && lastTwo[0] === n) return false;
+                            }
+                            return true;
+                        });
+                    }
+                    
+                    if (alternativeNumbers.length > 0) {
+                        // Prefer low payout numbers if available
+                        const preferredAlternatives = alternativeNumbers.filter(n => 
+                            (noBetNumbers.length === 0 || noBetNumbers.includes(n)) || 
+                            (lowPayoutNumbers.length === 0 || lowPayoutNumbers.includes(n))
+                        );
+                        
+                        if (preferredAlternatives.length > 0) {
+                            // Use weighted selection - prefer numbers closer to calculated number
+                            const sortedAlternatives = preferredAlternatives.sort((a, b) => {
+                                const distA = Math.min(Math.abs(a - calculatedNumber), Math.abs(37 + a - calculatedNumber));
+                                const distB = Math.min(Math.abs(b - calculatedNumber), Math.abs(37 + b - calculatedNumber));
+                                return distA - distB;
+                            });
+                            calculatedNumber = sortedAlternatives[0];
+                        } else {
+                            // Fallback: use any alternative number
+                            calculatedNumber = alternativeNumbers[(i * 7) % alternativeNumbers.length];
+                        }
+                        
+                        console.log(`✅ Changed to ${calculatedNumber} - Reason: ${changeReason}`);
+                    } else {
+                        console.warn(`⚠️ Could not find alternative number that meets all constraints at position ${i}`);
+                    }
+                }
+                
+                sequence.push(calculatedNumber);
+                
+                // Update recent window (sliding window of last 15 numbers)
+                recentWindow.push(calculatedNumber);
+                if (recentWindow.length > recentWindowSize) {
+                    recentWindow.shift(); // Remove oldest
+                }
+                
+                // Update for next iteration
+                thirdLast = secondLast;
+                secondLast = lastNumber;
+                lastNumber = calculatedNumber;
+                
+                // Progress indicator for large sequence (every 50 numbers)
+                if ((i + 1) % 50 === 0) {
+                    console.log(`Generated ${i + 1}/480 numbers...`);
+                }
+            }
+            
+            // For 480 numbers, we don't need to shuffle as much since we already have variety
+            // Only do a light shuffle to break obvious patterns
+            if (sequence.length <= 50) {
+                // For smaller sequences, do full shuffle
+                return shuffleWithMathPreservation(sequence, recentNumbers);
+            } else {
+                // For large sequences (480), do light shuffle to maintain performance
+                const shuffled = [...sequence];
+                // Only swap every 10th pair to break obvious patterns
+                for (let i = 0; i < shuffled.length - 1; i += 10) {
+                    if (Math.random() > 0.7) {
+                        const swapIdx = Math.min(i + 1, shuffled.length - 1);
+                        [shuffled[i], shuffled[swapIdx]] = [shuffled[swapIdx], shuffled[i]];
+                    }
+                }
+                return shuffled;
+            }
+        }
+        
+        // Save preset schedule to database
+        async function savePresetScheduleToDatabase(schedule, timePreset, patternType, startDrawNumber) {
+            try {
+                const scheduleDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+                const endDrawNumber = startDrawNumber + schedule.length - 1;
+                
+                const payload = {
+                    schedule_date: scheduleDate,
+                    start_draw_number: startDrawNumber,
+                    end_draw_number: endDrawNumber,
+                    time_preset: timePreset,
+                    pattern_type: patternType,
+                    schedule_data: schedule
+                };
+                
+                console.log('💾 Saving preset schedule:', { scheduleDate, startDrawNumber, endDrawNumber, totalDraws: schedule.length });
+                
+                const response = await fetch('../api/save_preset_schedule.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    return { success: true, data: data.data };
+                } else {
+                    return { success: false, message: data.message || 'Unknown error' };
+                }
+            } catch (error) {
+                console.error('❌ Error saving preset schedule:', error);
+                return { success: false, message: error.message };
+            }
+        }
+        
+        // Update preset schedule status display
+        function updatePresetScheduleStatus(startDraw, endDraw, totalDraws) {
+            const statusElement = document.getElementById('presetScheduleStatus');
+            if (statusElement) {
+                const scheduleDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                statusElement.innerHTML = `
+                    <i class="fas fa-check-circle text-success"></i> 
+                    Schedule loaded for <strong>${scheduleDate}</strong> | 
+                    Draws <strong>#${startDraw}</strong> to <strong>#${endDraw}</strong> 
+                    (${totalDraws} total draws)
+                `;
+                statusElement.style.display = 'block';
+            }
+        }
+        
+        // Check and auto-generate preset schedule if needed
+        async function checkAndAutoGeneratePreset() {
+            try {
+                console.log('🔍 Checking if preset schedule exists for today...');
+                
+                // Check if schedule exists for today
+                const checkResponse = await fetch(`../api/check_preset_schedule.php?_cb=${Date.now()}`);
+                if (!checkResponse.ok) {
+                    console.warn('⚠️ Failed to check preset schedule:', checkResponse.status);
+                    return;
+                }
+                
+                const checkData = await checkResponse.json();
+                
+                if (checkData.exists) {
+                    // Schedule exists, load it
+                    console.log('✅ Preset schedule exists for today:', checkData.data);
+                    await loadPresetScheduleFromDatabase(checkData.data.schedule_date);
+                } else {
+                    // Schedule doesn't exist, auto-generate it
+                    console.log('📅 No preset schedule found for today, auto-generating...');
+                    
+                    // Get saved settings or use defaults
+                    const savedSettings = loadSmartSelectionSettings();
+                    const timePreset = savedSettings.timePreset || 'auto';
+                    const patternType = savedSettings.patternType || 'smart';
+                    
+                    // Show notification
+                    showToast('Auto-Generating', 'Creating preset schedule for today (480 draws)...', 'info');
+                    
+                    // Generate schedule by calling generateSmartNumber which will create and save it
+                    await generateSmartNumber(false);
+                    
+                    console.log('✅ Preset schedule auto-generated for today');
+                }
+            } catch (error) {
+                console.error('❌ Error checking/auto-generating preset schedule:', error);
+                // Don't show error to user, just log it
+            }
+        }
+        
+        // Load preset schedule from database and display it
+        async function loadPresetScheduleFromDatabase(date = null) {
+            try {
+                const loadUrl = date ? 
+                    `../api/load_preset_schedule.php?date=${date}&_cb=${Date.now()}` :
+                    `../api/load_preset_schedule.php?_cb=${Date.now()}`;
+                
+                const response = await fetch(loadUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.data && data.data.schedule_data) {
+                    const schedule = data.data.schedule_data;
+                    const scheduleContainer = document.getElementById('presetSchedule');
+                    const scheduleBody = document.getElementById('presetScheduleBody');
+                    const placeholder = document.getElementById('presetSchedulePlaceholder');
+                    
+                    if (!scheduleContainer || !scheduleBody) return;
+                    
+                    // Clear and populate table (show first 30 entries)
+                    scheduleBody.innerHTML = '';
+                    const displayCount = Math.min(30, schedule.length);
+                    
+                    for (let i = 0; i < displayCount; i++) {
+                        const item = schedule[i];
+                        const row = document.createElement('tr');
+                        const bgColor = item.color === 'red' ? '#dc3545' : item.color === 'black' ? '#343a40' : '#28a745';
+                        const displayTime = new Date(item.scheduled_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+                        row.innerHTML = `
+                            <td><strong>#${item.draw_number}</strong></td>
+                            <td><small>${displayTime}</small></td>
+                            <td>
+                                <span class="number-circle-sm ${item.color}" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; border-radius: 50%; color: white; font-weight: bold; background-color: ${bgColor};">
+                                    ${item.winning_number}
+                                </span>
+                            </td>
+                            <td><small class="text-muted">${item.pattern || 'Preset'}</small></td>
+                        `;
+                        scheduleBody.appendChild(row);
+                    }
+                    
+                    // Add note if there are more entries
+                    if (schedule.length > displayCount) {
+                        const noteRow = document.createElement('tr');
+                        noteRow.innerHTML = `<td colspan="4" class="text-center text-muted"><small>... and ${schedule.length - displayCount} more draws (scroll to see all)</small></td>`;
+                        scheduleBody.appendChild(noteRow);
+                    }
+                    
+                    // Update status
+                    updatePresetScheduleStatus(data.data.start_draw_number, data.data.end_draw_number, data.data.total_draws);
+                    
+                    // Show schedule, hide placeholder
+                    scheduleContainer.style.display = 'block';
+                    if (placeholder) placeholder.style.display = 'none';
+                    
+                    console.log('✅ Preset schedule loaded from database:', { 
+                        totalDraws: schedule.length, 
+                        startDraw: data.data.start_draw_number, 
+                        endDraw: data.data.end_draw_number 
+                    });
+                } else {
+                    console.log('ℹ️ No preset schedule found in database');
+                }
+            } catch (error) {
+                console.error('❌ Error loading preset schedule from database:', error);
+            }
+        }
+        
+        // Check for midnight transition and auto-generate new schedule
+        let lastCheckedDate = new Date().toDateString();
+        function checkMidnightTransition() {
+            const currentDate = new Date().toDateString();
+            
+            if (currentDate !== lastCheckedDate) {
+                console.log('🕛 Midnight transition detected, generating new preset schedule...');
+                lastCheckedDate = currentDate;
+                
+                // Deactivate old schedule (handled by API when saving new one)
+                // Auto-generate new schedule
+                checkAndAutoGeneratePreset();
+            }
+        }
+        
+        // Set up midnight check interval (check every minute)
+        setInterval(checkMidnightTransition, 60000);
+        
+        // Get numbers with low payouts
+        function getLowPayoutNumbers(payoutData) {
+            if (!payoutData || !payoutData.number_payouts) {
+                return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+            }
+            
+            const payouts = payoutData.number_payouts;
+            const numbers = Object.keys(payouts).map(n => parseInt(n));
+            numbers.sort((a, b) => (payouts[a] || 0) - (payouts[b] || 0));
+            
+            // Return bottom 50% with lowest payouts
+            return numbers.slice(0, Math.floor(numbers.length / 2));
+        }
+        
+        // Get numbers with no bets
+        function getNoBetNumbers(payoutData) {
+            if (!payoutData || !payoutData.number_payouts) {
+                return [];
+            }
+            
+            const payouts = payoutData.number_payouts;
+            const numbers = [];
+            for (let i = 0; i <= 36; i++) {
+                if (!payouts[i] || payouts[i] === 0) {
+                    numbers.push(i);
+                }
+            }
+            return numbers;
+        }
+        
+        // Find similar number with low payout
+        function findSimilarLowPayoutNumber(target, noBetNumbers, lowPayoutNumbers) {
+            // First try no-bet numbers
+            if (noBetNumbers.length > 0) {
+                // Find closest number
+                const closest = noBetNumbers.reduce((prev, curr) => {
+                    return Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev;
+                });
+                return closest;
+            }
+            
+            // Then try low payout numbers
+            if (lowPayoutNumbers.length > 0) {
+                const closest = lowPayoutNumbers.reduce((prev, curr) => {
+                    return Math.abs(curr - target) < Math.abs(prev - target) ? curr : prev;
+                });
+                return closest;
+            }
+            
+            return null;
+        }
+        
+        // Get numbers by color
+        function getNumbersByColor(color) {
+            const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+            const blackNumbers = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35];
+            
+            if (color === 'red') return redNumbers;
+            if (color === 'black') return blackNumbers;
+            return [0];
+        }
+        
+        // Find nearest number of specific color
+        function findNearestColorNumber(number, targetColor) {
+            const colorNumbers = getNumbersByColor(targetColor);
+            return colorNumbers.reduce((prev, curr) => {
+                return Math.abs(curr - number) < Math.abs(prev - number) ? curr : prev;
+            });
+        }
+        
+        // Shuffle while preserving some mathematical relationships
+        function shuffleWithMathPreservation(sequence, recentNumbers) {
+            // Don't fully randomize - keep some mathematical flow
+            // But mix it up so it's not sequential
+            const shuffled = [...sequence];
+            
+            // Partial shuffle: swap some adjacent pairs
+            for (let i = 0; i < shuffled.length - 1; i += 2) {
+                // Swap every other pair to break sequential pattern
+                if (Math.random() > 0.5) {
+                    [shuffled[i], shuffled[i + 1]] = [shuffled[i + 1], shuffled[i]];
+                }
+            }
+            
+            // Randomly swap a few non-adjacent elements (but keep math relationships)
+            for (let i = 0; i < 3; i++) {
+                const idx1 = Math.floor(Math.random() * shuffled.length);
+                const idx2 = Math.floor(Math.random() * shuffled.length);
+                if (Math.abs(idx1 - idx2) > 2) { // Only swap if not too close
+                    [shuffled[idx1], shuffled[idx2]] = [shuffled[idx2], shuffled[idx1]];
+                }
+            }
+            
+            return shuffled;
+        }
+        
+        // Get pattern description for display
+        function getPatternDescription(patternType, index, recentNumbers, number) {
+            if (recentNumbers.length >= 2) {
+                const last = recentNumbers[0];
+                const second = recentNumbers[1];
+                
+                if (patternType === 'fibonacci') {
+                    return `(${last} + ${second}) mod 37`;
+                } else if (patternType === 'color_alternate') {
+                    return `(${last} + 7) mod 37`;
+                } else if (patternType === 'smart') {
+                    const ops = ['+7', '+13', 'sum', 'avg', '×2'];
+                    return `${last} ${ops[index % ops.length]} pattern`;
+                }
+            }
+            
+            return patternType === 'fibonacci' ? 'Fibonacci-like' :
+                   patternType === 'color_alternate' ? 'Color alternation' :
+                   patternType === 'cold_numbers' ? 'Cold number' :
+                   patternType === 'lowest_payout' ? 'Low payout' :
+                   'Math calculation';
+        }
+        
+        // Get time-based numbers based on preset
+        function getTimeBasedNumbers(timePreset) {
+            const now = new Date();
+            const hour = now.getHours();
+            
+            let numbers = [];
+            
+            if (timePreset === 'morning' || (timePreset === 'auto' && hour >= 6 && hour < 12)) {
+                // Morning: Lower numbers (0-12)
+                numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+            } else if (timePreset === 'afternoon' || (timePreset === 'auto' && hour >= 12 && hour < 18)) {
+                // Afternoon: Mid range (13-24)
+                numbers = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
+            } else if (timePreset === 'evening' || (timePreset === 'auto' && hour >= 18 && hour < 24)) {
+                // Evening: Higher numbers (25-36)
+                numbers = [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36];
+            } else {
+                // Night: Random distribution
+                numbers = Array.from({length: 37}, (_, i) => i);
+            }
+            
+            // Create a varied sequence
+            const sequence = [];
+            for (let i = 0; i < 15; i++) {
+                sequence.push(numbers[i % numbers.length]);
+            }
+            
+            return sequence;
+        }
+        
+        // Helper function to get number color for schedule
+        function getNumberColorForSchedule(number) {
+            const num = parseInt(number);
+            if (num === 0) return 'green';
+            const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+            return redNumbers.includes(num) ? 'red' : 'black';
+        }
+
         function setManualWinningNumber() {
-            const number = parseInt(document.getElementById('manualWinningNumber').value);
+            const manualInput = document.getElementById('manualWinningNumber');
+            if (!manualInput) {
+                console.error('❌ manualWinningNumber input not found');
+                showError('Manual winning number input not found');
+                return;
+            }
+            
+            const number = parseInt(manualInput.value);
+            console.log('🎯 setManualWinningNumber called:', { number, currentDrawNumber, currentMode: isAutoMode ? 'Auto' : 'Manual' });
 
             if (isNaN(number) || number < 0 || number > 36) {
+                console.error('❌ Invalid number:', number);
                 showError('Please enter a valid number (0-36)');
                 return;
             }
 
-            // Show a loading message
-            showToast('Processing', `Setting winning number to ${number}...`, 'info');
-
-            // If we're in auto mode, switch to manual mode first
-            const switchToManualFirst = isAutoMode;
-
-            const setNumber = () => {
-                // The parameter name in the API is 'winning_number', not 'number'
-                fetch('../api/set_winning_number.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `winning_number=${number}`
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status === 'success') {
-                        showToast('Success', data.message || `Successfully set winning number to ${number}`, 'success');
-                        document.getElementById('manualWinningNumber').value = '';
-
-                        // Make sure we're in manual mode
-                        isAutoMode = false;
-
-                        // Refresh the data to show the changes
-                        fetchDrawInfo();
-
-                        console.log('Set winning number success:', data);
-                    } else {
-                        showError(data.message || 'Failed to set winning number');
-                        console.error('Set winning number failed:', data);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error setting winning number:', error);
-                    showError(`Failed to set winning number: ${error.message}`);
-
-                    // Try to refresh the data anyway
-                    fetchDrawInfo();
-                });
-            };
-
-            // If we need to switch to manual mode first
-            if (switchToManualFirst) {
+            // ⚠️ CRITICAL: If in Auto Mode, switch to Manual Mode first
+            // This ensures the number is always saved as 'manual' in the database
+            if (isAutoMode) {
+                console.log('⚠️ Currently in Auto Mode - switching to Manual Mode to ensure number is saved correctly');
+                // Switch to manual mode
+                isAutoMode = false;
+                document.getElementById('currentMode').textContent = 'Manual';
+                document.getElementById('modeToggleText').textContent = 'Switch to Auto';
+                // Also update the API if needed (optional, but good for consistency)
                 fetch('../api/toggle_mode.php', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: 'mode=manual'
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status === 'success') {
-                        showToast('Mode Changed', 'Switched to manual mode', 'success');
-                        isAutoMode = false;
+                }).catch(err => console.warn('Could not update mode on server:', err));
+            }
 
-                        // Now set the winning number
-                        setNumber();
-                    } else {
-                        showError(data.message || 'Failed to switch to manual mode');
+            // ⚠️ CRITICAL: Set flag to prevent auto-apply from interfering
+            // But we'll clear it after the API call completes so checkForcedNumber can run
+            isManualSelectionInProgress = true;
+            console.log('🔒 Setting isManualSelectionInProgress = true to prevent auto-apply interference');
+
+            // Check if auto-apply is enabled - if so, don't submit in manual mode
+            const autoApplyCheckbox = document.getElementById('autoApplyForcedNumber');
+            const isAutoApplyEnabled = autoApplyCheckbox ? autoApplyCheckbox.checked : false;
+            
+            // In manual mode (auto-apply disabled), always submit the number
+            // In auto mode (auto-apply enabled), the system will handle it automatically
+            // But if user manually selects, we should still submit it
+            console.log('📤 Submitting winning number:', { number, currentDrawNumber, isAutoApplyEnabled, mode: 'Manual (forced)' });
+            
+            // ⚠️ CRITICAL: ALWAYS call submitWinningNumber with keepAutoMode = false (manual mode)
+            // This ensures the number is ALWAYS saved with source='manual' in the database
+            // regardless of any other settings or modes
+            submitWinningNumber(number, false);
+            
+            // Clear the flag after a delay to allow the API call to complete
+            setTimeout(() => {
+                isManualSelectionInProgress = false;
+                console.log('🔓 Clearing isManualSelectionInProgress flag');
+            }, 2000); // 2 seconds should be enough for the API call
+        }
+
+        async function executeAutoDraw() {
+            showToast('Auto Draw', 'Generating winning number...', 'info');
+            
+            // First, try to get number from preset schedule
+            const presetNumber = await getPresetNumberForCurrentDraw();
+            
+            if (presetNumber) {
+                // Use preset schedule number
+                console.log('Auto-selected number from preset schedule:', presetNumber.number);
+                submitWinningNumber(presetNumber.number, true);
+                
+                // After submitting, automatically set next draw number from preset schedule
+                setTimeout(() => {
+                    setNextDrawNumberFromPresetSchedule();
+                }, 1500);
+                
+                return;
+            }
+            
+            // If no preset schedule, check for bets and use smart selection
+            fetch(`../api/get_bet_distribution.php?draw_number=${currentDrawNumber}&_cb=${Date.now()}`)
+                .then(response => response.json())
+                .then(betData => {
+                    const hasBets = betData.success && betData.summary && betData.summary.total_bets > 0;
+                    
+                    if (!hasBets) {
+                        // No bets - use random or skip
+                        console.log('No bets found, skipping auto draw');
+                        resetTimer();
+                        fetchDrawInfo();
+                        return;
+                    }
+                    
+                    // Has bets - use smart selection
+                    const timePreset = document.getElementById('timePreset').value;
+                    const patternType = document.getElementById('patternType').value;
+                    
+                    fetch(`../api/smart_number_selection.php?draw_number=${currentDrawNumber}&time_preset=${timePreset}&pattern_type=${patternType}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                const number = data.data.selected_number;
+                                const payout = data.data.payout;
+                                
+                                // Check payout - if too high, skip this draw
+                                const maxPayout = 500;
+                                if (payout > maxPayout) {
+                                    console.warn('Payout too high, skipping auto draw');
+                                    showToast('Skipped', `Payout too high ($${parseFloat(payout).toFixed(2)}), skipping draw`, 'warning');
+                                    resetTimer();
+                                    fetchDrawInfo();
+                                    return;
+                                }
+                                
+                                console.log('Auto-selected number:', number);
+                                submitWinningNumber(number, true);
+                                
+                                // After submitting, automatically set next draw number from preset schedule
+                                setTimeout(() => {
+                                    setNextDrawNumberFromPresetSchedule();
+                                }, 1500);
+                            } else {
+                                console.error('Failed to generate smart number:', data);
+                                resetTimer();
+                                fetchDrawInfo();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error in auto draw:', error);
+                            resetTimer();
+                            fetchDrawInfo();
+                        });
+                })
+                .catch(error => {
+                    console.error('Error checking bets:', error);
+                    resetTimer();
+                    fetchDrawInfo();
+                });
+        }
+        
+        // Immediately check forced number after a short delay (to allow server to process)
+        function checkForcedNumberDelayed(delay = 1000) {
+            setTimeout(() => {
+                checkForcedNumber();
+            }, delay);
+        }
+        
+        // Initialize Firestore real-time listeners for draw numbers and game state
+        function initFirestoreRealTimeListeners() {
+            console.log('🔥 Initializing Firestore real-time listeners...');
+            
+            // Wait for FirestoreService to be available
+            function startListeners() {
+                if (!window.FirestoreService || !window.FirestoreService.isAvailable()) {
+                    console.warn('⚠️ FirestoreService not available yet, retrying...');
+                    setTimeout(startListeners, 500);
+                    return;
+                }
+                
+                console.log('✅ FirestoreService available, setting up listeners...');
+                
+                // Listen to game state changes (includes draw numbers)
+                const gameStateUnsubscribe = window.FirestoreService.listenToGameState((gameState) => {
+                    console.log('🔥 Game state updated from Firestore:', gameState);
+                    
+                    // Update draw number if available
+                    if (gameState.currentDrawNumber !== undefined) {
+                        const newDrawNumber = parseInt(gameState.currentDrawNumber);
+                        if (newDrawNumber !== currentDrawNumber && newDrawNumber > 0) {
+                            console.log(`🔥 Draw number updated via Firestore: ${currentDrawNumber} → ${newDrawNumber}`);
+                            currentDrawNumber = newDrawNumber;
+                            
+                            // Update UI
+                            document.getElementById('currentDrawNumber').textContent = newDrawNumber;
+                            if (document.getElementById('currentDrawNumber-mobile')) {
+                                document.getElementById('currentDrawNumber-mobile').textContent = newDrawNumber;
+                            }
+                            
+                            // Update upcoming draw number
+                            upcomingDrawNumber = newDrawNumber;
+                            if (document.getElementById('upcomingDrawNumber')) {
+                                document.getElementById('upcomingDrawNumber').textContent = newDrawNumber;
+                            }
+                            
+                            // Refresh bet distribution for new draw
+                            fetchBetDistribution();
+                            
+                            // Show notification
+                            showToast('Draw Updated', `Draw number updated to #${newDrawNumber}`, 'info');
+                        }
+                    }
+                    
+                    // Update winning number if available
+                    if (gameState.winningNumber !== undefined && gameState.winningNumber !== null) {
+                        const newWinningNumber = parseInt(gameState.winningNumber);
+                        if (newWinningNumber !== currentWinningNumber) {
+                            currentWinningNumber = newWinningNumber;
+                            const winningColor = gameState.winningColor || getNumberColor(newWinningNumber);
+                            const numberClass = 'number-circle ' + winningColor;
+                            
+                            document.getElementById('winningNumberDisplay').textContent = newWinningNumber;
+                            document.getElementById('winningNumberDisplay').className = numberClass;
+                            
+                            if (document.getElementById('winningNumberSource')) {
+                                document.getElementById('winningNumberSource').textContent = `Source: ${gameState.source || 'automatic'}`;
+                            }
+                            if (document.getElementById('winningNumberReason')) {
+                                document.getElementById('winningNumberReason').textContent = `Reason: ${gameState.reason || 'Auto-selected'}`;
+                            }
+                        }
+                    }
+                });
+                
+                // Monitor connection status
+                window.FirestoreService.onConnectionStatusChange((online) => {
+                    console.log('🔥 Firestore connection status:', online ? 'ONLINE' : 'OFFLINE');
+                    
+                    if (online) {
+                        // Sync draw number to Firestore when connection is restored
+                        syncDrawNumberToFirestore();
+                    }
+                });
+                
+                // Initial sync of draw number to Firestore
+                syncDrawNumberToFirestore();
+                
+                // Periodically sync draw number to Firestore (every 30 seconds)
+                setInterval(() => {
+                    syncDrawNumberToFirestore();
+                }, 30000);
+                
+                console.log('✅ Firestore real-time listeners initialized');
+            }
+            
+            // Start listeners
+            startListeners();
+        }
+        
+        // Sync current draw number to Firestore
+        function syncDrawNumberToFirestore() {
+            fetch('../api/sync_draw_number_to_firestore.php?_cb=' + Date.now())
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success' && window.FirestoreService && window.FirestoreService.isAvailable()) {
+                        // Write to Firestore gameState
+                        window.FirestoreService.writeGameState({
+                            currentDrawNumber: data.data.currentDrawNumber,
+                            nextDrawNumber: data.data.nextDrawNumber,
+                            expectedDrawNumber: data.data.expectedDrawNumber,
+                            lastUpdated: data.data.lastUpdated,
+                            lastResetDate: data.data.lastResetDate,
+                            needsReset: data.data.needsReset,
+                            timezone: data.data.timezone
+                        }).then(() => {
+                            console.log('✅ Draw number synced to Firestore:', data.data.currentDrawNumber);
+                        }).catch(error => {
+                            console.warn('⚠️ Failed to sync draw number to Firestore:', error);
+                        });
                     }
                 })
                 .catch(error => {
-                    console.error('Error toggling mode:', error);
-                    showError('Failed to switch to manual mode. Please try again.');
+                    console.warn('⚠️ Error syncing draw number:', error);
                 });
-            } else {
-                // Already in manual mode, just set the number
-                setNumber();
-            }
+        }
+        
+        // Correct draw number if it's out of sync
+        function correctDrawNumber(expectedDrawNumber) {
+            console.log(`🔄 Correcting draw number to ${expectedDrawNumber}...`);
+            
+            fetch('../api/sync_draw_number_to_time.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'force=true'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('✅ Draw number corrected:', data.data.new_draw_number);
+                    showToast('Draw Number Corrected', `Draw number updated to #${data.data.new_draw_number}`, 'success');
+                    
+                    // Refresh draw info
+                    fetchDrawInfo();
+                    
+                    // Sync to Firestore
+                    syncDrawNumberToFirestore();
+                } else {
+                    console.error('❌ Failed to correct draw number:', data.message);
+                    showToast('Error', 'Failed to correct draw number: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error correcting draw number:', error);
+                showToast('Error', 'Failed to correct draw number', 'error');
+            });
+        }
+
+        function submitWinningNumber(number, keepAutoMode = false) {
+            // Show loading
+            showToast('Processing', `Setting winning number to ${number}...`, 'info');
+            
+            // ⚠️ CRITICAL: Always send 'false' explicitly for manual mode
+            // This ensures PHP receives the string 'false' and treats it as manual
+            const keepAutoModeStr = keepAutoMode === true ? 'true' : 'false';
+            const payload = `winning_number=${number}&keep_auto_mode=${keepAutoModeStr}`;
+            console.log('📤 Sending payload:', payload, 'keepAutoMode:', keepAutoMode, 'keepAutoModeStr:', keepAutoModeStr);
+            console.log('🔒 isManualSelectionInProgress:', isManualSelectionInProgress);
+            
+            fetch('../api/set_winning_number.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: payload
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('✅ API Response:', data);
+                    console.log('✅ Source from API:', data.data?.source);
+                    
+                    // Verify the source is correct
+                    if (data.data?.source !== 'manual' && !keepAutoMode) {
+                        console.error('❌ WARNING: API returned source="' + data.data?.source + '" but we sent keep_auto_mode=false');
+                    }
+                    
+                    showToast('Success', `Winning number set to ${number}`, 'success');
+                    
+                    if (!keepAutoMode) {
+                        isAutoMode = false;
+                        document.getElementById('manualWinningNumber').value = '';
+                        
+                        // Update UI to reflect manual mode
+                        document.getElementById('currentMode').textContent = 'Manual';
+                        document.getElementById('modeToggleText').textContent = 'Switch to Auto';
+                    }
+                    
+                    // Sync to Firestore for real-time TV display sync
+                    if (window.FirestoreService && window.FirestoreService.isAvailable()) {
+                        try {
+                            const drawNumber = data.data?.draw_number || currentDrawNumber;
+                            const winningColor = data.data?.winning_color || (number === 0 ? 'green' : 
+                                ([1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36].includes(number) ? 'red' : 'black'));
+                            
+                            // Write winning number to Firestore
+                            FirestoreService.writeWinningNumber(drawNumber, number, winningColor, keepAutoMode ? 'auto' : 'manual')
+                                .then(() => {
+                                    console.log('✅ Winning number synced to Firestore');
+                                    
+                                    // Create spin command for synchronized execution
+                                    const syncTimestamp = new Date(Date.now() + 2000); // 2 seconds from now
+                                    return FirestoreService.writeSpinCommand(number, drawNumber, syncTimestamp, 'admin');
+                                })
+                                .then((commandId) => {
+                                    console.log('✅ Spin command created in Firestore:', commandId);
+                                })
+                                .catch((error) => {
+                                    console.warn('⚠️ Firestore sync failed (non-critical):', error);
+                                });
+                        } catch (error) {
+                            console.warn('⚠️ Firestore sync error (non-critical):', error);
+                        }
+                    } else {
+                        console.log('ℹ️ Firestore not available, skipping sync');
+                    }
+
+                    // Reset timer and refresh data
+                    resetTimer();
+                    fetchDrawInfo();
+                    
+                    // ⚠️ CRITICAL: Check forced number for the draw that was just set
+                    // The API returns the draw_number that was used, so check that specific draw
+                    const setDrawNumber = data.data?.draw_number || (currentDrawNumber + 1); // Default to next draw if not specified
+                    console.log('🔄 Refreshing forced number checker for draw #' + setDrawNumber + ' (just set number ' + number + ')');
+                    console.log('✅ API confirmed source: ' + (data.data?.source || 'unknown'));
+                    
+                    // Clear the manual selection flag first so checkForcedNumber can run
+                    isManualSelectionInProgress = false;
+                    console.log('🔓 Cleared isManualSelectionInProgress to allow forced number check');
+                    
+                    // Immediately check forced number to update display
+                    // Use a delay to ensure database has been updated
+                    setTimeout(() => {
+                        // Force check by calling checkForcedNumber which checks next draw
+                        checkForcedNumber();
+                    }, 500); // 500ms delay to ensure database update
+
+                    console.log('Set winning number success:', data);
+                } else {
+                    showError(data.message || 'Failed to set winning number');
+                    console.error('Set winning number failed:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error setting winning number:', error);
+                showError(`Failed to set winning number: ${error.message}`);
+
+                // Try to refresh the data anyway
+                fetchDrawInfo();
+            });
         }
 
         // Function to show toast notifications

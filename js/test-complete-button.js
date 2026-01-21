@@ -1,0 +1,1 @@
+console.log('Testing complete button functionality...'); setTimeout(() => { if (window.CompleteButtonUnifiedFix) { console.log('✅ Unified fix loaded'); console.log('Current mode:', window.CompleteButtonUnifiedFix.isCompleteBetMode()); } else { console.log('❌ Unified fix not loaded'); } }, 2000);

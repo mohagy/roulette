@@ -37,11 +37,24 @@ function setupRealTimeUpdates() {
     // Start with immediate update
     updateData();
 
-    // Set interval for regular updates (every 5 seconds)
-    updateInterval = setInterval(updateData, 5000);
+    // Set interval for regular updates (every 2 seconds for faster balance updates)
+    updateInterval = setInterval(updateData, 2000);
 
     // Update the "last updated" text every minute
     setInterval(updateLastUpdatedText, 60000);
+    
+    // Also update balance immediately when page becomes visible (user switches tabs/windows)
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            // Page became visible, update balance immediately
+            updateBalanceOnly();
+        }
+    });
+    
+    // Update balance on window focus (user switches back to window)
+    window.addEventListener('focus', function() {
+        updateBalanceOnly();
+    });
 }
 
 /**
@@ -465,14 +478,39 @@ function updateUserBalanceWithFeedback(balanceData) {
     const currentBalanceText = $('#balance-amount').text().replace(/[$,]/g, '');
     const currentBalance = parseFloat(currentBalanceText) || 0;
 
-    // Update balance display
-    $('#balance-amount').text('$' + formatNumber(newBalance));
+    // Only update if balance actually changed
+    if (Math.abs(newBalance - currentBalance) > 0.01) {
+        // Update balance display
+        $('#balance-amount').text('$' + formatNumber(newBalance));
 
-    // POS System: Simple balance update without winner celebrations
-    $('#balance-amount').addClass('pulse');
-    setTimeout(function() {
-        $('#balance-amount').removeClass('pulse');
-    }, 1000);
+        // POS System: Simple balance update without winner celebrations
+        $('#balance-amount').addClass('pulse');
+        setTimeout(function() {
+            $('#balance-amount').removeClass('pulse');
+        }, 1000);
+        
+        console.log('Balance updated:', currentBalance, '->', newBalance);
+    }
+}
+
+/**
+ * Update balance only (faster than full update)
+ */
+function updateBalanceOnly() {
+    $.ajax({
+        url: 'php/my_transactions_api.php?action=balance',
+        method: 'GET',
+        dataType: 'json',
+        cache: false,
+        success: function(response) {
+            if (response.status === 'success' && response.data) {
+                updateUserBalanceWithFeedback(response.data);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('❌ Error fetching balance:', error);
+        }
+    });
 }
 
 /**
@@ -844,6 +882,17 @@ function setupEventListeners() {
     $('#refresh-transactions').on('click', function() {
         updateData();
         showUpdateNotification('Refreshing transactions...');
+    });
+    
+    // Add balance refresh button click handler (if button exists)
+    $('#refresh-balance').on('click', function() {
+        updateBalanceOnly();
+        showUpdateNotification('Refreshing balance...');
+    });
+    
+    // Also refresh balance when clicking on the balance amount itself
+    $('#balance-amount').on('click', function() {
+        updateBalanceOnly();
     });
 
     // Tab change events

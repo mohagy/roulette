@@ -14,15 +14,18 @@
 /* Main floating upcoming draws container */
 .upcoming-draws-panel {
   position: fixed;
-  top: 80px;
-  left: 20px;
-  z-index: 1400;
+  top: 0px !important; /* Position at the very top */
+  left: 0px !important; /* Align to left edge */
+  right: auto !important;
+  width: 100% !important; /* Full width */
+  max-width: 100% !important; /* Remove max-width restriction */
+  min-width: 100% !important; /* Ensure full width */
+  z-index: 1000 !important; /* Lower than bet display (2000) but still visible */
   background: linear-gradient(135deg, var(--upcoming-dark) 0%, #2a2a2a 100%);
-  border: 2px solid var(--upcoming-gold);
-  border-radius: 15px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(255, 204, 0, 0.3);
-  min-width: 320px;
-  max-width: 450px;
+  border: none !important; /* Remove border for top placement */
+  border-bottom: 3px solid var(--upcoming-gold) !important; /* Add bottom border */
+  border-radius: 0 !important; /* Remove border radius for top placement */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 204, 0, 0.2);
   font-family: 'Arial', sans-serif;
   user-select: none;
   backdrop-filter: blur(15px);

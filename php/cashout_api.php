@@ -468,96 +468,133 @@ function validateDrawCompletion($conn, $draw_number) {
     ];
 
     try {
-        // ONLY METHOD: Check if draw exists in detailed_draw_results (AUTHORITATIVE SOURCE)
-        // This is the ONLY reliable source for completed draws - no fallbacks to analytics
+        // FIRST: Check if draw exists in analytics_history (AUTHORITATIVE SOURCE - same as TV display uses)
+        $tableCheck = $conn->query("SHOW TABLES LIKE 'analytics_history'");
+        if ($tableCheck && $tableCheck->num_rows > 0) {
+            $historyStmt = $conn->prepare("
+                SELECT winning_number, winning_color, draw_time
+                FROM analytics_history
+                WHERE draw_number = ?
+                ORDER BY id DESC
+                LIMIT 1
+            ");
 
-        // First check what columns exist in the table
-        $columnsStmt = $conn->prepare("SHOW COLUMNS FROM detailed_draw_results LIKE 'winning_color'");
-        $columnsStmt->execute();
-        $columnsResult = $columnsStmt->get_result();
-        $hasWinningColorColumn = $columnsResult->num_rows > 0;
-        $columnsStmt->close();
+            $historyStmt->bind_param("i", $draw_number);
+            $historyStmt->execute();
+            $historyResult = $historyStmt->get_result();
 
-        // Also check for 'color' column (actual column name in this database)
-        $colorColumnsStmt = $conn->prepare("SHOW COLUMNS FROM detailed_draw_results LIKE 'color'");
-        $colorColumnsStmt->execute();
-        $colorColumnsResult = $colorColumnsStmt->get_result();
-        $hasColorColumn = $colorColumnsResult->num_rows > 0;
-        $colorColumnsStmt->close();
+            if ($historyResult->num_rows > 0) {
+                // Draw found in analytics_history - it's completed
+                $drawHistory = $historyResult->fetch_assoc();
+                $result['is_completed'] = true;
+                $result['winning_number'] = intval($drawHistory['winning_number']);
+                
+                // Get winning color from database or calculate it
+                if (!empty($drawHistory['winning_color'])) {
+                    $result['winning_color'] = $drawHistory['winning_color'];
+                } else {
+                    $result['winning_color'] = calculateNumberColor($result['winning_number']);
+                }
 
-        // Check for timestamp columns
-        $timestampColumnsStmt = $conn->prepare("SHOW COLUMNS FROM detailed_draw_results LIKE 'timestamp'");
-        $timestampColumnsStmt->execute();
-        $timestampColumnsResult = $timestampColumnsStmt->get_result();
-        $hasTimestampColumn = $timestampColumnsResult->num_rows > 0;
-        $timestampColumnsStmt->close();
+                // Store draw time if available
+                if (isset($drawHistory['draw_time'])) {
+                    $result['draw_time'] = $drawHistory['draw_time'];
+                }
 
-        // Build query based on available columns
-        $selectColumns = "winning_number";
-        if ($hasWinningColorColumn) {
-            $selectColumns .= ", winning_color";
-        } elseif ($hasColorColumn) {
-            $selectColumns .= ", color";
-        }
-        if ($hasTimestampColumn) {
-            $selectColumns .= ", timestamp";
-        }
-
-        $historyStmt = $conn->prepare("
-            SELECT $selectColumns
-            FROM detailed_draw_results
-            WHERE draw_number = ?
-            LIMIT 1
-        ");
-
-        $historyStmt->bind_param("i", $draw_number);
-        $historyStmt->execute();
-        $historyResult = $historyStmt->get_result();
-
-        if ($historyResult->num_rows > 0) {
-            // Draw found in detailed results - it's completed
-            $drawHistory = $historyResult->fetch_assoc();
-            $result['is_completed'] = true;
-            $result['winning_number'] = $drawHistory['winning_number'];
-
-            // Get winning color from database or calculate it
-            if ($hasWinningColorColumn && isset($drawHistory['winning_color'])) {
-                $result['winning_color'] = $drawHistory['winning_color'];
-            } elseif ($hasColorColumn && isset($drawHistory['color'])) {
-                $result['winning_color'] = $drawHistory['color'];
-            } else {
-                $result['winning_color'] = calculateNumberColor($result['winning_number']);
+                $historyStmt->close();
+                return $result;
             }
-
-            // Store draw time if available
-            if ($hasTimestampColumn && isset($drawHistory['timestamp'])) {
-                $result['draw_time'] = $drawHistory['timestamp'];
-            }
-
             $historyStmt->close();
-            return $result;
         }
-        $historyStmt->close();
 
-        // If draw not found in detailed_draw_results, it has NOT occurred yet
-        // Get the actual current completed draw from detailed_draw_results (authoritative)
-        $maxDrawStmt = $conn->prepare("SELECT MAX(draw_number) as max_completed_draw FROM detailed_draw_results");
-        $maxDrawStmt->execute();
-        $maxDrawResult = $maxDrawStmt->get_result();
+        // SECOND: If not in analytics_history, check preset_schedule (fallback - same as API uses)
+        $tableCheck = $conn->query("SHOW TABLES LIKE 'preset_schedule'");
+        if ($tableCheck && $tableCheck->num_rows > 0) {
+            // Check both active and inactive schedules
+            $presetStmt = $conn->prepare("
+                SELECT schedule_data, start_draw_number, end_draw_number
+                FROM preset_schedule
+                WHERE start_draw_number <= ? AND end_draw_number >= ? AND is_active = 1
+                ORDER BY created_at DESC
+                LIMIT 1
+            ");
+            if ($presetStmt) {
+                $presetStmt->bind_param("ii", $draw_number, $draw_number);
+                $presetStmt->execute();
+                $presetResult = $presetStmt->get_result();
+                
+                // If no active schedule, try inactive ones
+                if ($presetResult->num_rows == 0) {
+                    $presetStmt = $conn->prepare("
+                        SELECT schedule_data, start_draw_number, end_draw_number
+                        FROM preset_schedule
+                        WHERE start_draw_number <= ? AND end_draw_number >= ?
+                        ORDER BY created_at DESC
+                        LIMIT 1
+                    ");
+                    if ($presetStmt) {
+                        $presetStmt->bind_param("ii", $draw_number, $draw_number);
+                        $presetStmt->execute();
+                        $presetResult = $presetStmt->get_result();
+                    }
+                }
+                
+                if ($presetResult && $presetResult->num_rows > 0) {
+                    $preset = $presetResult->fetch_assoc();
+                    $scheduleData = json_decode($preset['schedule_data'], true);
+                    if (is_array($scheduleData) && !empty($scheduleData)) {
+                        $index = $draw_number - $preset['start_draw_number'];
+                        if ($index >= 0 && $index < count($scheduleData)) {
+                            $scheduleItem = $scheduleData[$index];
+                            $winningNumber = is_array($scheduleItem) 
+                                ? intval($scheduleItem['winning_number'] ?? $scheduleItem)
+                                : intval($scheduleItem);
+                            
+                            if ($winningNumber >= 0 && $winningNumber <= 36) {
+                                $result['is_completed'] = true;
+                                $result['winning_number'] = $winningNumber;
+                                $result['winning_color'] = calculateNumberColor($winningNumber);
+                                return $result;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // If draw not found in analytics_history or preset_schedule, check current draw status
+        // Get the current draw number from roulette_analytics
+        $currentDrawStmt = $conn->prepare("SELECT current_draw_number FROM roulette_analytics WHERE id = 1");
+        $currentDrawStmt->execute();
+        $currentDrawResult = $currentDrawStmt->get_result();
+        $currentDrawNumber = 0;
+
+        if ($currentDrawResult->num_rows > 0) {
+            $currentDrawData = $currentDrawResult->fetch_assoc();
+            $currentDrawNumber = (int)($currentDrawData['current_draw_number'] ?? 0);
+        }
+        $currentDrawStmt->close();
+
+        // Get max completed draw from analytics_history
         $maxCompletedDraw = 0;
-
-        if ($maxDrawResult->num_rows > 0) {
-            $maxDrawData = $maxDrawResult->fetch_assoc();
-            $maxCompletedDraw = (int)($maxDrawData['max_completed_draw'] ?? 0);
+        $tableCheck = $conn->query("SHOW TABLES LIKE 'analytics_history'");
+        if ($tableCheck && $tableCheck->num_rows > 0) {
+            $maxDrawStmt = $conn->prepare("SELECT MAX(draw_number) as max_completed_draw FROM analytics_history");
+            $maxDrawStmt->execute();
+            $maxDrawResult = $maxDrawStmt->get_result();
+            if ($maxDrawResult->num_rows > 0) {
+                $maxDrawData = $maxDrawResult->fetch_assoc();
+                $maxCompletedDraw = (int)($maxDrawData['max_completed_draw'] ?? 0);
+            }
+            $maxDrawStmt->close();
         }
-        $maxDrawStmt->close();
 
-        $result['current_draw_number'] = $maxCompletedDraw;
-        $result['next_draw_number'] = $maxCompletedDraw + 1;
+        $result['current_draw_number'] = max($maxCompletedDraw, $currentDrawNumber);
+        $result['next_draw_number'] = $result['current_draw_number'] + 1;
 
-        // Since the draw was not found in detailed_draw_results, it has not occurred yet
+        // Since the draw was not found in analytics_history or preset_schedule, it has not occurred yet
         $result['error_message'] = "This draw (#$draw_number) has not occurred yet. " .
-                                 "Current completed draw is #$maxCompletedDraw. " .
+                                 "Current completed draw is #" . $result['current_draw_number'] . ". " .
                                  "Please wait for the draw to be completed before attempting to cash out.";
 
     } catch (Exception $e) {
@@ -600,23 +637,26 @@ function getCurrentDrawInfo($conn) {
             $analyticsStmt->close();
         }
 
-        // Try detailed_draw_results table as second priority
-        $detailedStmt = $conn->prepare("SELECT MAX(draw_number) as max_draw FROM detailed_draw_results");
-        if ($detailedStmt) {
-            $detailedStmt->execute();
-            $detailedResult = $detailedStmt->get_result();
+        // Try analytics_history table as second priority
+        $tableCheck = $conn->query("SHOW TABLES LIKE 'analytics_history'");
+        if ($tableCheck && $tableCheck->num_rows > 0) {
+            $analyticsHistoryStmt = $conn->prepare("SELECT MAX(draw_number) as max_draw FROM analytics_history");
+            if ($analyticsHistoryStmt) {
+                $analyticsHistoryStmt->execute();
+                $analyticsHistoryResult = $analyticsHistoryStmt->get_result();
 
-            if ($detailedResult->num_rows > 0) {
-                $detailed = $detailedResult->fetch_assoc();
-                if ($detailed['max_draw'] && $detailed['max_draw'] > 0) {
-                    $info['current_draw'] = (int)$detailed['max_draw'];
-                    $info['next_draw'] = $info['current_draw'] + 1;
-                    $info['source'] = 'detailed_draw_results';
-                    $detailedStmt->close();
-                    return $info;
+                if ($analyticsHistoryResult->num_rows > 0) {
+                    $analyticsHistory = $analyticsHistoryResult->fetch_assoc();
+                    if ($analyticsHistory['max_draw'] && $analyticsHistory['max_draw'] > 0) {
+                        $info['current_draw'] = (int)$analyticsHistory['max_draw'];
+                        $info['next_draw'] = $info['current_draw'] + 1;
+                        $info['source'] = 'analytics_history';
+                        $analyticsHistoryStmt->close();
+                        return $info;
+                    }
                 }
+                $analyticsHistoryStmt->close();
             }
-            $detailedStmt->close();
         }
 
         // Try roulette_state table as last resort

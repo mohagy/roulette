@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Apply Taller Bet Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #1a472a; /* Dark green background */
+            color: #fff;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h1 {
+            color: #f8d348; /* Gold color */
+            text-shadow: 0 0 10px rgba(248, 211, 72, 0.5);
+            margin-bottom: 30px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        button {
+            background-color: #f8d348;
+            color: #000;
+            border: none;
+            padding: 15px 25px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        button:hover {
+            background-color: #ffdf60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        .result {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            border-left: 4px solid #f8d348;
+            text-align: left;
+            display: none;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .instructions {
+            margin-top: 30px;
+            text-align: left;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .instructions h2 {
+            color: #f8d348;
+            margin-top: 0;
+        }
+        .instructions ol {
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        #cssCode {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+            text-align: left;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Taller Bet Display Panel</h1>
+        <p>This page provides multiple ways to make your bet display panel taller, reaching down to the Custom Amount button.</p>
+        
+        <div class="options">
+            <button id="applyJsBtn">Apply Height Change Now</button>
+            <button id="copyBtn">Copy CSS for Permanent Solution</button>
+        </div>
+        
+        <div id="result" class="result"></div>
+        
+        <div class="instructions">
+            <h2>How to use this tool:</h2>
+            <ol>
+                <li><strong>Apply directly:</strong> Click the "Apply Height Change Now" button to immediately make the bet display taller on the current page.</li>
+                <li><strong>Permanent solution:</strong> Click "Copy CSS for Permanent Solution" to copy CSS code that you can add to your style.css file for a permanent change.</li>
+            </ol>
+            
+            <div id="cssCode">/* 
+ * Custom Bet Display CSS
+ * This CSS applies a taller height to the bet display container,
+ * extending it down to the Custom Amount button.
+ */
+
+.bet-display-container {
+  height: 750px !important;
+  max-height: none !important;
+}
+
+.bet-display-body {
+  max-height: calc(750px - 90px) !important; /* Accounting for header and stake control height */
+}
+
+.bet-display-list {
+  max-height: 850px !important;
+}</div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('applyJsBtn').addEventListener('click', function() {
+            try {
+                // Get the bet display container
+                const betDisplay = document.getElementById('bet-display-container');
+                
+                if (betDisplay) {
+                    // Set new height to reach custom amount button
+                    betDisplay.style.height = '750px';
+                    
+                    // Also update the max-height of the bet display body
+                    const betDisplayBody = betDisplay.querySelector('.bet-display-body');
+                    if (betDisplayBody) {
+                        const headerHeight = betDisplay.querySelector('.bet-display-header').offsetHeight || 50;
+                        const stakeControlHeight = betDisplay.querySelector('.stake-control').offsetHeight || 40;
+                        betDisplayBody.style.maxHeight = (750 - headerHeight - stakeControlHeight) + 'px';
+                    }
+                    
+                    // Update the bet display list
+                    const betDisplayList = betDisplay.querySelector('.bet-display-list');
+                    if (betDisplayList) {
+                        betDisplayList.style.maxHeight = '850px';
+                    }
+                    
+                    // Show success message
+                    const result = document.getElementById('result');
+                    result.textContent = 'Success! The bet display has been extended to reach the custom amount button. You should see the change immediately.';
+                    result.style.display = 'block';
+                } else {
+                    // This page probably opened separately, not in the game
+                    const result = document.getElementById('result');
+                    result.textContent = 'This page needs to be opened from within the roulette game, or you need to copy the CSS for a permanent solution.';
+                    result.style.display = 'block';
+                }
+            } catch (error) {
+                const result = document.getElementById('result');
+                result.textContent = 'Error: ' + error.message;
+                result.style.display = 'block';
+            }
+        });
+        
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const cssCode = document.getElementById('cssCode').textContent;
+            
+            navigator.clipboard.writeText(cssCode).then(function() {
+                const result = document.getElementById('result');
+                result.textContent = 'CSS code copied to clipboard! You can now paste this into your style.css file for a permanent change.';
+                result.style.display = 'block';
+            }, function(err) {
+                const result = document.getElementById('result');
+                result.textContent = 'Error copying text: ' + err;
+                result.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html> 

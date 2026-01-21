@@ -36,6 +36,12 @@ resizeWindow();
 // Create DetailedDrawManager interface for compatibility with new save-detailed-draw.js
 // This initializes the DrawResults module and makes it available as DetailedDrawManager
 $(document).ready(function() {
+  // Start real-time debug panel updates when page loads
+  setTimeout(() => {
+    if (typeof startDebugPanelRealTimeUpdates === 'function') {
+      startDebugPanelRealTimeUpdates();
+    }
+  }, 2000); // Wait 2 seconds for all scripts to load
   if (window.DrawResults && typeof window.DrawResults.initialize === 'function') {
     try {
       // Initialize DrawResults with proper config
@@ -135,6 +141,15 @@ let activeChipNumber = 5;
 let rolledNumbersArray = [];
 let rolledNumbersColorArray = [];
 const mouseEventType = ["click", "mouseover"];
+
+// Track the last draw number that had a result saved
+// This prevents multiple results from being saved for the same draw number
+let lastSavedDrawNumber = 0;
+
+// Tutorial highlighting state management
+let tutorialHighlightedDrawNumber = 0; // Track which draw number had tutorial run
+let isTutorialRunning = false; // Prevent multiple simultaneous tutorial sequences
+let tutorialTimeoutIds = []; // Store timeout IDs to allow clearing if needed
 
 // Replace localStorage methods with API calls for state persistence
 // Save roll history to database
@@ -783,6 +798,9 @@ $(".button-spin").click(async function () {
   // Remove bet check and always proceed with spin
   // Stop the countdown when manually spinning
   clearInterval(countdownInterval);
+  
+  // 🎓 Clear tutorial highlights if user manually spins before tutorial completes
+  clearAllTutorialHighlights();
 
   if (playAudio) {
     ballSpinSound.play();
@@ -791,64 +809,485 @@ $(".button-spin").click(async function () {
   winAmountOnScreen = 0;
   cashSumBefore = cashSum;
 
-  // 🔥 FIREBASE MODE: Get winning number from Firebase instead of generating
-  // If Firebase is available, wait for the latest draw result
-  if (window.FirebaseService && window.FirebaseDrawManager) {
-    try {
-      console.log('🔥 TV Display: Getting winning number from Firebase...');
-      
-      // Get current draw number
-      const drawInfo = await FirebaseService.GameState.getDrawInfo();
-      const currentDraw = drawInfo?.currentDraw || drawInfo?.nextDraw - 1;
-      
-      if (currentDraw) {
-        // Get the latest draw result from Firebase
-        const latestDraw = await FirebaseDrawManager.getDraw(currentDraw);
+  // ⚠️ CRITICAL: Check for manually forced number FIRST (manual > preset > random)
+  // Manual forced numbers should always override preset schedule
+  let manualForcedNumber = null;
+  let manualForcedFound = false;
+  let presetNumberFound = false; // Track if preset number was found (from API or preset schedule)
+  let drawNumberToCheck = 0; // Start with 0 - will be set by API
+  let apiCurrentDraw = 0; // Store API current draw for debug panel
+  let apiNextDraw = 0; // Store API next draw for debug panel
+  
+  // ⏰ CRITICAL: ALWAYS get draw number from SERVER API FIRST (server-time-based calculation)
+  // DO NOT use local currentDrawNumber - it may be stale
+  // This ensures all devices use the same draw number regardless of their local clock
+  try {
+    console.log('🎯 Fetching current draw number from API (server-time-based)...');
+    const drawResponse = await fetch(`/slipp/api/get_current_draw.php?_cb=${Date.now()}`);
+    
+    if (drawResponse.ok) {
+      const drawData = await drawResponse.json();
+      if (drawData.status === 'success' && drawData.data) {
+        // ⚠️ CRITICAL: Use NEXT draw number for preset lookup (users place bets on next draw)
+        // The current_draw_number is the draw that's ending/completing
+        // The next_draw_number is the draw that's about to start (this is what we need)
+        apiCurrentDraw = parseInt(drawData.data.current_draw_number || 0);
+        apiNextDraw = parseInt(drawData.data.next_draw_number || (apiCurrentDraw + 1));
         
-        if (latestDraw && latestDraw.winningNumber !== undefined) {
-          rouletteNumber = latestDraw.winningNumber;
-          console.log('✅ TV Display: Got winning number from Firebase:', rouletteNumber, 'for draw', currentDraw);
+        // 🐛 Update debug panel with draw numbers from API
+        updateDebugPanel({
+          currentDraw: apiCurrentDraw,
+          nextDraw: apiNextDraw
+        });
+        
+        // Use next draw for preset lookup (this is the draw that's about to start)
+        if (!isNaN(apiNextDraw) && apiNextDraw > 0) {
+          drawNumberToCheck = apiNextDraw;
+          currentDrawNumber = apiNextDraw; // Update local variable to match API
+          console.log('✅ Got NEXT draw number from API (server-time-based):', drawNumberToCheck, '(current:', apiCurrentDraw, ')');
+          
+          // Log server time info if available
+          if (drawData.data.server_time) {
+            console.log('⏰ Server time:', drawData.data.server_time.formatted, '(' + drawData.data.server_time.timezone + ')');
+            console.log('⏰ Server time breakdown: ' + drawData.data.server_time.hour + ':' + drawData.data.server_time.minute + ':' + drawData.data.server_time.second);
+          }
         } else {
-          // No draw result yet, wait a bit and check again
-          console.log('⏳ TV Display: No draw result in Firebase yet, waiting...');
-          
-          // Wait up to 5 seconds for draw result
-          let attempts = 0;
-          while (attempts < 10 && !latestDraw) {
-            await new Promise(resolve => setTimeout(resolve, 500));
-            const checkDraw = await FirebaseDrawManager.getDraw(currentDraw);
-            if (checkDraw && checkDraw.winningNumber !== undefined) {
-              rouletteNumber = checkDraw.winningNumber;
-              console.log('✅ TV Display: Got winning number after waiting:', rouletteNumber);
-              break;
-            }
-            attempts++;
-          }
-          
-          // If still no result, generate random (fallback)
-          if (rouletteNumber === undefined) {
-            console.warn('⚠️ TV Display: No Firebase result, using random number as fallback');
-            rouletteNumber = Math.floor(Math.random() * rouletteNumbersAmount + 0);
-          }
+          console.warn('⚠️ API returned invalid draw number:', apiNextDraw);
         }
       } else {
-        // No draw number available, generate random (fallback)
-        console.warn('⚠️ TV Display: No draw number available, using random number');
-        rouletteNumber = Math.floor(Math.random() * rouletteNumbersAmount + 0);
+        console.warn('⚠️ API did not return next_draw_number, using current_draw_number + 1');
+        apiCurrentDraw = parseInt(drawData.data.current_draw_number || 0);
+        apiNextDraw = apiCurrentDraw + 1;
+        if (!isNaN(apiCurrentDraw) && apiCurrentDraw > 0) {
+          drawNumberToCheck = apiNextDraw;
+          currentDrawNumber = drawNumberToCheck;
+          console.log('✅ Using calculated next draw number:', drawNumberToCheck);
+        }
+        
+        // 🐛 Update debug panel
+        updateDebugPanel({
+          currentDraw: apiCurrentDraw,
+          nextDraw: apiNextDraw
+        });
+      }
+    }
+    
+    // ⚠️ DO NOT use client-side time calculation - always trust server time
+    // If API fails, that's an error condition, not a reason to use local time
+    if (drawNumberToCheck === 0) {
+      console.error('❌ CRITICAL: Failed to get draw number from server - cannot proceed safely');
+      // Fallback only if absolutely necessary
+      if (Array.isArray(rolledNumbersArray) && rolledNumbersArray.length > 0) {
+        drawNumberToCheck = rolledNumbersArray.length + 1;
+        console.warn('⚠️ Using fallback: draw number from roll history:', drawNumberToCheck);
+      } else {
+        drawNumberToCheck = 1;
+        console.warn('⚠️ Using fallback: default draw number:', drawNumberToCheck);
+      }
+    }
+    
+  } catch (error) {
+    console.error('❌ Error fetching draw number from API:', error);
+    // Only use fallback if API completely fails
+    if (Array.isArray(rolledNumbersArray) && rolledNumbersArray.length > 0) {
+      drawNumberToCheck = rolledNumbersArray.length + 1;
+      console.warn('⚠️ Using fallback: draw number from roll history:', drawNumberToCheck);
+    } else {
+      drawNumberToCheck = 1;
+      console.warn('⚠️ Using fallback: default draw number:', drawNumberToCheck);
+    }
+  }
+  
+  // ⚠️ CRITICAL: Check for forced numbers (manual OR preset) BEFORE checking preset schedule separately
+  // Manual forced numbers take priority over preset schedule
+  // Preset schedule numbers take priority over random generation
+  // Check BOTH current draw AND next draw (drawNumberToCheck might be current or next)
+  if (drawNumberToCheck > 0) {
+    try {
+      // First check the current draw number
+      console.log('🔍 Checking for forced number (manual or preset) for draw #' + drawNumberToCheck + '...');
+      const forcedResponse = await fetch(`/slipp/api/direct_forced_number.php?draw_number=${drawNumberToCheck}&_cb=${Date.now()}`);
+      if (forcedResponse.ok) {
+        const forcedData = await forcedResponse.json();
+        console.log('🔍 Forced number API response:', forcedData);
+        
+        // ✅ FIX: Accept BOTH manual forced numbers AND preset schedule numbers
+        // Manual forced numbers (source='manual') take priority
+        // Preset schedule numbers (source='preset_schedule') are also valid
+        if (forcedData.status === 'success' && forcedData.has_forced_number) {
+          const forcedNum = parseInt(forcedData.forced_number);
+          
+          // If it's a manual forced number, mark it as such
+          if (forcedData.source === 'manual') {
+            manualForcedNumber = forcedNum;
+            manualForcedFound = true;
+            console.log('✅ Found MANUAL forced number for draw #' + drawNumberToCheck + ':', forcedNum);
+          } else if (forcedData.source === 'preset_schedule') {
+            // Preset schedule number - use it but don't mark as manual
+            console.log('✅ Found PRESET SCHEDULE number for draw #' + drawNumberToCheck + ':', forcedNum);
+            presetNumberFound = true; // Mark as preset found
+          } else {
+            // Automatic forced number - use it as fallback
+            console.log('✅ Found AUTOMATIC forced number for draw #' + drawNumberToCheck + ':', forcedNum);
+          }
+          
+          // Set the roulette number regardless of source
+          rouletteNumber = forcedNum;
+          
+          // Determine color
+          if (forcedNum === 0) {
+            rouletteColor = 'green';
+          } else {
+            const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+            rouletteColor = redNumbers.includes(forcedNum) ? 'red' : 'black';
+          }
+          
+          console.log('✅ Using forced number from API:', forcedNum, '(' + rouletteColor + ')', '- Source:', forcedData.source || 'unknown');
+          
+          // 🐛 Update debug panel
+          updateDebugPanel({
+            forcedNumber: forcedNum,
+            manualForced: forcedData.source === 'manual' ? forcedNum : null,
+            presetNumber: forcedData.source === 'preset_schedule' ? forcedNum : null,
+            manualFound: forcedData.source === 'manual',
+            presetFound: forcedData.source === 'preset_schedule',
+            drawToCheck: drawNumberToCheck
+          });
+        } else {
+          console.log('ℹ️ No forced number found in API response for draw #' + drawNumberToCheck);
+          
+          // 🐛 Update debug panel
+          updateDebugPanel({
+            forcedNumber: null,
+            manualForced: null,
+            presetNumber: null,
+            manualFound: false,
+            presetFound: false
+          });
+        }
+      }
+      
+      // Also check next draw in case the forced number was set for the next draw
+      if (!manualForcedFound && !presetNumberFound && drawNumberToCheck < 480) {
+        const nextDrawCheck = drawNumberToCheck + 1;
+        console.log('🔍 Also checking next draw #' + nextDrawCheck + ' for forced number...');
+        const nextForcedResponse = await fetch(`/slipp/api/direct_forced_number.php?draw_number=${nextDrawCheck}&_cb=${Date.now()}`);
+        if (nextForcedResponse.ok) {
+          const nextForcedData = await nextForcedResponse.json();
+          if (nextForcedData.status === 'success' && nextForcedData.has_forced_number) {
+            const nextForcedNum = parseInt(nextForcedData.forced_number);
+            
+            // If it's a manual forced number, mark it as such
+            if (nextForcedData.source === 'manual') {
+              manualForcedNumber = nextForcedNum;
+              manualForcedFound = true;
+            } else if (nextForcedData.source === 'preset_schedule') {
+              presetNumberFound = true;
+            }
+            
+            drawNumberToCheck = nextDrawCheck; // Update to use next draw
+            rouletteNumber = nextForcedNum;
+            
+            // Determine color
+            if (nextForcedNum === 0) {
+              rouletteColor = 'green';
+            } else {
+              const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+              rouletteColor = redNumbers.includes(nextForcedNum) ? 'red' : 'black';
+            }
+            
+            console.log('✅ Found forced number for next draw #' + nextDrawCheck + ':', nextForcedNum, '(' + rouletteColor + ')', '- Source:', nextForcedData.source || 'unknown');
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('⚠️ Error checking for forced number:', e);
+    }
+  }
+  
+  // 🎯 PRESET NUMBER MODE: Check for preset schedule number (only if no forced number found yet)
+  // This takes priority over random generation to ensure preset schedule is followed
+  // Note: presetNumberFound may already be set to true if we found a preset from direct_forced_number.php
+  
+  // Now check for preset number using the synchronized draw number (only if no forced number found yet)
+  if (drawNumberToCheck > 0 && !manualForcedFound && !presetNumberFound) {
+    try {
+      console.log('🎯 Checking preset schedule for draw #' + drawNumberToCheck + '...');
+      const presetResponse = await fetch(`/slipp/api/get_current_preset.php?draw_number=${drawNumberToCheck}&_cb=${Date.now()}`);
+      
+      if (presetResponse.ok) {
+        const presetData = await presetResponse.json();
+        
+        if (presetData.status === 'success' && presetData.data && presetData.data.winning_number !== null && presetData.data.winning_number !== undefined) {
+          // ⏰ If current draw's time has passed, prefer the NEXT draw (when timer hits 00:00)
+          if (!presetData.data.time_valid) {
+            console.log('⏰ Draw #' + drawNumberToCheck + ' time has passed (scheduled: ' + presetData.data.scheduled_time + '), checking next draw first...');
+            const nextDrawNumber = drawNumberToCheck + 1;
+            
+            try {
+              const nextPresetResponse = await fetch(`/slipp/api/get_current_preset.php?draw_number=${nextDrawNumber}&_cb=${Date.now()}`);
+              if (nextPresetResponse.ok) {
+                const nextPresetData = await nextPresetResponse.json();
+                if (nextPresetData.status === 'success' && nextPresetData.data && nextPresetData.data.winning_number !== null && nextPresetData.data.winning_number !== undefined) {
+                  if (nextPresetData.data.time_valid) {
+                    // Use next draw's preset (timer just hit 00:00, new draw starting)
+                    rouletteNumber = parseInt(nextPresetData.data.winning_number);
+                    presetNumberFound = true;
+                    drawNumberToCheck = nextDrawNumber;
+                    currentDrawNumber = nextDrawNumber;
+                    console.log('✅ Using next draw #' + nextDrawNumber + ' (timer hit 00:00):', rouletteNumber, '(' + nextPresetData.data.color + ')');
+                    console.log('📋 Pattern:', nextPresetData.data.pattern || 'N/A');
+                  } else {
+                    // Next draw also expired, use current draw's preset as fallback
+                    rouletteNumber = parseInt(presetData.data.winning_number);
+                    presetNumberFound = true;
+                    console.log('✅ Using current draw #' + drawNumberToCheck + ' (next draw also expired):', rouletteNumber, '(' + presetData.data.color + ')');
+                  }
+                } else {
+                  // No preset for next draw, use current draw's preset
+                  rouletteNumber = parseInt(presetData.data.winning_number);
+                  presetNumberFound = true;
+                  console.log('✅ Using current draw #' + drawNumberToCheck + ' (no preset for next):', rouletteNumber, '(' + presetData.data.color + ')');
+                }
+              } else {
+                // Next draw check failed, use current draw's preset
+                rouletteNumber = parseInt(presetData.data.winning_number);
+                presetNumberFound = true;
+                console.log('✅ Using current draw #' + drawNumberToCheck + ' (next draw check failed):', rouletteNumber, '(' + presetData.data.color + ')');
+              }
+            } catch (nextError) {
+              console.warn('⚠️ Error checking next draw:', nextError);
+              // Fallback: use current draw's preset
+              rouletteNumber = parseInt(presetData.data.winning_number);
+              presetNumberFound = true;
+              console.log('✅ Using current draw #' + drawNumberToCheck + ' (error checking next):', rouletteNumber, '(' + presetData.data.color + ')');
+            }
+          } else {
+            // Time is valid - use current draw's preset
+            rouletteNumber = parseInt(presetData.data.winning_number);
+            presetNumberFound = true;
+            console.log('✅ Found preset number from schedule for draw #' + drawNumberToCheck + ':', rouletteNumber, '(' + presetData.data.color + ') - Time valid');
+            
+            // 🐛 Update debug panel
+            updateDebugPanel({
+              presetNumber: rouletteNumber,
+              presetFound: true,
+              forcedNumber: rouletteNumber
+            });
+          }
+          
+          if (presetNumberFound) {
+            console.log('📋 Pattern:', presetData.data.pattern || 'N/A');
+            console.log('⏰ Scheduled time:', presetData.data.scheduled_time || 'N/A', '- Current time:', new Date().toLocaleTimeString());
+          }
+        } else {
+          console.log('ℹ️ No preset number found for draw #' + drawNumberToCheck + ' (status: ' + (presetData.status || 'unknown') + ') - ' + (presetData.message || 'Schedule not found'));
+          // Log more details for debugging
+          console.log('🔍 Preset API response:', presetData);
+        }
+      } else {
+        console.warn('⚠️ Error fetching preset number:', presetResponse.status, presetResponse.statusText);
       }
     } catch (error) {
-      console.error('❌ TV Display: Error getting number from Firebase, using random:', error);
-      rouletteNumber = Math.floor(Math.random() * rouletteNumbersAmount + 0);
+      console.warn('⚠️ Error checking preset schedule:', error);
+    }
+  }
+  
+  // ❌ RANDOM NUMBERS DISABLED: Only use preset schedule numbers (if no manual forced number)
+  // Try multiple draw numbers when timer reaches 00:00 to find valid preset
+  if (!presetNumberFound && !manualForcedFound) {
+    console.log('⚠️ No preset number found for draw #' + drawNumberToCheck + ', trying adjacent draws...');
+    
+    // Try next draw first
+    const nextDrawNumber = drawNumberToCheck + 1;
+    try {
+      const nextPresetResponse = await fetch(`/slipp/api/get_current_preset.php?draw_number=${nextDrawNumber}&_cb=${Date.now()}`);
+      
+      if (nextPresetResponse.ok) {
+        const nextPresetData = await nextPresetResponse.json();
+        
+        if (nextPresetData.status === 'success' && nextPresetData.data && nextPresetData.data.winning_number !== null && nextPresetData.data.winning_number !== undefined) {
+          // Only use if time is valid (don't use presets that have passed their time)
+          if (nextPresetData.data.time_valid) {
+            rouletteNumber = parseInt(nextPresetData.data.winning_number);
+            presetNumberFound = true;
+            drawNumberToCheck = nextDrawNumber; // Update to next draw number
+            currentDrawNumber = nextDrawNumber; // Sync local variable
+            console.log('✅ Found preset number from next draw #' + nextDrawNumber + ':', rouletteNumber, '(' + nextPresetData.data.color + ')');
+            console.log('📋 Pattern:', nextPresetData.data.pattern || 'N/A');
+          } else {
+            console.log('ℹ️ Preset found for draw #' + nextDrawNumber + ' but time has passed (scheduled: ' + nextPresetData.data.scheduled_time + ')');
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('⚠️ Error checking next draw preset:', error);
+    }
+    
+    // If still not found, try previous draw (in case API draw number is ahead of schedule)
+    if (!presetNumberFound && drawNumberToCheck > 1) {
+      const prevDrawNumber = drawNumberToCheck - 1;
+      try {
+        const prevPresetResponse = await fetch(`/slipp/api/get_current_preset.php?draw_number=${prevDrawNumber}&_cb=${Date.now()}`);
+        
+        if (prevPresetResponse.ok) {
+          const prevPresetData = await prevPresetResponse.json();
+          
+          if (prevPresetData.status === 'success' && prevPresetData.data && prevPresetData.data.winning_number !== null && prevPresetData.data.winning_number !== undefined) {
+            // Only use if time is valid
+            if (prevPresetData.data.time_valid) {
+              rouletteNumber = parseInt(prevPresetData.data.winning_number);
+              presetNumberFound = true;
+              drawNumberToCheck = prevDrawNumber;
+              currentDrawNumber = prevDrawNumber;
+              console.log('✅ Found preset number from previous draw #' + prevDrawNumber + ':', rouletteNumber, '(' + prevPresetData.data.color + ')');
+              console.log('📋 Pattern:', prevPresetData.data.pattern || 'N/A');
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('⚠️ Error checking previous draw preset:', error);
+      }
+    }
+    
+    // If still no preset found, this is an error - DO NOT use fallback
+    // ⚠️ CRITICAL: Only do this if no manual forced number was found
+    // If manual forced number exists, we already have rouletteNumber set correctly
+    if (!presetNumberFound && !manualForcedFound) {
+      console.error('❌ CRITICAL: No preset number found for draw #' + drawNumberToCheck + ' (or adjacent draws)');
+      console.error('❌ This should not happen - preset schedule must exist for all draws');
+      console.error('❌ Wheel will NOT spin - preset schedule is required');
+      
+      // DO NOT use last rolled number as fallback - this causes wrong numbers to appear
+      // Instead, show an error and prevent the spin
+      alert('Error: No preset number found for draw #' + drawNumberToCheck + '. Please check the preset schedule.');
+      return; // Stop the spin - do not proceed without a valid preset number
+    } else if (manualForcedFound) {
+      console.log('✅ Using manually forced number for animation:', rouletteNumber);
+    } else if (presetNumberFound) {
+      console.log('✅ Using preset schedule number for animation:', rouletteNumber);
+    }
+  }
+  
+  // ⚠️ CRITICAL: Final check - if manual forced number exists, ensure it's being used for animation
+  // Do NOT allow preset check to overwrite manual forced number
+  if (manualForcedFound && manualForcedNumber !== null) {
+    rouletteNumber = manualForcedNumber;
+    console.log('🔒 LOCKING: Using manually forced number for animation:', rouletteNumber, '(preventing preset override)');
+  }
+  
+  // Log the final rouletteNumber that will be used for animation
+  console.log('🎯 FINAL rouletteNumber for animation:', rouletteNumber, '(manualForced:', manualForcedFound, ', presetFound:', presetNumberFound, ')');
+  
+  // 🐛 Update debug panel with final state before save check
+  updateDebugPanel({
+    currentDraw: apiCurrentDraw || currentDrawNumber || 0,
+    nextDraw: apiNextDraw || (apiCurrentDraw ? apiCurrentDraw + 1 : 0),
+    forcedNumber: rouletteNumber || 0,
+    presetNumber: presetNumberFound ? rouletteNumber : null,
+    manualForced: manualForcedFound ? manualForcedNumber : null,
+    drawToCheck: drawNumberToCheck || 0,
+    lastSavedDraw: lastSavedDrawNumber || 0,
+    willSave: false, // Will be updated below
+    presetFound: presetNumberFound,
+    manualFound: manualForcedFound
+  });
+  
+  // 🎯 CHECK IF WE SHOULD SAVE THIS RESULT
+  // Only save the FIRST result for each draw number
+  // Multiple spins can happen, but only the first one counts and gets saved
+  let shouldSaveResult = false;
+  
+  // Save if we have either a preset number OR a manually forced number
+  if ((presetNumberFound || manualForcedFound) && rouletteNumber > 0 && drawNumberToCheck > 0) {
+    // Check if we've already saved a result for this draw number
+    if (drawNumberToCheck !== lastSavedDrawNumber) {
+      // This is the first spin for this draw number - allow save
+      // The API's time_valid check already handles whether the scheduled time has passed
+      shouldSaveResult = true;
+      console.log('✅ First result for draw #' + drawNumberToCheck + ' - will be saved');
+      
+      // 🐛 Update debug panel
+      updateDebugPanel({
+        willSave: true
+      });
+    } else {
+      console.log('⏭️ Result already saved for draw #' + drawNumberToCheck + ' - discarding duplicate result (display only)');
+      console.log('ℹ️ Wheel will spin and show the preset number, but result will not be saved to database');
+      
+      // 🐛 Update debug panel
+      updateDebugPanel({
+        willSave: false
+      });
+    }
+  } else if (!presetNumberFound) {
+    console.log('ℹ️ No preset number found - wheel will spin but result will not be saved');
+    
+    // 🐛 Update debug panel
+    updateDebugPanel({
+      willSave: false
+    });
+  } else {
+    console.log('ℹ️ Invalid preset number or draw number - skipping save');
+    
+    // 🐛 Update debug panel
+    updateDebugPanel({
+      willSave: false
+    });
+  }
+  
+  // Store the draw number we're using (even if we won't save)
+  const currentSpinDrawNumber = drawNumberToCheck;
+  
+  // 🚀 INSTANT STORAGE: Save winning number only if this is the first result for this draw number
+  if (shouldSaveResult && rouletteNumber > 0) {
+    console.log('⚡ INSTANT SAVE: Saving first result for draw #' + currentSpinDrawNumber + ':', rouletteNumber);
+    // ⏰ CRITICAL: Pass the draw number to save function to ensure correct draw number is saved
+    await saveWinningNumberInstantly(rouletteNumber, currentSpinDrawNumber);
+    lastSavedDrawNumber = currentSpinDrawNumber; // Mark this draw number as saved
+    
+    // 🐛 Update debug panel after save
+    updateDebugPanel({
+      lastSavedDraw: lastSavedDrawNumber,
+      willSave: false // Already saved
+    });
+    
+    // ⏰ CRITICAL: After saving, set currentDrawNumber to NEXT draw (saved draw + 1)
+    // This ensures analytics display shows the correct draw numbers
+    // The API returns the CURRENT draw (which we just saved), so we need to increment it
+    currentDrawNumber = currentSpinDrawNumber + 1;
+    console.log('✅ Set currentDrawNumber to NEXT draw after save:', currentDrawNumber, '(just saved draw #' + currentSpinDrawNumber + ')');
+    
+    // 🎓 Reset tutorial tracking for the new draw
+    tutorialHighlightedDrawNumber = 0;
+    isTutorialRunning = false;
+    clearAllTutorialHighlights();
+    
+    // Optionally sync with server to verify we're still in the correct time window
+    // But we use savedDrawNumber + 1 as the primary source since we know we just saved it
+    try {
+      const syncResponse = await fetch(`/slipp/api/get_current_draw.php?_cb=${Date.now()}`);
+      if (syncResponse.ok) {
+        const syncData = await syncResponse.json();
+        if (syncData.status === 'success' && syncData.data && syncData.data.current_draw_number) {
+          const syncedDrawNumber = parseInt(syncData.data.current_draw_number);
+          if (!isNaN(syncedDrawNumber) && syncedDrawNumber > 0) {
+            // Server returns CURRENT draw, but we need NEXT draw for analytics
+            // So if server says current is 223 (which we just saved), next should be 224
+            // But if server is ahead (e.g., 224), we should use that + 1 = 225
+            // For now, we trust our saved draw number + 1
+            console.log('📊 Server reports current draw:', syncedDrawNumber, '- We just saved draw #' + currentSpinDrawNumber + ', so next is:', currentDrawNumber);
+          }
+        }
+      }
+    } catch (syncError) {
+      // Non-critical: Just log the error, we already have currentDrawNumber set correctly
+      console.warn('⚠️ Could not verify draw number with server (non-critical):', syncError);
     }
   } else {
-    // Firebase not available, generate random (fallback)
-    console.log('⚠️ TV Display: Firebase not available, generating random number');
-    rouletteNumber = Math.floor(Math.random() * rouletteNumbersAmount + 0);
+    console.log('⏭️ SKIP SAVE: Duplicate or invalid result for draw #' + currentSpinDrawNumber + ' - display only (not saved)');
+    // Don't increment draw number if we didn't save - allows multiple spins for same draw
   }
-
-  // 🚀 INSTANT STORAGE: Save winning number immediately after getting it
-  console.log('⚡ INSTANT SAVE: Winning number:', rouletteNumber, '- Saving immediately...');
-  saveWinningNumberInstantly(rouletteNumber);
 
   // If there are bets placed, process them
   if (betSum > 0) {
@@ -945,16 +1384,91 @@ $(".button-spin").click(async function () {
   }
   //Marking roulette wheel with number glow ends
 
-  let rouletteWheelAnimation = () => {
+  let rouletteWheelAnimation = async () => {
+    // ⚠️ CRITICAL: Final check RIGHT BEFORE animation to ensure correct number is used
+    // This ensures we ALWAYS use the scheduled forced/preset number, even if it changed
+    console.log('🎬 ANIMATION: Starting final forced/preset number check...');
+    
+    // Get current draw number first
+    let drawNumberToUse = currentDrawNumber || 0;
+    try {
+      const drawResponse = await fetch(`/slipp/api/get_current_draw.php?_cb=${Date.now()}`);
+      if (drawResponse.ok) {
+        const drawData = await drawResponse.json();
+        if (drawData.status === 'success' && drawData.data) {
+          drawNumberToUse = parseInt(drawData.data.next_draw_number || drawData.data.current_draw_number || currentDrawNumber || 0);
+        }
+      }
+    } catch (error) {
+      console.warn('⚠️ ANIMATION: Could not fetch current draw, using local:', drawNumberToUse);
+    }
+    
+    // Priority: Manual forced > Preset schedule > Automatic forced
+    let finalNumber = rouletteNumber; // Default to current value
+    let numberSource = 'unknown';
+    
+    if (drawNumberToUse > 0) {
+      try {
+        // Check for forced number (includes manual and preset)
+        const forcedResponse = await fetch(`/slipp/api/direct_forced_number.php?draw_number=${drawNumberToUse}&_cb=${Date.now()}`);
+        if (forcedResponse.ok) {
+          const forcedData = await forcedResponse.json();
+          if (forcedData.status === 'success' && forcedData.has_forced_number) {
+            finalNumber = parseInt(forcedData.forced_number);
+            numberSource = forcedData.source || 'unknown';
+            console.log('✅ ANIMATION: Found forced number from API:', finalNumber, '- Source:', numberSource, '- Draw:', drawNumberToUse);
+          } else {
+            // No forced number, check preset schedule directly
+            try {
+              const presetResponse = await fetch(`/slipp/api/get_current_preset.php?draw_number=${drawNumberToUse}&_cb=${Date.now()}`);
+              if (presetResponse.ok) {
+                const presetData = await presetResponse.json();
+                if (presetData.status === 'success' && presetData.data && presetData.data.winning_number !== null) {
+                  finalNumber = parseInt(presetData.data.winning_number);
+                  numberSource = 'preset_schedule';
+                  console.log('✅ ANIMATION: Found preset number from API:', finalNumber, '- Draw:', drawNumberToUse);
+                }
+              }
+            } catch (presetError) {
+              console.warn('⚠️ ANIMATION: Error checking preset:', presetError);
+            }
+          }
+        }
+      } catch (forcedError) {
+        console.warn('⚠️ ANIMATION: Error checking forced number:', forcedError);
+      }
+    }
+    
+    // Update rouletteNumber to the final number
+    rouletteNumber = finalNumber;
+    console.log('🎯 ANIMATION: Final number set to:', rouletteNumber, '- Source:', numberSource, '- Draw:', drawNumberToUse);
+    
+    // Validate rouletteNumber is valid (0-36)
+    if (isNaN(rouletteNumber) || rouletteNumber < 0 || rouletteNumber > 36) {
+      console.error('❌ ANIMATION: Invalid rouletteNumber:', rouletteNumber, '- Defaulting to 0');
+      rouletteNumber = 0;
+    }
+    
     $(".ball-container").html('<div class="ball-spinner"><div class="ball"></div></div>');
     var ballContainer = document.querySelector(".ball-spinner");
     var sheet = document.createElement("style");
 
+    // Find the index of the number in the roulette array
+    var ballLandingNumber = 0; // Default to 0
     for (let i = 0; i < rouletteNumbersAmount; i++) {
       if (rouletteNumber == rouletteNumbersArray[i]) {
-        var ballLandingNumber = i;
+        ballLandingNumber = i;
+        break;
       }
     }
+    
+    // Safety check: if number not found, default to index 0
+    if (ballLandingNumber === undefined || ballLandingNumber < 0 || ballLandingNumber >= rouletteNumbersAmount) {
+      console.warn('⚠️ ANIMATION: Number', rouletteNumber, 'not found in array, using index 0');
+      ballLandingNumber = 0;
+    }
+    
+    console.log('🎯 ANIMATION: Ball landing on index', ballLandingNumber, 'for number', rouletteNumber);
 
     sheet.textContent = `
     @-webkit-keyframes ball-container-animation{
@@ -973,7 +1487,8 @@ $(".button-spin").click(async function () {
     $(".roulette-cross").addClass("roulette-wheel-spin");
   };
 
-  rouletteWheelAnimation();
+  // Await the async function to ensure forced number is fetched before animation
+  await rouletteWheelAnimation();
 
   const lastRollColor = () => {
     let lastRoll;
@@ -1058,31 +1573,11 @@ $(".button-spin").click(async function () {
     console.log('  rolledNumbersArray:', rolledNumbersArray);
     console.log('  rolledNumbersColorArray:', rolledNumbersColorArray);
 
-    // Update the display with the complete array (including historical data)
-    setTimeout(function () {
-      console.log('🎯 LAST ROLL DISPLAY: Updating DOM elements');
-
-      for (let i = 0; i < rolledNumbersArray.length && i < 5; i++) {
-        let rolledNumberIndex = i + 1;
-        $(`.roll${rolledNumberIndex}`).html(rolledNumbersArray[i]);
-
-        switch (rolledNumbersColorArray[i]) {
-          case "red":
-            $(`.roll${rolledNumberIndex}`).removeClass("roll-black").removeClass("roll-green").addClass("roll-red");
-            break;
-          case "black":
-            $(`.roll${rolledNumberIndex}`).removeClass("roll-red").removeClass("roll-green").addClass("roll-black");
-            break;
-          case "green":
-            $(`.roll${rolledNumberIndex}`).removeClass("roll-red").removeClass("roll-black").addClass("roll-green");
-            break;
-        }
-
-        console.log(`🎯 LAST ROLL DISPLAY: Set .roll${rolledNumberIndex} to ${rolledNumbersArray[i]} (${rolledNumbersColorArray[i]})`);
-      }
-
-      console.log('🎯 LAST ROLL DISPLAY: DOM update completed');
-    }, 5000);
+    // ✅ CRITICAL FIX: Do NOT update DOM here - let the API refresh handle it
+    // The API refresh (at 2 seconds after spin) will update the rolls container
+    // with data from the database, ensuring consistency with the history display
+    // This prevents mismatches between local arrays and database data
+    console.log('🎯 LAST ROLL DISPLAY: Skipping DOM update - API refresh will handle it for consistency');
 
     return currentColor;
   };
@@ -1181,6 +1676,61 @@ $(".button-spin").click(async function () {
     console.log('📊 ANALYTICS: Recording spin for analytics only (instant save already completed)');
     recordSpinForAnalyticsOnly(rouletteNumber);
 
+    // ✅ CRITICAL: Refresh both displays from API after spin completes to ensure consistency
+    // Wait a bit for the database to be updated, then refresh from API
+    setTimeout(async () => {
+      console.log('🔄 REFRESH: Refreshing both displays from API after spin...');
+      try {
+        const cacheBuster = Date.now();
+        const response = await fetch(`/slipp/api/get_analytics_history.php?limit=5&_cb=${cacheBuster}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.status === 'success' && data.data && Array.isArray(data.data.draws) && data.data.draws.length > 0) {
+            // Extract winning numbers from draws (most recent first)
+            const recentDraws = data.data.draws.sort((a, b) => b.draw_number - a.draw_number).slice(0, 5);
+            const recentNumbers = recentDraws.map(draw => parseInt(draw.winning_number));
+            
+            // Generate colors from the draws
+            const recentColors = recentDraws.map(draw => {
+              return draw.winning_color || 'black';
+            });
+            
+            // Update global arrays
+            window.rolledNumbersArray = recentNumbers;
+            window.rolledNumbersColorArray = recentColors;
+            
+            // Update roulette-rolls-container DOM
+            for (let i = 0; i < 5; i++) {
+              const element = document.querySelector(`.roll${i + 1}`);
+              if (element && i < recentNumbers.length) {
+                const number = recentNumbers[i];
+                const color = recentColors[i] || 'black';
+                element.innerHTML = number;
+                element.classList.remove('roll-red', 'roll-black', 'roll-green');
+                element.classList.add(`roll-${color}`);
+              }
+            }
+            
+            console.log('✅ REFRESH: Updated rolls display from API:', recentNumbers);
+          }
+        }
+      } catch (error) {
+        console.warn('⚠️ REFRESH: Error refreshing displays:', error);
+      }
+      
+      // Also refresh history display
+      if (typeof displayNumberHistoryWithActualDrawNumbers === 'function') {
+        displayNumberHistoryWithActualDrawNumbers();
+      }
+    }, 2000); // Wait 2 seconds for database to be updated
+
     // Show analytics panels - no need to call updateAnalytics() again as it's already called in recordSpinForAnalytics()
     setTimeout(function() {
       $('.analytics-left-sidebar').fadeIn(300).addClass('visible');
@@ -1230,18 +1780,27 @@ $(".button-spin").click(async function () {
 /**
  * 🚀 INSTANT STORAGE FUNCTION
  * Saves winning number immediately after generation, before animation
+ * @param {number} winningNumber - The winning number (0-36)
+ * @param {number} drawNumber - The draw number to save with (MUST be provided)
  */
-async function saveWinningNumberInstantly(winningNumber) {
+async function saveWinningNumberInstantly(winningNumber, drawNumber) {
   const saveStartTime = performance.now();
 
   try {
-    console.log('⚡ INSTANT SAVE: Starting immediate storage for number:', winningNumber);
+    // ⏰ CRITICAL: Validate draw number is provided
+    if (!drawNumber || drawNumber <= 0) {
+      console.error('❌ INSTANT SAVE: Invalid draw number provided:', drawNumber);
+      throw new Error('Draw number is required and must be greater than 0');
+    }
+
+    console.log('⚡ INSTANT SAVE: Starting immediate storage for number:', winningNumber, 'draw #' + drawNumber);
 
     // Use high-performance storage if available
     if (window.HighPerformanceStorage && typeof window.HighPerformanceStorage.saveWinningNumber === 'function') {
-      console.log('🚀 INSTANT SAVE: Using High-Performance Storage');
+      console.log('🚀 INSTANT SAVE: Using High-Performance Storage with draw #' + drawNumber);
 
-      const result = await window.HighPerformanceStorage.saveWinningNumber(winningNumber, null, {
+      // ⏰ CRITICAL: Pass the draw number to the storage function
+      const result = await window.HighPerformanceStorage.saveWinningNumber(winningNumber, drawNumber, {
         instant: true,
         source: 'tv_display_instant',
         timestamp: new Date().toISOString().slice(0, 19).replace('T', ' ')
@@ -1252,35 +1811,51 @@ async function saveWinningNumberInstantly(winningNumber) {
       if (result.success) {
         console.log(`✅ INSTANT SAVE: SUCCESS in ${saveTime.toFixed(2)}ms - Number ${winningNumber} saved instantly!`);
 
+        // Update currentDrawNumber if returned from the save result
+        if (result.data && result.data.draw_number) {
+          currentDrawNumber = result.data.draw_number;
+          console.log('✅ Updated currentDrawNumber from save result:', currentDrawNumber);
+        } else if (currentDrawNumber > 0) {
+          // Increment draw number for next spin if not provided by save result
+          currentDrawNumber++;
+          console.log('✅ Incremented currentDrawNumber to:', currentDrawNumber);
+        }
+
         // Dispatch instant save event for real-time monitoring
         dispatchInstantSaveEvent(winningNumber, saveTime, result);
 
       } else {
         console.error('❌ INSTANT SAVE: High-Performance Storage failed:', result.error);
-        // Fallback to triple storage
-        await fallbackToTripleStorage(winningNumber, saveStartTime);
+        // Fallback to triple storage with draw number
+        await fallbackToTripleStorage(winningNumber, saveStartTime, drawNumber);
       }
 
     } else {
       console.warn('⚠️ INSTANT SAVE: High-Performance Storage not available, using fallback');
-      await fallbackToTripleStorage(winningNumber, saveStartTime);
+      await fallbackToTripleStorage(winningNumber, saveStartTime, drawNumber);
     }
 
   } catch (error) {
     console.error('💥 INSTANT SAVE: Error during instant save:', error);
-    await fallbackToTripleStorage(winningNumber, saveStartTime);
+    await fallbackToTripleStorage(winningNumber, saveStartTime, drawNumber);
   }
 }
 
 /**
  * Fallback to triple storage system
+ * @param {number} winningNumber - The winning number (0-36)
+ * @param {number} saveStartTime - Performance timestamp
+ * @param {number} drawNumber - The draw number to save with (optional, will use currentDrawNumber if not provided)
  */
-async function fallbackToTripleStorage(winningNumber, saveStartTime) {
+async function fallbackToTripleStorage(winningNumber, saveStartTime, drawNumber = null) {
   try {
-    console.log('🔄 INSTANT SAVE: Falling back to Triple Storage');
+    // Use provided draw number or fall back to currentDrawNumber
+    const finalDrawNumber = drawNumber || currentDrawNumber || 1;
+    console.log('🔄 INSTANT SAVE: Falling back to Triple Storage with draw #' + finalDrawNumber);
 
     if (window.TripleStorage && typeof window.TripleStorage.saveSpin === 'function') {
-      const result = await window.TripleStorage.saveSpin(winningNumber, null, {
+      // ⏰ CRITICAL: Pass the draw number to TripleStorage.saveSpin
+      const result = await window.TripleStorage.saveSpin(winningNumber, finalDrawNumber, {
         instant: true,
         source: 'tv_display_instant_fallback'
       });
@@ -1410,9 +1985,8 @@ function startCountdown() {
 
     if (countdownTime <= 0) {
       clearInterval(countdownInterval);
-      // Auto-spin when timer reaches zero - will read winning number from Firebase
+      // Auto-spin when timer reaches zero - no bet check
       if (!$(".roulette-wheel-container").hasClass("roulette-wheel-visible")) {
-        console.log('🔥 TV Display: Countdown reached zero, auto-spinning (reading from Firebase)...');
         $(".button-spin").click();
       }
 
@@ -1422,6 +1996,12 @@ function startCountdown() {
         countdownTime = nextDraw.secondsRemaining;
         localStorage.setItem('countdownEndTime', nextDraw.timestamp.toString());
         saveRollHistory(); // Save the updated timer to database
+        
+        // 🎓 Reset tutorial tracking for the new draw
+        tutorialHighlightedDrawNumber = 0;
+        isTutorialRunning = false;
+        clearAllTutorialHighlights();
+        
         startCountdown();
       }, 16000); // Wait for spin animation to complete (15s display + 1s buffer)
     } else {
@@ -1466,6 +2046,724 @@ function updateCountdownDisplay() {
   if (countdownTime === 0) {
     $(".alert-bets").removeClass("alert-message-visible");
   }
+
+  // 🎓 TUTORIAL HIGHLIGHTING: Trigger at 60 seconds (after 2s delay) and clear at 30 seconds
+  if (countdownTime === 60) {
+    // Wait 2 seconds, then start tutorial highlighting
+    setTimeout(() => {
+      // Double-check we're still at 60 seconds (or close to it) before starting
+      const savedEndTime = localStorage.getItem('countdownEndTime');
+      const currentTime = new Date().getTime();
+      if (savedEndTime && !isNaN(parseInt(savedEndTime))) {
+        const remainingTimeMs = parseInt(savedEndTime) - currentTime;
+        const remainingTimeSec = Math.floor(remainingTimeMs / 1000);
+        // Only start if we're still around 58-60 seconds (accounting for the 2s delay)
+        if (remainingTimeSec >= 58 && remainingTimeSec <= 60) {
+          startTutorialHighlighting();
+        }
+      }
+    }, 2000);
+  }
+
+  // Clear tutorial highlights when timer reaches 30 seconds
+  if (countdownTime === 30) {
+    clearAllTutorialHighlights();
+  }
+}
+
+/**
+ * 🐛 Update debug panel with forced number and protection stats
+ * @param {Object} data - Debug data to update
+ */
+function updateDebugPanel(data) {
+  try {
+    const panel = document.getElementById('debug-forced-number-panel');
+    if (!panel) return;
+    
+    // Update individual fields if provided
+    if (data.currentDraw !== undefined) {
+      const el = document.getElementById('debug-current-draw');
+      if (el) el.textContent = data.currentDraw || '--';
+    }
+    
+    if (data.nextDraw !== undefined) {
+      const el = document.getElementById('debug-next-draw');
+      if (el) el.textContent = data.nextDraw || '--';
+    }
+    
+    if (data.forcedNumber !== undefined) {
+      const el = document.getElementById('debug-forced-number');
+      if (el) {
+        el.textContent = data.forcedNumber !== null && data.forcedNumber !== undefined ? data.forcedNumber : '--';
+        el.style.color = data.forcedNumber > 0 || data.forcedNumber === 0 ? '#4CAF50' : '#888';
+      }
+    }
+    
+    if (data.presetNumber !== undefined) {
+      const el = document.getElementById('debug-preset-number');
+      if (el) {
+        el.textContent = data.presetNumber !== null ? data.presetNumber : '--';
+        el.style.color = data.presetNumber !== null ? '#9C27B0' : '#888';
+      }
+    }
+    
+    if (data.manualForced !== undefined) {
+      const el = document.getElementById('debug-manual-forced');
+      if (el) {
+        el.textContent = data.manualForced !== null ? data.manualForced : '--';
+        el.style.color = data.manualForced !== null ? '#F44336' : '#888';
+      }
+    }
+    
+    if (data.drawToCheck !== undefined) {
+      const el = document.getElementById('debug-draw-to-check');
+      if (el) el.textContent = data.drawToCheck || '--';
+    }
+    
+    if (data.lastSavedDraw !== undefined) {
+      const el = document.getElementById('debug-last-saved');
+      if (el) el.textContent = data.lastSavedDraw || '--';
+    }
+    
+    if (data.willSave !== undefined) {
+      const el = document.getElementById('debug-will-save');
+      if (el) {
+        el.textContent = data.willSave ? 'YES' : 'NO';
+        el.style.color = data.willSave ? '#4CAF50' : '#F44336';
+      }
+    }
+    
+    if (data.presetFound !== undefined) {
+      const el = document.getElementById('debug-preset-found');
+      if (el) {
+        el.textContent = data.presetFound ? 'YES' : 'NO';
+        el.style.color = data.presetFound ? '#4CAF50' : '#F44336';
+      }
+    }
+    
+    if (data.manualFound !== undefined) {
+      const el = document.getElementById('debug-manual-found');
+      if (el) {
+        el.textContent = data.manualFound ? 'YES' : 'NO';
+        el.style.color = data.manualFound ? '#4CAF50' : '#F44336';
+      }
+    }
+  } catch (error) {
+    console.warn('Error updating debug panel:', error);
+  }
+}
+
+/**
+ * Update debug panel's rolls container (sync with actual roulette-rolls-container)
+ */
+function updateDebugPanelRolls() {
+  try {
+    const debugRollsContainer = document.getElementById('debug-rolls-container');
+    if (!debugRollsContainer) return;
+    
+    // Get the actual rolls from the main roulette-rolls-container
+    const rolls = [];
+    for (let i = 1; i <= 5; i++) {
+      const rollElement = document.querySelector(`.roll${i}`);
+      if (rollElement) {
+        const number = rollElement.textContent.trim();
+        const isRed = rollElement.classList.contains('roll-red');
+        const isGreen = rollElement.classList.contains('roll-green');
+        const isBlack = rollElement.classList.contains('roll-black');
+        
+        rolls.push({
+          number: number || '--',
+          color: isRed ? 'red' : (isGreen ? 'green' : (isBlack ? 'black' : 'black'))
+        });
+      } else {
+        rolls.push({ number: '--', color: 'black' });
+      }
+    }
+    
+    // Update debug rolls display
+    rolls.forEach((roll, index) => {
+      const debugRoll = debugRollsContainer.querySelector(`.debug-roll${index + 1}`);
+      if (debugRoll) {
+        debugRoll.textContent = roll.number;
+        debugRoll.classList.remove('debug-roll-red', 'debug-roll-black', 'debug-roll-green');
+        debugRoll.classList.add(`debug-roll-${roll.color}`);
+        
+        // Apply color styles
+        if (roll.color === 'red') {
+          debugRoll.style.background = 'rgba(244, 67, 54, 0.3)';
+          debugRoll.style.borderColor = 'rgba(244, 67, 54, 0.8)';
+          debugRoll.style.color = '#f44336';
+        } else if (roll.color === 'green') {
+          debugRoll.style.background = 'rgba(76, 175, 80, 0.3)';
+          debugRoll.style.borderColor = 'rgba(76, 175, 80, 0.8)';
+          debugRoll.style.color = '#4CAF50';
+        } else {
+          debugRoll.style.background = 'rgba(33, 33, 33, 0.5)';
+          debugRoll.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+          debugRoll.style.color = '#fff';
+        }
+      }
+    });
+    
+    return rolls;
+  } catch (error) {
+    console.warn('Error updating debug panel rolls:', error);
+    return [];
+  }
+}
+
+/**
+ * Update debug panel's history container (sync with actual number-history-container)
+ */
+function updateDebugPanelHistory() {
+  try {
+    const debugHistoryContainer = document.getElementById('debug-history-container');
+    if (!debugHistoryContainer) return [];
+    
+    // Get the actual history from the main number-history-container
+    const historyItems = [];
+    const historyElements = document.querySelectorAll('#number-history .history-item');
+    
+    historyElements.forEach((item) => {
+      const drawElement = item.querySelector('.history-draw');
+      const numberElement = item.querySelector('.history-number');
+      
+      if (drawElement && numberElement) {
+        const drawText = drawElement.textContent.trim();
+        const number = numberElement.textContent.trim();
+        const isRed = numberElement.classList.contains('red');
+        const isGreen = numberElement.classList.contains('green');
+        const isBlack = numberElement.classList.contains('black');
+        
+        historyItems.push({
+          draw: drawText,
+          number: number,
+          color: isRed ? 'red' : (isGreen ? 'green' : (isBlack ? 'black' : 'black'))
+        });
+      }
+    });
+    
+    // Update debug history display
+    debugHistoryContainer.innerHTML = '';
+    historyItems.forEach((item) => {
+      const itemDiv = document.createElement('div');
+      itemDiv.style.cssText = 'padding: 4px; border-radius: 4px; background: rgba(255,255,255,0.05); text-align: center;';
+      
+      const drawDiv = document.createElement('div');
+      drawDiv.textContent = item.draw;
+      drawDiv.style.cssText = 'font-size: 9px; color: #888; margin-bottom: 2px;';
+      
+      const numberDiv = document.createElement('div');
+      numberDiv.textContent = item.number;
+      numberDiv.style.cssText = `font-weight: bold; font-size: 12px; color: ${item.color === 'red' ? '#f44336' : (item.color === 'green' ? '#4CAF50' : '#fff')};`;
+      
+      itemDiv.appendChild(drawDiv);
+      itemDiv.appendChild(numberDiv);
+      debugHistoryContainer.appendChild(itemDiv);
+    });
+    
+    return historyItems;
+  } catch (error) {
+    console.warn('Error updating debug panel history:', error);
+    return [];
+  }
+}
+
+/**
+ * Sync rolls container with history API to ensure consistency
+ */
+async function syncRollsContainerWithHistory() {
+  try {
+    const cacheBuster = Date.now();
+    const response = await fetch(`/slipp/api/get_analytics_history.php?limit=5&_cb=${cacheBuster}`, {
+      method: 'GET',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      },
+      cache: 'no-store'
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.status === 'success' && data.data && Array.isArray(data.data.draws) && data.data.draws.length > 0) {
+        // Extract winning numbers from draws (most recent first)
+        const recentDraws = data.data.draws.sort((a, b) => b.draw_number - a.draw_number).slice(0, 5);
+        const recentNumbers = recentDraws.map(draw => parseInt(draw.winning_number));
+        
+        // Generate colors from the draws
+        const rouletteNumbersRed = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+        const colors = recentDraws.map(draw => {
+          const num = parseInt(draw.winning_number);
+          if (num === 0) return 'green';
+          return rouletteNumbersRed.includes(num) ? 'red' : 'black';
+        });
+        
+        // Update rolls container DOM (roll1 is most recent, roll5 is oldest)
+        for (let i = 0; i < 5; i++) {
+          const element = document.querySelector(`.roll${i + 1}`);
+          if (element && i < recentNumbers.length) {
+            const number = recentNumbers[i];
+            const color = colors[i] || 'black';
+            
+            element.innerHTML = number;
+            element.classList.remove('roll-red', 'roll-black', 'roll-green');
+            element.classList.add(`roll-${color}`);
+          }
+        }
+        
+        // Update global arrays for consistency
+        window.rolledNumbersArray = recentNumbers;
+        window.rolledNumbersColorArray = colors;
+        
+        console.log('✅ SYNC: Rolls container synced with history API:', recentNumbers);
+        return true;
+      }
+    }
+    return false;
+  } catch (error) {
+    console.warn('⚠️ SYNC: Error syncing rolls container:', error);
+    return false;
+  }
+}
+
+/**
+ * Check if rolls and history match
+ */
+function checkDebugPanelMatch() {
+  try {
+    const matchText = document.getElementById('debug-match-text');
+    const matchStatus = document.getElementById('debug-match-status');
+    if (!matchText || !matchStatus) return;
+    
+    // Get rolls (first 5 from history should match the 5 rolls)
+    const rolls = updateDebugPanelRolls();
+    const history = updateDebugPanelHistory();
+    
+    if (rolls.length === 0 || history.length === 0) {
+      matchText.textContent = 'No data';
+      matchText.style.color = '#888';
+      matchStatus.style.background = 'rgba(255,255,255,0.1)';
+      return;
+    }
+    
+    // Compare first 5 numbers from history with rolls
+    // History is most recent first (index 0 = most recent)
+    // Rolls: roll1 = most recent, roll5 = oldest
+    let matches = 0;
+    let mismatches = [];
+    
+    for (let i = 0; i < Math.min(5, rolls.length, history.length); i++) {
+      const rollNum = parseInt(rolls[i].number);
+      const historyNum = parseInt(history[i].number);
+      
+      if (!isNaN(rollNum) && !isNaN(historyNum)) {
+        if (rollNum === historyNum) {
+          matches++;
+        } else {
+          mismatches.push({ index: i + 1, roll: rollNum, history: historyNum });
+        }
+      }
+    }
+    
+    // Update match status
+    if (mismatches.length === 0 && matches === Math.min(5, rolls.length, history.length)) {
+      matchText.textContent = '✅ MATCHING';
+      matchText.style.color = '#4CAF50';
+      matchStatus.style.background = 'rgba(76, 175, 80, 0.2)';
+      matchStatus.style.border = '1px solid rgba(76, 175, 80, 0.5)';
+    } else if (mismatches.length > 0) {
+      matchText.textContent = `❌ MISMATCH (${mismatches.length} of ${Math.min(5, rolls.length, history.length)})`;
+      matchText.style.color = '#f44336';
+      matchStatus.style.background = 'rgba(244, 67, 54, 0.2)';
+      matchStatus.style.border = '1px solid rgba(244, 67, 54, 0.5)';
+      console.warn('⚠️ Debug panel: Data mismatch detected:', mismatches);
+      
+      // Auto-sync if mismatch detected
+      console.log('🔄 Auto-syncing rolls container with history API...');
+      syncRollsContainerWithHistory();
+    } else {
+      matchText.textContent = '⚠️ PARTIAL';
+      matchText.style.color = '#ff9800';
+      matchStatus.style.background = 'rgba(255, 152, 0, 0.2)';
+      matchStatus.style.border = '1px solid rgba(255, 152, 0, 0.5)';
+    }
+  } catch (error) {
+    console.warn('Error checking debug panel match:', error);
+  }
+}
+
+/**
+ * 🔄 Real-time debug panel update - fetches live data from APIs
+ */
+let debugPanelUpdateInterval = null;
+
+async function updateDebugPanelRealTime() {
+  try {
+    const panel = document.getElementById('debug-forced-number-panel');
+    if (!panel) {
+      console.log('🐛 Debug panel: Panel not found, skipping update');
+      return; // Panel not found, don't update
+    }
+    
+    console.log('🔄 Debug panel: Starting real-time update...');
+    
+    // Fetch current draw numbers
+    try {
+      const drawResponse = await fetch(`/slipp/api/get_current_draw.php?_cb=${Date.now()}`);
+      if (drawResponse.ok) {
+        const drawData = await drawResponse.json();
+        console.log('🔄 Debug panel: Draw data received:', drawData);
+        
+        if (drawData.status === 'success' && drawData.data) {
+          const currentDraw = parseInt(drawData.data.current_draw_number || 0);
+          const nextDraw = parseInt(drawData.data.next_draw_number || (currentDraw + 1));
+          
+          console.log('🔄 Debug panel: Current Draw:', currentDraw, ', Next Draw:', nextDraw);
+          
+          // Update draw numbers immediately
+          updateDebugPanel({
+            currentDraw: currentDraw,
+            nextDraw: nextDraw,
+            drawToCheck: nextDraw
+          });
+          
+          // Check for forced number for the next draw (the one that will be used)
+          if (nextDraw > 0) {
+            try {
+              const forcedResponse = await fetch(`/slipp/api/direct_forced_number.php?draw_number=${nextDraw}&_cb=${Date.now()}`);
+              if (forcedResponse.ok) {
+                const forcedData = await forcedResponse.json();
+                console.log('🔄 Debug panel: Forced data received:', forcedData);
+                
+                if (forcedData.status === 'success' && forcedData.has_forced_number) {
+                  const forcedNum = parseInt(forcedData.forced_number);
+                  
+                  console.log('🔄 Debug panel: Found forced number:', forcedNum, 'Source:', forcedData.source);
+                  
+                  updateDebugPanel({
+                    forcedNumber: forcedNum,
+                    manualForced: forcedData.source === 'manual' ? forcedNum : null,
+                    presetNumber: forcedData.source === 'preset_schedule' ? forcedNum : null,
+                    manualFound: forcedData.source === 'manual',
+                    presetFound: forcedData.source === 'preset_schedule',
+                    drawToCheck: nextDraw
+                  });
+                } else {
+                  // No forced number found - also check preset schedule directly
+                  console.log('🔄 Debug panel: No forced number found, checking preset schedule...');
+                  
+                  try {
+                    const presetResponse = await fetch(`/slipp/api/get_current_preset.php?draw_number=${nextDraw}&_cb=${Date.now()}`);
+                    if (presetResponse.ok) {
+                      const presetData = await presetResponse.json();
+                      if (presetData.status === 'success' && presetData.data && presetData.data.winning_number) {
+                        const presetNum = parseInt(presetData.data.winning_number);
+                        console.log('🔄 Debug panel: Found preset number:', presetNum);
+                        
+                        updateDebugPanel({
+                          forcedNumber: presetNum,
+                          presetNumber: presetNum,
+                          presetFound: true,
+                          manualFound: false,
+                          manualForced: null,
+                          drawToCheck: nextDraw
+                        });
+                      } else {
+                        // No preset either
+                        updateDebugPanel({
+                          forcedNumber: null,
+                          manualForced: null,
+                          presetNumber: null,
+                          manualFound: false,
+                          presetFound: false,
+                          drawToCheck: nextDraw
+                        });
+                      }
+                    }
+                  } catch (presetError) {
+                    console.warn('Debug panel: Error fetching preset:', presetError);
+                    // No forced number found
+                    updateDebugPanel({
+                      forcedNumber: null,
+                      manualForced: null,
+                      presetNumber: null,
+                      manualFound: false,
+                      presetFound: false,
+                      drawToCheck: nextDraw
+                    });
+                  }
+                }
+              }
+            } catch (forcedError) {
+              console.warn('Debug panel: Error fetching forced number:', forcedError);
+            }
+          }
+        }
+      } else {
+        console.warn('Debug panel: Draw API response not OK:', drawResponse.status);
+      }
+    } catch (drawError) {
+      console.warn('Debug panel: Error fetching draw numbers:', drawError);
+    }
+    
+    // Update last saved draw (from global variable if available)
+    if (typeof lastSavedDrawNumber !== 'undefined') {
+      updateDebugPanel({
+        lastSavedDraw: lastSavedDrawNumber || 0
+      });
+    }
+    
+    // Update willSave status (check if next draw is already saved)
+    if (typeof lastSavedDrawNumber !== 'undefined' && typeof nextDraw !== 'undefined') {
+      const willSave = (lastSavedDrawNumber !== nextDraw);
+      updateDebugPanel({
+        willSave: willSave
+      });
+    }
+    
+    // Sync rolls container with history API to ensure consistency
+    await syncRollsContainerWithHistory();
+    
+    // Update rolls and history displays in debug panel (sync with actual displays)
+    updateDebugPanelRolls();
+    updateDebugPanelHistory();
+    checkDebugPanelMatch();
+    
+    console.log('🔄 Debug panel: Real-time update completed');
+    
+  } catch (error) {
+    console.warn('Debug panel: Error in real-time update:', error);
+  }
+}
+
+/**
+ * Start real-time debug panel updates
+ */
+function startDebugPanelRealTimeUpdates() {
+  // Clear any existing interval
+  if (debugPanelUpdateInterval) {
+    clearInterval(debugPanelUpdateInterval);
+  }
+  
+  // Update immediately (don't wait for first interval)
+  updateDebugPanelRealTime();
+  
+  // Update every 500ms (0.5 seconds) for more responsive real-time statistics
+  debugPanelUpdateInterval = setInterval(updateDebugPanelRealTime, 500);
+  
+  console.log('🔄 Debug panel real-time updates started (updating every 0.5 seconds)');
+}
+
+/**
+ * Stop real-time debug panel updates
+ */
+function stopDebugPanelRealTimeUpdates() {
+  if (debugPanelUpdateInterval) {
+    clearInterval(debugPanelUpdateInterval);
+    debugPanelUpdateInterval = null;
+    console.log('🛑 Debug panel real-time updates stopped');
+  }
+}
+
+/**
+ * Clear all tutorial highlights from the board
+ */
+function clearAllTutorialHighlights() {
+  // Remove white-area class from all numbers
+  $(".number").removeClass("white-area");
+  
+  // Remove visual indicator from betting area buttons
+  $(".bottom-column").removeClass("tutorial-highlight");
+  
+  // Clear any pending tutorial timeouts
+  tutorialTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
+  tutorialTimeoutIds = [];
+  
+  // Reset tutorial running flag
+  isTutorialRunning = false;
+  
+  console.log('🎓 Tutorial highlights cleared');
+}
+
+/**
+ * Highlight a specific betting area for the tutorial
+ * @param {string} areaName - The area to highlight (e.g., 'column-1st12', 'column-even', 'bet2to1-1')
+ */
+function highlightTutorialArea(areaName) {
+  // Clear previous highlights first
+  $(".number").removeClass("white-area");
+  $(".bottom-column").removeClass("tutorial-highlight");
+  
+  console.log('🎓 Highlighting tutorial area:', areaName);
+  
+  // Highlight the betting area button itself
+  $(`.${areaName}`).addClass("tutorial-highlight");
+  
+  // Highlight the appropriate numbers based on area type
+  switch(areaName) {
+    case 'column-1st12':
+      // 1st 12: numbers 1-12
+      for (let i = 1; i <= 12; i++) {
+        $(`.number${i}`).addClass("white-area");
+      }
+      break;
+      
+    case 'column-2nd12':
+      // 2nd 12: numbers 13-24
+      for (let i = 13; i <= 24; i++) {
+        $(`.number${i}`).addClass("white-area");
+      }
+      break;
+      
+    case 'column-3rd12':
+      // 3rd 12: numbers 25-36
+      for (let i = 25; i <= 36; i++) {
+        $(`.number${i}`).addClass("white-area");
+      }
+      break;
+      
+    case 'column-1to18':
+      // 1 to 18: numbers 1-18
+      for (let i = 1; i <= 18; i++) {
+        $(`.number${i}`).addClass("white-area");
+      }
+      break;
+      
+    case 'column-even':
+      // Even: numbers 2, 4, 6, ..., 36
+      for (let i = 2; i <= 36; i += 2) {
+        $(`.number${i}`).addClass("white-area");
+      }
+      break;
+      
+    case 'column-odd':
+      // Odd: numbers 1, 3, 5, ..., 35
+      for (let i = 1; i <= 35; i += 2) {
+        $(`.number${i}`).addClass("white-area");
+      }
+      break;
+      
+    case 'column-red':
+      // Red: numbers in rouletteNumbersRed array
+      rouletteNumbersRed.forEach(num => {
+        $(`.number${num}`).addClass("white-area");
+      });
+      break;
+      
+    case 'column-black':
+      // Black: numbers in rouletteNumbersBlack array
+      rouletteNumbersBlack.forEach(num => {
+        $(`.number${num}`).addClass("white-area");
+      });
+      break;
+      
+    case 'column-19to36':
+      // 19 to 36: numbers 19-36
+      for (let i = 19; i <= 36; i++) {
+        $(`.number${i}`).addClass("white-area");
+      }
+      break;
+      
+    case 'bet2to1-1':
+      // 2 to 1-1: numbers where i % 3 == 0 (3, 6, 9, ..., 36)
+      for (let i = 3; i <= 36; i += 3) {
+        $(`.number${i}`).addClass("white-area");
+      }
+      break;
+      
+    case 'bet2to1-2':
+      // 2 to 1-2: numbers where i % 3 == 2 (2, 5, 8, ..., 35)
+      for (let i = 2; i <= 35; i += 3) {
+        $(`.number${i}`).addClass("white-area");
+      }
+      break;
+      
+    case 'bet2to1-3':
+      // 2 to 1-3: numbers where i % 3 == 1 (1, 4, 7, ..., 34)
+      for (let i = 1; i <= 34; i += 3) {
+        $(`.number${i}`).addClass("white-area");
+      }
+      break;
+      
+    default:
+      console.warn('Unknown tutorial area:', areaName);
+  }
+}
+
+/**
+ * Start the tutorial highlighting sequence
+ * Highlights all betting areas one by one, 2 seconds each
+ */
+function startTutorialHighlighting() {
+  // Get current draw number to track if tutorial already ran
+  const currentDraw = currentDrawNumber || 1;
+  
+  // Check if tutorial already ran for this draw
+  if (tutorialHighlightedDrawNumber === currentDraw) {
+    console.log('🎓 Tutorial already ran for draw #' + currentDraw + ', skipping');
+    return;
+  }
+  
+  // Prevent multiple simultaneous tutorial sequences
+  if (isTutorialRunning) {
+    console.log('🎓 Tutorial already running, skipping');
+    return;
+  }
+  
+  // Mark tutorial as running and record the draw number
+  isTutorialRunning = true;
+  tutorialHighlightedDrawNumber = currentDraw;
+  
+  console.log('🎓 Starting tutorial highlighting for draw #' + currentDraw);
+  
+  // Define the sequence of areas to highlight (12 areas, 2 seconds each = 24 seconds total)
+  const tutorialAreas = [
+    'column-1st12',
+    'column-2nd12',
+    'column-3rd12',
+    'column-1to18',
+    'column-even',
+    'column-red',
+    'column-black',
+    'column-odd',
+    'column-19to36',
+    'bet2to1-1',
+    'bet2to1-2',
+    'bet2to1-3'
+  ];
+  
+  // Clear any existing timeouts
+  tutorialTimeoutIds.forEach(timeoutId => clearTimeout(timeoutId));
+  tutorialTimeoutIds = [];
+  
+  // Sequence through all areas with 2-second intervals
+  tutorialAreas.forEach((areaName, index) => {
+    const timeoutId = setTimeout(() => {
+      highlightTutorialArea(areaName);
+      
+      // After the last area, clear highlights after 2 seconds
+      if (index === tutorialAreas.length - 1) {
+        const clearTimeoutId = setTimeout(() => {
+          // Don't clear if timer has already reached 30 seconds (clearAllTutorialHighlights will handle it)
+          const savedEndTime = localStorage.getItem('countdownEndTime');
+          const currentTime = new Date().getTime();
+          if (savedEndTime && !isNaN(parseInt(savedEndTime))) {
+            const remainingTimeMs = parseInt(savedEndTime) - currentTime;
+            const remainingTimeSec = Math.floor(remainingTimeMs / 1000);
+            // Only clear if we're still above 30 seconds
+            if (remainingTimeSec > 30) {
+              clearAllTutorialHighlights();
+            }
+          }
+        }, 2000);
+        tutorialTimeoutIds.push(clearTimeoutId);
+      }
+    }, index * 2000); // 2 seconds per area
+    
+    tutorialTimeoutIds.push(timeoutId);
+  });
 }
 
 // Update visibilitychange event listener to save state when tab becomes invisible
@@ -1512,6 +2810,12 @@ document.addEventListener('visibilitychange', function() {
               countdownTime = nextDraw.secondsRemaining;
               localStorage.setItem('countdownEndTime', nextDraw.timestamp.toString());
               saveRollHistory();
+              
+              // 🎓 Reset tutorial tracking for the new draw
+              tutorialHighlightedDrawNumber = 0;
+              isTutorialRunning = false;
+              clearAllTutorialHighlights();
+              
               startCountdown();
             }, 16000);
           }
@@ -1553,61 +2857,7 @@ $(document).ready(function() {
   // Define a function to load all game state
   async function initializeGameState() {
     try {
-      // Try to load from Firebase first (if available)
-      if (window.FirebaseService && window.FirebaseDrawManager) {
-        try {
-          console.log('🔥 Loading game state from Firebase...');
-          
-          // Get current game state from Firebase
-          const gameState = await FirebaseDrawManager.getCurrentDrawState();
-          const drawInfo = await FirebaseService.GameState.getDrawInfo();
-          
-          if (gameState || drawInfo) {
-            console.log('✅ Loaded game state from Firebase:', { gameState, drawInfo });
-            
-            // Update roll history from Firebase
-            if (gameState?.rollHistory && gameState.rollHistory.length > 0) {
-              rolledNumbersArray = gameState.rollHistory.slice(0, 5);
-              rolledNumbersColorArray = (gameState.rollColors || []).slice(0, 5);
-              
-              // Update localStorage
-              localStorage.setItem('rolledNumbersArray', JSON.stringify(rolledNumbersArray));
-              localStorage.setItem('rolledNumbersColorArray', JSON.stringify(rolledNumbersColorArray));
-              
-              console.log('✅ Updated roll history from Firebase:', rolledNumbersArray, rolledNumbersColorArray);
-              
-              // Update display
-              for (let i = 0; i < rolledNumbersArray.length; i++) {
-                const rolledNumberIndex = i + 1;
-                $(`.roll${rolledNumberIndex}`).html(rolledNumbersArray[i]);
-                
-                switch (rolledNumbersColorArray[i]) {
-                  case "red":
-                    $(`.roll${rolledNumberIndex}`).removeClass("roll-black").removeClass("roll-green").addClass("roll-red");
-                    break;
-                  case "black":
-                    $(`.roll${rolledNumberIndex}`).removeClass("roll-red").removeClass("roll-green").addClass("roll-black");
-                    break;
-                  case "green":
-                    $(`.roll${rolledNumberIndex}`).removeClass("roll-red").removeClass("roll-black").addClass("roll-green");
-                    break;
-                }
-              }
-            }
-            
-            // Update draw numbers
-            if (drawInfo?.currentDraw && drawInfo?.nextDraw) {
-              currentDrawNumber = drawInfo.currentDraw;
-              localStorage.setItem('currentDrawNumber', currentDrawNumber.toString());
-              console.log('✅ Updated draw numbers from Firebase:', { current: drawInfo.currentDraw, next: drawInfo.nextDraw });
-            }
-          }
-        } catch (firebaseError) {
-          console.warn('⚠️ Could not load from Firebase, falling back to server:', firebaseError);
-        }
-      }
-      
-      // Load from server (fallback or additional data)
+      // First load roll history
       await loadRollHistory();
 
       // Then load analytics data
@@ -1742,15 +2992,59 @@ async function loadAnalyticsData() {
       console.log('Analytics data loaded from database:', data);
 
       try {
-        // Parse the analytics data
-        if (data.all_spins) {
-          allSpins = JSON.parse(data.all_spins);
-          console.log('Loaded allSpins:', allSpins);
-        }
+        // ✅ CRITICAL FIX: ALWAYS prioritize rolledNumbersArray as source of truth for analytics
+        // This ensures analytics ALWAYS match the spin history bar display
+        // Check if rolledNumbersArray is already loaded and populated (it should be if loadRollHistory was called first)
+        if (Array.isArray(rolledNumbersArray) && rolledNumbersArray.length > 0) {
+          console.log('🔄 ALWAYS syncing analytics from rolledNumbersArray (source of truth):', rolledNumbersArray);
+          
+          // Use rolledNumbersArray as allSpins (they should be the same)
+          // Take last 100 spins (most recent first)
+          allSpins = rolledNumbersArray.slice(0, 100);
+          
+          // Recalculate numberFrequency from actual spin history
+          numberFrequency = {};
+          for (let i = 0; i <= 36; i++) {
+            numberFrequency[i] = 0;
+          }
+          
+          // Count frequencies from actual spin history
+          rolledNumbersArray.forEach(number => {
+            if (number !== null && number !== undefined) {
+              const num = parseInt(number);
+              if (!isNaN(num) && num >= 0 && num <= 36) {
+                numberFrequency[num] = (numberFrequency[num] || 0) + 1;
+              }
+            }
+          });
+          
+          console.log('✅ Analytics ALWAYS synced from rolledNumbersArray. allSpins:', allSpins, 'numberFrequency:', numberFrequency);
+          console.log('🛡️ Ignoring stale database data to prevent overwriting correct analytics');
+        } else {
+          // Fallback: Use data from API ONLY if rolledNumbersArray is completely empty
+          console.log('⚠️ rolledNumbersArray not available, using API data (will sync when rolledNumbersArray loads)');
+          
+          if (data.all_spins) {
+            const apiAllSpins = JSON.parse(data.all_spins);
+            // Only use if rolledNumbersArray is still empty
+            if (!Array.isArray(rolledNumbersArray) || rolledNumbersArray.length === 0) {
+              allSpins = apiAllSpins;
+              console.log('Loaded allSpins from API (temporary, will sync when rolledNumbersArray loads):', allSpins);
+            } else {
+              console.log('⚠️ Ignoring API all_spins because rolledNumbersArray is now available');
+            }
+          }
 
-        if (data.number_frequency) {
-          numberFrequency = JSON.parse(data.number_frequency);
-          console.log('Loaded numberFrequency:', numberFrequency);
+          if (data.number_frequency) {
+            const apiNumberFrequency = JSON.parse(data.number_frequency);
+            // Only use if rolledNumbersArray is still empty
+            if (!Array.isArray(rolledNumbersArray) || rolledNumbersArray.length === 0) {
+              numberFrequency = apiNumberFrequency;
+              console.log('Loaded numberFrequency from API (temporary, will sync when rolledNumbersArray loads):', numberFrequency);
+            } else {
+              console.log('⚠️ Ignoring API number_frequency because rolledNumbersArray is now available');
+            }
+          }
         }
 
         if (data.current_draw_number !== undefined) {
@@ -1845,17 +3139,58 @@ function updateDrawNumberDisplay() {
   console.log('Draw number tracking maintained internally - Current draw:', currentDrawNumber);
 }
 
+// Helper function to sync analytics from rolledNumbersArray (source of truth)
+function syncAnalyticsFromRollHistory() {
+  // Always sync analytics from rolledNumbersArray if available
+  if (Array.isArray(rolledNumbersArray) && rolledNumbersArray.length > 0) {
+    console.log('🔄 Syncing analytics from rolledNumbersArray (source of truth):', rolledNumbersArray);
+    
+    // Use rolledNumbersArray as allSpins
+    allSpins = rolledNumbersArray.slice(0, 100);
+    
+    // Recalculate numberFrequency from actual spin history
+    numberFrequency = {};
+    for (let i = 0; i <= 36; i++) {
+      numberFrequency[i] = 0;
+    }
+    
+    // Count frequencies from actual spin history
+    rolledNumbersArray.forEach(number => {
+      if (number !== null && number !== undefined) {
+        const num = parseInt(number);
+        if (!isNaN(num) && num >= 0 && num <= 36) {
+          numberFrequency[num] = (numberFrequency[num] || 0) + 1;
+        }
+      }
+    });
+    
+    console.log('✅ Analytics synced from rolledNumbersArray. allSpins:', allSpins, 'numberFrequency:', numberFrequency);
+    return true;
+  }
+  return false;
+}
+
 // Function to update analytics display
 function updateAnalytics() {
+  // ✅ CRITICAL: Always sync from rolledNumbersArray before updating display
+  // This ensures analytics NEVER show stale data from database
+  syncAnalyticsFromRollHistory();
+  
   console.log('Updating analytics display with data:', {
     allSpins: allSpins,
     numberFrequency: numberFrequency,
-    currentDrawNumber: currentDrawNumber
+    currentDrawNumber: currentDrawNumber,
+    rolledNumbersArray: rolledNumbersArray
   });
 
   if (!Array.isArray(allSpins) || allSpins.length === 0) {
-    console.warn('No spin data available for analytics');
-    return;
+    // Try to sync one more time from rolledNumbersArray
+    if (syncAnalyticsFromRollHistory() && allSpins.length > 0) {
+      console.log('✅ Analytics synced on demand from rolledNumbersArray');
+    } else {
+      console.warn('No spin data available for analytics');
+      return;
+    }
   }
 
   // Clear current displays
@@ -1978,13 +3313,13 @@ function updateAnalytics() {
 
   // Prepare Hot & Cold numbers
   const sortedNumbers = Object.entries(numberFrequency)
-    .map(([number, count]) => ({ number: parseInt(number), count }))
+    .map(([number, count]) => ({ number: parseInt(number), count: parseInt(count) || 0 }))
     .sort((a, b) => b.count - a.count);
 
   console.log('Sorted numbers by frequency:', sortedNumbers);
 
-  // Display Hot numbers (top 5 most frequent)
-  const hotNumbers = sortedNumbers.slice(0, 5).filter(item => item.count > 0);
+  // Display Hot numbers (top 5 most frequent that have appeared at least once)
+  const hotNumbers = sortedNumbers.filter(item => item.count > 0).slice(0, 5);
   console.log('Hot numbers:', hotNumbers);
 
   if (hotNumbers.length === 0) {
@@ -2002,13 +3337,26 @@ function updateAnalytics() {
     });
   }
 
-  // Display Cold numbers (5 least frequent that have appeared at least once)
-  const nonZeroAppearances = sortedNumbers.filter(item => item.count > 0);
-  const coldNumbers = nonZeroAppearances.length > 5 ?
-                      nonZeroAppearances.slice(-5).reverse() :
-                      nonZeroAppearances.slice().reverse();
+  // Display Cold numbers (5 least frequent, including zero counts)
+  // First get numbers that have appeared (count > 0), sorted by frequency (ascending)
+  const appearedNumbers = sortedNumbers.filter(item => item.count > 0);
+  
+  // If we have more than 5 numbers that have appeared, take the 5 least frequent
+  // Otherwise, include numbers with 0 counts to fill up to 5
+  let coldNumbers;
+  if (appearedNumbers.length > 5) {
+    // More than 5 numbers have appeared - take the 5 least frequent
+    coldNumbers = appearedNumbers.slice(-5).reverse();
+  } else {
+    // Fewer than 5 numbers have appeared - include zeros to show what hasn't appeared
+    const zeroCountNumbers = sortedNumbers.filter(item => item.count === 0);
+    // Combine least frequent appeared numbers with zero count numbers
+    const leastFrequentAppeared = appearedNumbers.slice().reverse();
+    const combinedCold = [...leastFrequentAppeared, ...zeroCountNumbers].slice(0, 5);
+    coldNumbers = combinedCold;
+  }
 
-  console.log('Cold numbers:', coldNumbers);
+  console.log('Cold numbers (least frequent):', coldNumbers);
 
   if (coldNumbers.length === 0) {
     $('#cold-numbers').append('<div class="no-data">No cold numbers yet</div>');
@@ -2026,33 +3374,183 @@ function updateAnalytics() {
   }
 
   // Display number history (last 8 spins in reverse order - newest first)
-  const historyToShow = allSpins.slice(0, 8);
-  historyToShow.forEach((number, index) => {
-    const colorClass = number === 0 ? 'green' :
-                      rouletteNumbersRed.includes(number) ? 'red' : 'black';
+  // ⏰ CRITICAL: Fetch actual draw numbers from database instead of calculating
+  // This ensures we show the correct draw numbers that were actually saved
+  displayNumberHistoryWithActualDrawNumbers(allSpins.slice(0, 8));
 
-    // Calculate draw number with proper sequential logic
-    // Since currentDrawNumber is the NEXT draw number, we need to subtract (index + 1)
-    // This ensures the most recent spin shows the current draw number, not the next one
+  console.log('Analytics display updated');
+}
+
+/**
+ * ⏰ CRITICAL: Display number history with ACTUAL draw numbers from database
+ * This fetches the actual draw numbers that were saved, not calculated ones
+ */
+// Prevent multiple simultaneous calls to displayNumberHistoryWithActualDrawNumbers
+let isUpdatingHistory = false;
+
+async function displayNumberHistoryWithActualDrawNumbers(numbers) {
+  // Prevent race conditions - if already updating, wait for it to complete
+  if (isUpdatingHistory) {
+    console.log('⏳ History update already in progress, skipping duplicate call');
+    return;
+  }
+  
+  isUpdatingHistory = true;
+  
+  try {
+    // ⏰ CRITICAL: Ensure container is cleared before appending (in case function called multiple times)
+    // Note: updateAnalytics() should have already cleared it, but we'll clear it here too for safety
+    $('#number-history').empty();
+    
+    // Fetch last 8 draws from new analytics_history API (uses preset_schedule and server time)
+    // Add cache-busting and ensure no-cache headers
+    const cacheBuster = Date.now();
+    const response = await fetch(`/slipp/api/get_analytics_history.php?limit=8&_cb=${cacheBuster}`, {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache'
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      
+      if (data.status === 'success' && data.data && Array.isArray(data.data.draws) && data.data.draws.length > 0) {
+        // Use analytics_history draws (have actual draw numbers from preset_schedule and server time)
+        console.log('✅ Using analytics history from new table:', data.data);
+        console.log('✅ Current draw number:', data.data.current_draw_number, 'Server time:', data.data.server_time);
+        
+        // ⏰ CRITICAL: Sort by draw_number DESC first to ensure correct order
+        const sortedData = data.data.draws.sort((a, b) => b.draw_number - a.draw_number);
+        
+        // ⏰ CRITICAL: Only show unique draws (avoid duplicates)
+        // Use a Map to ensure we keep the most recent entry for each draw number
+        const uniqueDrawsMap = new Map();
+        
+        sortedData.forEach((draw) => {
+          const drawNum = draw.draw_number;
+          // If we haven't seen this draw number, or this one is more recent (shouldn't happen with new query, but safety check)
+          if (!uniqueDrawsMap.has(drawNum)) {
+            uniqueDrawsMap.set(drawNum, draw);
+          }
+        });
+        
+        // Convert map to array and sort by draw_number DESC (most recent first)
+        const uniqueDraws = Array.from(uniqueDrawsMap.values())
+          .sort((a, b) => b.draw_number - a.draw_number)
+          .slice(0, 8); // Limit to 8 most recent unique draws
+        
+        console.log('✅ Displaying unique draws:', uniqueDraws.map(d => `#${d.draw_number}: ${d.winning_number}`));
+        
+        // ⏰ CRITICAL: Clear container completely and verify it's empty before appending
+        const historyContainer = $('#number-history');
+        historyContainer.empty();
+        
+        // Double-check: Verify container is actually empty (prevent duplicates from partial clears)
+        if (historyContainer.children().length > 0) {
+          console.warn('⚠️ Container not empty after clear, forcing empty');
+          historyContainer.html('');
+        }
+        
+        // Build HTML string first, then append once (more efficient and prevents partial renders)
+        let historyHTML = '';
+        uniqueDraws.forEach((draw, index) => {
+          const number = draw.winning_number;
+          const drawNum = draw.draw_number;
+          const colorClass = number === 0 ? 'green' :
+                            rouletteNumbersRed.includes(number) ? 'red' : 'black';
+
+          historyHTML += `
+            <div class="history-item">
+              <div class="history-draw">Draw #${drawNum}</div>
+              <div class="history-number ${colorClass}">${number}</div>
+            </div>
+          `;
+        });
+        
+        // Append all at once
+        historyContainer.html(historyHTML);
+        
+        // Final verification: Check for duplicates
+        const displayedDrawNumbers = [];
+        historyContainer.find('.history-item').each(function() {
+          const drawText = $(this).find('.history-draw').text();
+          const drawNum = drawText.replace('Draw #', '');
+          if (displayedDrawNumbers.includes(drawNum)) {
+            console.error('❌ DUPLICATE DETECTED:', drawNum);
+            $(this).remove(); // Remove duplicate
+          } else {
+            displayedDrawNumbers.push(drawNum);
+          }
+        });
+        
+        isUpdatingHistory = false;
+        return; // Exit early if we got data from database
+      } else {
+        console.warn('⚠️ API returned empty or invalid data:', data);
+      }
+    } else {
+      console.error('❌ Failed to fetch recent draws:', response.status, response.statusText);
+    }
+    
+    
+    // Fallback: Calculate draw numbers (for backward compatibility)
+    console.warn('⚠️ Could not fetch actual draw numbers, falling back to calculation');
+    const historyToShow = numbers || [];
     let baseDrawNumber = currentDrawNumber || 1;
-
+    
     // If the base is too low to show 8 sequential draws, adjust it
     if (baseDrawNumber <= historyToShow.length) {
       baseDrawNumber = historyToShow.length + 1;
     }
+    
+    // Clear container before appending fallback data
+    $('#number-history').empty();
+    
+    historyToShow.forEach((number, index) => {
+      const colorClass = number === 0 ? 'green' :
+                        rouletteNumbersRed.includes(number) ? 'red' : 'black';
+      const drawNum = baseDrawNumber - (index + 1);
 
-    // Calculate the draw number for this spin (newest first)
-    const drawNum = baseDrawNumber - (index + 1);
+      $('#number-history').append(`
+        <div class="history-item">
+          <div class="history-draw">Draw #${drawNum}</div>
+          <div class="history-number ${colorClass}">${number}</div>
+        </div>
+      `);
+    });
+    
+    isUpdatingHistory = false;
+    
+  } catch (error) {
+    console.error('❌ Error fetching actual draw numbers:', error);
+    isUpdatingHistory = false;
+    
+    // Fallback to calculation on error
+    const historyToShow = numbers || [];
+    let baseDrawNumber = currentDrawNumber || 1;
+    
+    if (baseDrawNumber <= historyToShow.length) {
+      baseDrawNumber = historyToShow.length + 1;
+    }
+    
+    // Clear container before appending error fallback data
+    $('#number-history').empty();
+    
+    historyToShow.forEach((number, index) => {
+      const colorClass = number === 0 ? 'green' :
+                        rouletteNumbersRed.includes(number) ? 'red' : 'black';
+      const drawNum = baseDrawNumber - (index + 1);
 
-    $('#number-history').append(`
-      <div class="history-item">
-        <div class="history-draw">Draw #${drawNum}</div>
-        <div class="history-number ${colorClass}">${number}</div>
-      </div>
-    `);
-  });
-
-  console.log('Analytics display updated');
+      $('#number-history').append(`
+        <div class="history-item">
+          <div class="history-draw">Draw #${drawNum}</div>
+          <div class="history-number ${colorClass}">${number}</div>
+        </div>
+      `);
+    });
+  }
 }
 
 // Analytics-only function (no database save since instant save already completed)
@@ -2374,3 +3872,5 @@ $(".answer-yes").click(function () {
 $(".answer-no").click(function () {
   $(".alert-game-over").removeClass("alert-message-visible");
 });
+
+

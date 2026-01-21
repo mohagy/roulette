@@ -1,0 +1,22 @@
+/**
+ * Top Bar Z-Index Fix
+ * Ensures the top-bar has proper z-index and the sidebar appears below it
+ */
+
+/* Ensure top-bar has a defined z-index */
+.top-bar,
+.roulette-table .top-bar {
+  position: relative !important;
+  z-index: 2000 !important; /* Below sidebar (2001) but above other content */
+}
+
+/* Ensure sidebar appears below top-bar but above other content */
+.right-action-sidebar {
+  z-index: 2001 !important; /* Just above top-bar */
+}
+
+/* Ensure upcoming draws panel (if at top) doesn't conflict */
+.upcoming-draws-panel {
+  z-index: 1000 !important; /* Below top-bar and sidebar */
+}
+

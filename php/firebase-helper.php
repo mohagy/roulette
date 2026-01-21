@@ -129,3 +129,12 @@ function firebaseUpdateAnalytics($winningNumber, $drawNumber) {
     return firebaseWrite('analytics/current', $analyticsData);
 }
 
+
+
+
+
+
+
+
+
+

@@ -110,6 +110,19 @@ function checkIfBetIsWinner($bet, $winningNumber, $winningColor) {
             }
             break;
 
+        case 'sixline':
+            // Check for a six line bet (e.g., "Six Line (10,11,12,13,14,15)")
+            preg_match('/\((\d+),(\d+),(\d+),(\d+),(\d+),(\d+)\)/', $betDescription, $matches);
+            if (count($matches) >= 7) {
+                return $winningNumber == intval($matches[1]) ||
+                       $winningNumber == intval($matches[2]) ||
+                       $winningNumber == intval($matches[3]) ||
+                       $winningNumber == intval($matches[4]) ||
+                       $winningNumber == intval($matches[5]) ||
+                       $winningNumber == intval($matches[6]);
+            }
+            break;
+
         case 'line':
             // Check for a line bet (e.g., "Line (1,2,3,4,5,6)")
             preg_match_all('/\d+/', $betDescription, $matches);
@@ -124,7 +137,10 @@ function checkIfBetIsWinner($bet, $winningNumber, $winningColor) {
 
         default:
             // For any other bet types, check if the description contains the winning number
-            return strpos($betDescription, (string)$winningNumber) !== false;
+            // BUT: Only check as a whole word to avoid false matches (e.g., "5" matching "15")
+            // Use word boundaries to ensure exact number matches
+            $pattern = '/\b' . preg_quote((string)$winningNumber, '/') . '\b/';
+            return preg_match($pattern, $betDescription) === 1;
     }
 
     return false;
@@ -138,21 +154,163 @@ function checkIfBetIsWinner($bet, $winningNumber, $winningColor) {
  * @return array|null Winning information or null if not found
  */
 function getWinningInformation($conn, $drawNumber) {
-    // First try to get from detailed_draw_results (most reliable)
-    $stmt = $conn->prepare("
-        SELECT winning_number, color as winning_color, timestamp as draw_time
-        FROM detailed_draw_results
-        WHERE draw_number = ?
-    ");
-    $stmt->bind_param("i", $drawNumber);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    // FIRST: Try analytics_history (this is what TV display uses - stores completed draw results!)
+    // This is the SAME source that shows Draw #53 = 28 in the analytics display
+    // The API get_analytics_history.php queries this table the same way
+    $tableCheck = $conn->query("SHOW TABLES LIKE 'analytics_history'");
+    if ($tableCheck && $tableCheck->num_rows > 0) {
+        // Query exactly like the API does - no date restriction, just by draw_number
+        // The API uses: WHERE DATE(draw_time) = ? AND draw_number >= 1 AND draw_number <= 480
+        // But for historical lookups, we query by draw_number only (no date filter)
+        $stmt = $conn->prepare("
+            SELECT winning_number, winning_color, draw_time, draw_number
+            FROM analytics_history
+            WHERE draw_number = ?
+            ORDER BY id DESC, draw_time DESC
+            LIMIT 1
+        ");
+        if ($stmt) {
+            $stmt->bind_param("i", $drawNumber);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $winningNumber = intval($row['winning_number']);
+                
+                // Return the winning number if it's valid (0-36)
+                // Note: 0 is a valid winning number (green), so we check >= 0
+                if ($winningNumber >= 0 && $winningNumber <= 36) {
+                    $winningColor = $row['winning_color'];
+                    
+                    if (empty($winningColor)) {
+                        $redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+                        $winningColor = ($winningNumber == 0) ? 'green' : (in_array($winningNumber, $redNumbers) ? 'red' : 'black');
+                    }
 
-    if ($result->num_rows > 0) {
-        return $result->fetch_assoc();
+                    return [
+                        'winning_number' => $winningNumber,
+                        'winning_color' => $winningColor,
+                        'draw_time' => $row['draw_time'] ?? date('Y-m-d H:i:s')
+                    ];
+                }
+            }
+        }
+    }
+    
+    // SECOND: Try preset_schedule (this is what the API uses as fallback when analytics_history is empty!)
+    // The TV display gets data from preset_schedule if analytics_history doesn't have it
+    $tableCheck = $conn->query("SHOW TABLES LIKE 'preset_schedule'");
+    if ($tableCheck && $tableCheck->num_rows > 0) {
+        // Check all preset schedules (active and inactive) for historical data
+        $stmt = $conn->prepare("
+            SELECT schedule_data, start_draw_number, end_draw_number, pattern_type
+            FROM preset_schedule
+            WHERE start_draw_number <= ? AND end_draw_number >= ?
+            ORDER BY created_at DESC
+            LIMIT 1
+        ");
+        if ($stmt) {
+            $stmt->bind_param("ii", $drawNumber, $drawNumber);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                $preset = $result->fetch_assoc();
+                $scheduleData = json_decode($preset['schedule_data'], true);
+                if (is_array($scheduleData) && !empty($scheduleData)) {
+                    $index = $drawNumber - $preset['start_draw_number'];
+                    if ($index >= 0 && $index < count($scheduleData)) {
+                        $scheduleItem = $scheduleData[$index];
+                        $winningNumber = is_array($scheduleItem) 
+                            ? intval($scheduleItem['winning_number'] ?? $scheduleItem)
+                            : intval($scheduleItem);
+                        
+                        if ($winningNumber >= 0 && $winningNumber <= 36) {
+                            $redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+                            $winningColor = ($winningNumber == 0) ? 'green' : (in_array($winningNumber, $redNumbers) ? 'red' : 'black');
+                            
+                            // Calculate draw time based on draw number (3 minutes per draw)
+                            $drawMinutes = ($drawNumber - 1) * 3;
+                            $drawHour = floor($drawMinutes / 60);
+                            $drawMin = $drawMinutes % 60;
+                            $drawTime = date('Y-m-d') . ' ' . str_pad($drawHour, 2, '0', STR_PAD_LEFT) . ':' . str_pad($drawMin, 2, '0', STR_PAD_LEFT) . ':00';
+                            
+                            return [
+                                'winning_number' => $winningNumber,
+                                'winning_color' => $winningColor,
+                                'draw_time' => $drawTime
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // THIRD: Try next_draw_winning_number (only for FUTURE draws - forced numbers get deleted after draw completes!)
+    // This is what admin panel shows for upcoming draws, but gets deleted when draw completes
+    $stmt = $conn->prepare("
+        SELECT winning_number, source, reason
+        FROM next_draw_winning_number
+        WHERE draw_number = ?
+        ORDER BY id DESC
+        LIMIT 1
+    ");
+    if ($stmt) {
+        $stmt->bind_param("i", $drawNumber);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $winningNumber = intval($row['winning_number']);
+
+            if ($winningNumber >= 0 && $winningNumber <= 36) {
+                $redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+                $winningColor = ($winningNumber == 0) ? 'green' : (in_array($winningNumber, $redNumbers) ? 'red' : 'black');
+
+                // Try to get draw time from detailed_draw_results or analytics_history
+                $timeStmt = $conn->prepare("
+                    SELECT timestamp as draw_time
+                    FROM detailed_draw_results
+                    WHERE draw_number = ?
+                    LIMIT 1
+                ");
+                $timeStmt->bind_param("i", $drawNumber);
+                $timeStmt->execute();
+                $timeResult = $timeStmt->get_result();
+                $drawTime = date('Y-m-d H:i:s');
+                if ($timeResult->num_rows > 0) {
+                    $timeRow = $timeResult->fetch_assoc();
+                    $drawTime = $timeRow['draw_time'];
+                } else {
+                    // Try analytics_history for time
+                    $timeStmt2 = $conn->prepare("
+                        SELECT draw_time
+                        FROM analytics_history
+                        WHERE draw_number = ?
+                        LIMIT 1
+                    ");
+                    $timeStmt2->bind_param("i", $drawNumber);
+                    $timeStmt2->execute();
+                    $timeResult2 = $timeStmt2->get_result();
+                    if ($timeResult2->num_rows > 0) {
+                        $timeRow2 = $timeResult2->fetch_assoc();
+                        $drawTime = $timeRow2['draw_time'];
+                    }
+                }
+
+                return [
+                    'winning_number' => $winningNumber,
+                    'winning_color' => $winningColor,
+                    'draw_time' => $drawTime
+                ];
+            }
+        }
     }
 
-    // If not found, try to get from roulette_analytics
+    // FOURTH: Try to get from roulette_analytics all_spins
     $stmt = $conn->prepare("
         SELECT all_spins, number_frequency, current_draw_number
         FROM roulette_analytics
@@ -185,37 +343,6 @@ function getWinningInformation($conn, $drawNumber) {
                         'draw_time' => isset($spin['timestamp']) ? $spin['timestamp'] : date('Y-m-d H:i:s')
                     ];
                 }
-            }
-        }
-
-        // If we're looking for the current draw and it's not in all_spins yet
-        if ($drawNumber == $analytics['current_draw_number'] - 1) {
-            // Try to get from next_draw_winning_number table
-            $stmt = $conn->prepare("
-                SELECT winning_number
-                FROM next_draw_winning_number
-                WHERE draw_number = ?
-            ");
-            $stmt->bind_param("i", $drawNumber);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            if ($result->num_rows > 0) {
-                $row = $result->fetch_assoc();
-                $winningNumber = $row['winning_number'];
-
-                // Define red numbers
-                $redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
-                $winningColor = in_array($winningNumber, $redNumbers) ? 'red' : 'black';
-                if ($winningNumber == 0) {
-                    $winningColor = 'green';
-                }
-
-                return [
-                    'winning_number' => $winningNumber,
-                    'winning_color' => $winningColor,
-                    'draw_time' => date('Y-m-d H:i:s', strtotime('-3 minutes'))
-                ];
             }
         }
     }
@@ -342,14 +469,14 @@ $stmt = $conn->prepare("
         (bs.status = 'won') as is_winner,
         bs.paid_out_amount as winning_amount,
         bs.transaction_id,
-        ddr.winning_number AS actual_winning_number,
-        ddr.color as winning_color,
-        ddr.timestamp as draw_time,
-        UNIX_TIMESTAMP(ddr.timestamp) as draw_timestamp,
+        ah.winning_number AS ah_winning_number,
+        ah.winning_color AS ah_winning_color,
+        ah.draw_time AS ah_draw_time,
+        UNIX_TIMESTAMP(ah.draw_time) as draw_timestamp,
         UNIX_TIMESTAMP(NOW()) as current_time_ts
     FROM betting_slips bs
     LEFT JOIN transactions t ON bs.transaction_id = t.transaction_id
-    LEFT JOIN detailed_draw_results ddr ON bs.draw_number = ddr.draw_number
+    LEFT JOIN analytics_history ah ON bs.draw_number = ah.draw_number
     WHERE t.user_id = ?
     ORDER BY bs.created_at DESC
     LIMIT 50
@@ -359,15 +486,151 @@ $stmt->execute();
 $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        // If we don't have winning information from detailed_draw_results, try to get it from other sources
+        // Initialize actual_winning_number - prioritize analytics_history (same as TV display)
+        $row['actual_winning_number'] = null;
+        $row['winning_color'] = null;
+        $row['draw_time'] = null;
+        
+        // FIRST: Try analytics_history (this is what TV display uses - most reliable!)
+        // Always try direct query first (more reliable than JOIN for historical data)
+        $ahStmt = $conn->prepare("
+            SELECT winning_number, winning_color, draw_time, draw_number
+            FROM analytics_history
+            WHERE draw_number = ?
+            ORDER BY id DESC
+            LIMIT 1
+        ");
+        if ($ahStmt) {
+            $drawNum = intval($row['draw_number']);
+            $ahStmt->bind_param("i", $drawNum);
+            $ahStmt->execute();
+            $ahResult = $ahStmt->get_result();
+            if ($ahResult->num_rows > 0) {
+                $ahRow = $ahResult->fetch_assoc();
+                $ahNumber = intval($ahRow['winning_number']);
+                if ($ahNumber >= 0 && $ahNumber <= 36) {
+                    $row['actual_winning_number'] = $ahNumber;
+                    $row['winning_color'] = $ahRow['winning_color'];
+                    $row['draw_time'] = $ahRow['draw_time'];
+                    if ($row['draw_time']) {
+                        $row['draw_timestamp'] = strtotime($row['draw_time']);
+                    }
+                }
+            }
+        }
+        
+        // Fallback: If direct query didn't work, try LEFT JOIN result
+        if ($row['actual_winning_number'] === null && $row['ah_winning_number'] !== null && $row['ah_winning_number'] !== '') {
+            $ahNumber = intval($row['ah_winning_number']);
+            if ($ahNumber >= 0 && $ahNumber <= 36) {
+                $row['actual_winning_number'] = $ahNumber;
+                $row['winning_color'] = $row['ah_winning_color'];
+                $row['draw_time'] = $row['ah_draw_time'];
+                if ($row['draw_time']) {
+                    $row['draw_timestamp'] = strtotime($row['draw_time']);
+                }
+            }
+        }
+        
+        // SECOND: If analytics_history is empty, try preset_schedule (same as API fallback!)
+        // This is what the TV display uses when analytics_history is empty
+        // Check both active and inactive schedules (for historical data)
+        if ($row['actual_winning_number'] === null) {
+            // First try active schedules
+            $presetStmt = $conn->prepare("
+                SELECT schedule_data, start_draw_number, end_draw_number, pattern_type
+                FROM preset_schedule
+                WHERE start_draw_number <= ? AND end_draw_number >= ? AND is_active = 1
+                ORDER BY created_at DESC
+                LIMIT 1
+            ");
+            if ($presetStmt) {
+                $drawNum = intval($row['draw_number']);
+                $presetStmt->bind_param("ii", $drawNum, $drawNum);
+                $presetStmt->execute();
+                $presetResult = $presetStmt->get_result();
+                
+                // If no active schedule found, try inactive ones (for historical data)
+                if ($presetResult->num_rows == 0) {
+                    $presetStmt = $conn->prepare("
+                        SELECT schedule_data, start_draw_number, end_draw_number, pattern_type
+                        FROM preset_schedule
+                        WHERE start_draw_number <= ? AND end_draw_number >= ?
+                        ORDER BY created_at DESC
+                        LIMIT 1
+                    ");
+                    if ($presetStmt) {
+                        $presetStmt->bind_param("ii", $drawNum, $drawNum);
+                        $presetStmt->execute();
+                        $presetResult = $presetStmt->get_result();
+                    }
+                }
+            } else {
+                $presetResult = null;
+            }
+            
+            if ($presetResult && $presetResult->num_rows > 0) {
+                $preset = $presetResult->fetch_assoc();
+                $scheduleData = json_decode($preset['schedule_data'], true);
+                if (is_array($scheduleData) && !empty($scheduleData)) {
+                    $index = $drawNum - $preset['start_draw_number'];
+                    if ($index >= 0 && $index < count($scheduleData)) {
+                        $scheduleItem = $scheduleData[$index];
+                        $winningNumber = is_array($scheduleItem) 
+                            ? intval($scheduleItem['winning_number'] ?? $scheduleItem)
+                            : intval($scheduleItem);
+                        
+                        if ($winningNumber >= 0 && $winningNumber <= 36) {
+                            $redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+                            $winningColor = ($winningNumber == 0) ? 'green' : (in_array($winningNumber, $redNumbers) ? 'red' : 'black');
+                            
+                            // Calculate draw time based on draw number (3 minutes per draw, starting at 00:00)
+                            $drawMinutes = ($drawNum - 1) * 3;
+                            $drawHour = floor($drawMinutes / 60);
+                            $drawMin = $drawMinutes % 60;
+                            $drawTime = date('Y-m-d') . ' ' . str_pad($drawHour, 2, '0', STR_PAD_LEFT) . ':' . str_pad($drawMin, 2, '0', STR_PAD_LEFT) . ':00';
+                            
+                            $row['actual_winning_number'] = $winningNumber;
+                            $row['winning_color'] = $winningColor;
+                            $row['draw_time'] = $drawTime;
+                            $row['draw_timestamp'] = strtotime($drawTime);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // THIRD: If still not found, try getWinningInformation function (checks other sources)
         if ($row['actual_winning_number'] === null) {
             $winningInfo = getWinningInformation($conn, $row['draw_number']);
-            if ($winningInfo) {
-                $row['actual_winning_number'] = $winningInfo['winning_number'];
+            if ($winningInfo && isset($winningInfo['winning_number']) && $winningInfo['winning_number'] !== null && $winningInfo['winning_number'] !== '') {
+                $row['actual_winning_number'] = intval($winningInfo['winning_number']);
                 $row['winning_color'] = $winningInfo['winning_color'];
                 $row['draw_time'] = $winningInfo['draw_time'];
-                $row['draw_timestamp'] = strtotime($winningInfo['draw_time']);
+                if ($row['draw_time']) {
+                    $row['draw_timestamp'] = strtotime($row['draw_time']);
+                }
             }
+        }
+        
+        // FOURTH: Fallback to betting_slips.winning_number if available
+        // BUT: Skip 0 from betting_slips as it might be a default/placeholder value
+        // Only use it if we've exhausted all other sources
+        if ($row['actual_winning_number'] === null && $row['winning_number'] !== null && $row['winning_number'] !== '') {
+            $bsNumber = intval($row['winning_number']);
+            // Only use if it's a valid non-zero number, or if it's 0 and we're sure it's correct
+            if ($bsNumber > 0 && $bsNumber <= 36) {
+                $row['actual_winning_number'] = $bsNumber;
+                $redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+                $row['winning_color'] = in_array($bsNumber, $redNumbers) ? 'red' : 'black';
+            }
+            // Don't use 0 from betting_slips - it's likely a placeholder
+        }
+        
+        // Ensure color is set if we have a winning number
+        if ($row['actual_winning_number'] !== null && empty($row['winning_color'])) {
+            $redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+            $row['winning_color'] = ($row['actual_winning_number'] == 0) ? 'green' : (in_array($row['actual_winning_number'], $redNumbers) ? 'red' : 'black');
         }
 
         // If we have winning information, process the bets to determine winners
@@ -503,13 +766,27 @@ foreach ($bettingSlips as $slip) {
     $totalPotentialWins += $slip['potential_payout'];
 
     // Calculate actual wins from betting slips
+    // Only count slips that actually have winnings (paid_out_amount > 0 or calculated winning_amount > 0)
     $slipWinAmount = 0;
-    if ($slip['is_winner'] || $slip['status'] === 'won') {
-        // Use the winning_amount if available, otherwise use paid_out_amount
-        $slipWinAmount = isset($slip['winning_amount']) && $slip['winning_amount'] > 0
-            ? $slip['winning_amount']
-            : (isset($slip['paid_out_amount']) ? $slip['paid_out_amount'] : 0);
-
+    
+    // Get the actual winning amount from paid_out_amount first (most reliable - what was actually paid)
+    if (isset($slip['paid_out_amount']) && $slip['paid_out_amount'] > 0) {
+        $slipWinAmount = $slip['paid_out_amount'];
+    } else if (isset($slip['winning_amount']) && $slip['winning_amount'] > 0) {
+        $slipWinAmount = $slip['winning_amount'];
+    } else if (($slip['is_winner'] || $slip['status'] === 'won') && isset($slip['bets'])) {
+        // Calculate from bets if no paid_out_amount is set
+        $calculatedWin = 0;
+        foreach ($slip['bets'] as $bet) {
+            if (isset($bet['is_winner']) && $bet['is_winner'] && isset($bet['winning_amount'])) {
+                $calculatedWin += $bet['winning_amount'];
+            }
+        }
+        $slipWinAmount = $calculatedWin;
+    }
+    
+    // Only add to total if there are actual winnings
+    if ($slipWinAmount > 0) {
         $totalActualWins += $slipWinAmount;
 
         // Add to monthly data for wins
@@ -560,8 +837,9 @@ uasort($betsByType, function($a, $b) {
 $netProfit = $totalActualWins - abs($totalBets);
 $roi = $totalBets > 0 ? ($netProfit / abs($totalBets)) * 100 : 0;
 
-// Use actual wins for display (prioritize betting slip wins over transaction wins)
-$displayTotalWins = $totalActualWins > 0 ? $totalActualWins : $totalWins;
+// Use actual wins for display - ONLY count betting slip wins with paid_out_amount > 0
+// Don't fall back to transaction wins as they may be outdated or incorrect
+$displayTotalWins = $totalActualWins; // Always use actual wins from betting slips, even if 0
 
 // Prepare data for charts
 $chartData = [
@@ -629,29 +907,29 @@ $chartDataJson = json_encode($chartData);
                         <div class="collapse navbar-collapse" id="navbarNav">
                             <ul class="navbar-nav">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="https://roulette.aruka.app/slipp/index.html">
+                                    <a class="nav-link" href="index.html">
                                         <i class="fas fa-home"></i> Game
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link active" href="https://roulette.aruka.app/slipp/my_transactions_new.php">
+                                    <a class="nav-link active" href="my_transactions_new.php">
                                         <i class="fas fa-history"></i> My Transactions
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="https://roulette.aruka.app/slipp/redeem_voucher.php">
+                                    <a class="nav-link" href="redeem_voucher.php">
                                         <i class="fas fa-ticket-alt"></i> Redeem Voucher
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="https://roulette.aruka.app/slipp/commission.php">
+                                    <a class="nav-link" href="commission.php">
                                         <i class="fas fa-percentage"></i> Commission
                                     </a>
                                 </li>
                             </ul>
                             <ul class="navbar-nav ms-auto">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="https://roulette.aruka.app/slipp/logout.php">
+                                    <a class="nav-link" href="logout.php">
                                         <i class="fas fa-sign-out-alt"></i> Logout
                                     </a>
                                 </li>
@@ -677,8 +955,13 @@ $chartDataJson = json_encode($chartData);
                             <p class="mb-0">Win Rate: <span class="badge bg-light text-dark"><?php echo $user['win_rate']; ?>%</span></p>
                         </div>
                         <div class="col-md-6 text-md-end">
-                            <div class="balance-label">Current Balance</div>
-                            <div class="balance-amount" id="balance-amount">$<?php echo number_format($user['cash_balance'], 2); ?></div>
+                            <div class="balance-label">
+                                Current Balance
+                                <button class="btn btn-sm btn-link p-0 ms-2" id="refresh-balance" title="Refresh Balance" style="color: inherit; text-decoration: none;">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div class="balance-amount" id="balance-amount" style="cursor: pointer;" title="Click to refresh balance">$<?php echo number_format($user['cash_balance'], 2); ?></div>
                         </div>
                     </div>
                 </div>
@@ -809,7 +1092,9 @@ $chartDataJson = json_encode($chartData);
                                                     <?php endif; ?>
                                                 </td>
                                                 <td class="result-cell">
-                                                    <?php if ($slip['actual_winning_number'] === null): ?>
+                                                    <?php if ($slip['is_paid'] == 1): ?>
+                                                        <span class="badge bg-info">PROCESSED</span>
+                                                    <?php elseif ($slip['actual_winning_number'] === null): ?>
                                                         <span class="badge badge-pending">Pending</span>
                                                     <?php elseif ($slip['is_winner'] || $slip['status'] === 'won'): ?>
                                                         <span class="badge badge-win">WIN</span>

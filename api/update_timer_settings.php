@@ -102,11 +102,24 @@ try {
     $latestResult = $conn->query($getLatestQuery);
     $latestState = $latestResult->fetch_assoc();
 
-    // Insert a new record with updated next_draw_time
+    // Update or insert state with id=1 (single row pattern)
     $stmt = $conn->prepare("
         INSERT INTO roulette_state
-        (roll_history, roll_colors, last_draw, next_draw, countdown_time, end_time, current_draw_number, winning_number, next_draw_winning_number, manual_mode, next_draw_time)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (id, roll_history, roll_colors, last_draw, next_draw, countdown_time, end_time, current_draw_number, winning_number, next_draw_winning_number, manual_mode, next_draw_time, updated_at)
+        VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+        ON DUPLICATE KEY UPDATE
+            roll_history = VALUES(roll_history),
+            roll_colors = VALUES(roll_colors),
+            last_draw = VALUES(last_draw),
+            next_draw = VALUES(next_draw),
+            countdown_time = VALUES(countdown_time),
+            end_time = VALUES(end_time),
+            current_draw_number = VALUES(current_draw_number),
+            winning_number = VALUES(winning_number),
+            next_draw_winning_number = VALUES(next_draw_winning_number),
+            manual_mode = VALUES(manual_mode),
+            next_draw_time = VALUES(next_draw_time),
+            updated_at = NOW()
     ");
 
     $stmt->bind_param("ssssiiiiiii",

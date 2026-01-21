@@ -9,8 +9,8 @@ const CashierDrawDisplay = (function() {
     const config = {
         debug: true,
         syncInterval: 5000, // Sync every 5 seconds
-        apiEndpoint: 'php/get_last_completed_draw_details.php',
-        fallbackEndpoint: 'api/tv_sync.php',
+        apiEndpoint: 'api/get_current_draw.php', // Use server-time-based draw calculation
+        fallbackEndpoint: 'php/get_last_completed_draw_details.php',
         storageKeys: {
             position: 'cashier_draw_display_position',
             collapsed: 'cashier_draw_display_collapsed',
@@ -328,66 +328,7 @@ const CashierDrawDisplay = (function() {
         try {
             updateSyncStatus('syncing');
 
-            // Try Firebase first if available
-            if (window.FirebaseService && window.FirebaseService.isOnline()) {
-                try {
-                    log('Fetching draw data from Firebase...');
-                    
-                    // Get draw info from Firebase
-                    const drawInfo = await window.FirebaseService.GameState.getDrawInfo();
-                    const gameState = await window.FirebaseService.GameState.getCurrent();
-                    
-                    let currentDraw = 0;
-                    let lastCompletedDraw = 0;
-                    
-                    if (drawInfo && drawInfo.currentDraw) {
-                        currentDraw = drawInfo.currentDraw;
-                        lastCompletedDraw = currentDraw;
-                    } else if (gameState && gameState.drawNumber) {
-                        currentDraw = gameState.drawNumber;
-                        lastCompletedDraw = currentDraw;
-                    }
-                    
-                    // Get last draw details from Firebase
-                    let lastDrawDetails = null;
-                    if (lastCompletedDraw > 0) {
-                        try {
-                            const lastDraw = await window.FirebaseService.Draws.getDraw(lastCompletedDraw);
-                            if (lastDraw) {
-                                lastDrawDetails = {
-                                    draw_number: lastCompletedDraw,
-                                    winning_number: lastDraw.winningNumber || null,
-                                    winning_number_color: lastDraw.color || null,
-                                    total_slips: lastDraw.totalSlips || 0,
-                                    winning_slips: lastDraw.winningSlips || 0
-                                };
-                            }
-                        } catch (e) {
-                            log('Error fetching last draw details:', e);
-                        }
-                    }
-                    
-                    if (currentDraw > 0) {
-                        const firebaseData = {
-                            draw_number: lastCompletedDraw,
-                            last_completed_draw: lastCompletedDraw,
-                            next_draw_for_betting: currentDraw + 1,
-                            upcoming_draw: currentDraw + 1,
-                            ...lastDrawDetails
-                        };
-                        
-                        processDrawData(firebaseData);
-                        updateLastCompletedDrawDetails(firebaseData);
-                        updateSyncStatus('active');
-                        log('Successfully synced from Firebase:', firebaseData);
-                        return;
-                    }
-                } catch (firebaseError) {
-                    log('Firebase sync failed, trying API fallback:', firebaseError);
-                }
-            }
-
-            // Fallback to PHP API if Firebase is not available
+            // Fetch enhanced draw details
             const response = await fetch(config.apiEndpoint + '?_cb=' + Date.now());
 
             if (!response.ok) {
@@ -397,8 +338,68 @@ const CashierDrawDisplay = (function() {
             const data = await response.json();
 
             if (data.status === 'success' && data.data) {
-                processDrawData(data.data);
-                updateLastCompletedDrawDetails(data.data);
+                // api/get_current_draw.php format
+                const drawData = {
+                    current_draw_number: data.data.current_draw_number,
+                    next_draw_number: data.data.next_draw_number,
+                    draw_number: data.data.current_draw_number, // For backward compatibility
+                    // Winning number info may not be in get_current_draw.php, fetch separately if needed
+                    winning_number: data.data.winning_number || null,
+                    winning_number_color: data.data.winning_number_color || null
+                };
+                
+                processDrawData(drawData);
+                
+                // Try to get draw details (winning number, slips) from separate endpoint
+                // ⚠️ CRITICAL: Query for LAST completed draw, not current draw (current draw may not be completed yet)
+                // Get the last completed draw (current_draw_number - 1, or use null to get latest from today)
+                const lastCompletedDrawNumber = drawData.current_draw_number ? (drawData.current_draw_number - 1) : null;
+                
+                if (drawData.current_draw_number) {
+                    try {
+                        // First try to get details for the last completed draw (current - 1)
+                        const drawNumberToQuery = lastCompletedDrawNumber || drawData.current_draw_number;
+                        const detailsResponse = await fetch(`php/get_last_completed_draw_details.php?draw_number=${drawNumberToQuery}&_cb=${Date.now()}`);
+                        if (detailsResponse.ok) {
+                            const detailsData = await detailsResponse.json();
+                            console.log('Draw details API response:', detailsData);
+                            
+                            if (detailsData.status === 'success' && detailsData.data) {
+                                // Use the data even if draw_number doesn't exactly match (it's the last completed draw)
+                                updateLastCompletedDrawDetails(detailsData.data);
+                            } else {
+                                // If no draw number specified, try without draw_number to get latest
+                                try {
+                                    const latestResponse = await fetch(`php/get_last_completed_draw_details.php?_cb=${Date.now()}`);
+                                    if (latestResponse.ok) {
+                                        const latestData = await latestResponse.json();
+                                        if (latestData.status === 'success' && latestData.data && latestData.data.draw_number) {
+                                            console.log('Using latest completed draw:', latestData.data.draw_number);
+                                            updateLastCompletedDrawDetails(latestData.data);
+                                        }
+                                    }
+                                } catch (latestError) {
+                                    console.warn('Could not fetch latest draw details:', latestError);
+                                }
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error fetching draw details:', error);
+                        // If draw details fetch fails, try without draw_number parameter to get latest
+                        try {
+                            const fallbackResponse = await fetch(`php/get_last_completed_draw_details.php?_cb=${Date.now()}`);
+                            if (fallbackResponse.ok) {
+                                const fallbackData = await fallbackResponse.json();
+                                if (fallbackData.status === 'success' && fallbackData.data && fallbackData.data.draw_number) {
+                                    updateLastCompletedDrawDetails(fallbackData.data);
+                                }
+                            }
+                        } catch (fallbackError) {
+                            console.error('Fallback draw details fetch also failed:', fallbackError);
+                        }
+                    }
+                }
+                
                 updateSyncStatus('active');
             } else {
                 throw new Error(data.message || 'Invalid response format');
@@ -411,12 +412,26 @@ const CashierDrawDisplay = (function() {
     }
 
     /**
-     * Process draw data from API or Firebase
+     * Process draw data from API
      */
     function processDrawData(data) {
-        // Handle enhanced API response format or Firebase data
-        const lastCompletedDraw = data.draw_number || data.last_completed_draw || data.current_completed_draw || 0;
-        const upcomingDraw = data.upcoming_draw || data.next_draw_for_betting || (lastCompletedDraw ? lastCompletedDraw + 1 : 1);
+        // ⚠️ CRITICAL: Use server-time-based draw numbers from get_current_draw.php
+        // If API provides current_draw_number and next_draw_number, use those
+        // Otherwise, fall back to draw_number but cap at 480 (max draws per day)
+        let lastCompletedDraw = null;
+        let upcomingDraw = null;
+        
+        if (data.current_draw_number !== undefined) {
+            // API provides server-time-based draw numbers
+            lastCompletedDraw = parseInt(data.current_draw_number) || null;
+            upcomingDraw = parseInt(data.next_draw_number) || (lastCompletedDraw ? lastCompletedDraw + 1 : null);
+        } else if (data.draw_number !== undefined) {
+            // Fallback to draw_number from old API
+            const rawDrawNumber = parseInt(data.draw_number);
+            // ⚠️ Cap at 480 (max draws per day - resets daily)
+            lastCompletedDraw = rawDrawNumber > 480 ? rawDrawNumber % 480 : rawDrawNumber;
+            upcomingDraw = lastCompletedDraw ? (lastCompletedDraw >= 480 ? 1 : lastCompletedDraw + 1) : null;
+        }
 
         // Update state
         const hasChanges = (
@@ -572,14 +587,25 @@ const CashierDrawDisplay = (function() {
             }
         }
 
-        // Show the details section if we have data
-        if (elements.lastDrawDetails && data.draw_number) {
-            elements.lastDrawDetails.style.display = 'block';
+        // Show the details section if we have data (winning number OR draw number)
+        if (elements.lastDrawDetails) {
+            // Always show if we have a winning number (even if no draw_number)
+            // Or show if we have a draw_number
+            const hasData = (data.winning_number !== null && data.winning_number !== undefined) || data.draw_number;
+            
+            if (hasData) {
+                elements.lastDrawDetails.style.display = 'block';
+                log('Showing draw details section - winning number:', data.winning_number, ', draw number:', data.draw_number);
 
-            // Add a subtle highlight effect for new data
-            if (isNewData) {
-                elements.lastDrawDetails.classList.add('updated');
-                setTimeout(() => elements.lastDrawDetails.classList.remove('updated'), 1000);
+                // Add a subtle highlight effect for new data
+                if (isNewData) {
+                    elements.lastDrawDetails.classList.add('updated');
+                    setTimeout(() => elements.lastDrawDetails.classList.remove('updated'), 1000);
+                }
+            } else {
+                // Hide if no data at all
+                elements.lastDrawDetails.style.display = 'none';
+                log('Hiding draw details section - no winning number or draw number');
             }
         }
     }

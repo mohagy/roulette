@@ -14,7 +14,7 @@ class TVStyleDrawDisplay {
             container: document.body,
             debug: false,
             syncInterval: 5000, // 5 seconds
-            syncUrl: 'sync_draw_timer.php',
+            syncUrl: 'api/get_current_draw.php', // Use correct API endpoint
             ...config
         };
 
@@ -71,20 +71,85 @@ class TVStyleDrawDisplay {
                 'Expires': '0'
             }
         })
-            .then(response => response.json())
+            .then(response => {
+                // Check if response is OK
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 this.log('Received data from server:', data);
 
-                // Force refresh if draw numbers have changed
-                const drawNumberChanged =
-                    (data.currentDrawNumber !== undefined && this.state.currentDrawNumber !== data.currentDrawNumber) ||
-                    (data.lastDrawNumber !== undefined && this.state.lastDrawNumber !== data.lastDrawNumber);
+                // Handle api/get_current_draw.php response format
+                if (data.status === 'success' && data.data) {
+                    const apiData = data.data;
+                    const currentDraw = apiData.current_draw_number || apiData.currentDrawNumber || 1;
+                    const nextDraw = apiData.next_draw_number || (currentDraw + 1);
+                    
+                    // Get countdown from Georgetown time sync if available
+                    let countdownTime = 0;
+                    if (window.GeorgetownTimeSync && typeof window.GeorgetownTimeSync.getSecondsUntilNextDraw === 'function') {
+                        const secondsRemaining = window.GeorgetownTimeSync.getSecondsUntilNextDraw();
+                        if (secondsRemaining !== null && secondsRemaining > 0) {
+                            countdownTime = secondsRemaining;
+                            this.log('Got countdown from GeorgetownTimeSync:', countdownTime);
+                        }
+                    }
+                    
+                    // Try real-time-countdown-timer if available
+                    if (!countdownTime && window.RealTimeCountdownTimer) {
+                        const timerElement = document.getElementById('countdown-time');
+                        if (timerElement && timerElement.dataset.secondsRemaining) {
+                            countdownTime = parseInt(timerElement.dataset.secondsRemaining);
+                            this.log('Got countdown from real-time-countdown-timer:', countdownTime);
+                        }
+                    }
+                    
+                    // Calculate countdown if we have server time
+                    if (!countdownTime && apiData.server_time) {
+                        // Calculate seconds until next 3-minute interval
+                        const now = new Date();
+                        const currentMinute = parseInt(apiData.server_time.minute || now.getMinutes());
+                        const currentSecond = parseInt(apiData.server_time.second || now.getSeconds());
+                        const minutesToNext = 3 - (currentMinute % 3);
+                        countdownTime = (minutesToNext * 60) - currentSecond;
+                        if (countdownTime <= 0) countdownTime = 180; // Default to 3 minutes
+                        this.log('Calculated countdown from server time:', countdownTime);
+                    }
+                    
+                    // Fallback: calculate from current time
+                    if (!countdownTime) {
+                        const now = new Date();
+                        const currentMinute = now.getMinutes();
+                        const currentSecond = now.getSeconds();
+                        const minutesToNext = 3 - (currentMinute % 3);
+                        countdownTime = (minutesToNext * 60) - currentSecond;
+                        if (countdownTime <= 0) countdownTime = 180;
+                        this.log('Using fallback countdown calculation:', countdownTime);
+                    }
+                    
+                    // Update display with formatted data
+                    const displayData = {
+                        currentDrawNumber: currentDraw,
+                        lastDrawNumber: currentDraw > 1 ? (currentDraw - 1) : 1,
+                        upcomingDraws: [nextDraw],
+                        countdownTime: countdownTime
+                    };
+                    
+                    this.updateDisplay(displayData);
+                } else {
+                    // Handle old format or fallback
+                    const drawNumberChanged =
+                        (data.currentDrawNumber !== undefined && this.state.currentDrawNumber !== data.currentDrawNumber) ||
+                        (data.lastDrawNumber !== undefined && this.state.lastDrawNumber !== data.lastDrawNumber);
 
-                if (drawNumberChanged) {
-                    this.log('Draw numbers changed, forcing refresh');
+                    if (drawNumberChanged) {
+                        this.log('Draw numbers changed, forcing refresh');
+                    }
+
+                    this.updateDisplay(data);
                 }
-
-                this.updateDisplay(data);
             })
             .catch(error => {
                 this.log('Error syncing with server:', error);
@@ -544,10 +609,17 @@ class TVStyleDrawDisplay {
      * Update the countdown display
      */
     updateCountdown() {
+        if (!this.timerDisplay) {
+            this.log('Timer display element not found');
+            return;
+        }
+        
         const minutes = Math.floor(this.state.countdownTime / 60);
         const seconds = this.state.countdownTime % 60;
+        const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-        this.timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        this.timerDisplay.textContent = formattedTime;
+        this.log(`Updated countdown timer: ${formattedTime} (${this.state.countdownTime}s remaining)`);
 
         // Add warning class if less than 30 seconds
         if (this.state.countdownTime < 30) {

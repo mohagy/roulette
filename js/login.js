@@ -51,28 +51,27 @@ $(document).ready(function() {
         // Show loading overlay
         loadingOverlay.addClass('active');
 
-        // Get form data
-        const username = usernameInput.val();
-        const password = passwordInput.val();
-
-        // Try Firebase authentication first (for static hosting)
-        if (window.FirebaseAuth && window.FirebaseService && FirebaseService.isOnline()) {
-            FirebaseAuth.login(username, password)
-                .then(function(user) {
+        // Submit form via AJAX
+        $.ajax({
+            type: 'POST',
+            url: 'ajax_login.php', // Use the dedicated AJAX endpoint
+            data: $(this).serialize(),
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success') {
                     // Add success animation
                     loginButton.addClass('success');
 
                     // Redirect after a short delay
                     setTimeout(function() {
-                        window.location.href = 'index.html';
+                        window.location.href = response.redirect || 'index.php';
                     }, 1000);
-                })
-                .catch(function(error) {
+                } else {
                     // Hide loading overlay
                     loadingOverlay.removeClass('active');
 
                     // Show error message
-                    showError(error.message || 'Login failed. Please try again.');
+                    showError(response.message || 'Login failed. Please try again.');
 
                     // Add error animation to button
                     loginButton.addClass('error');
@@ -80,51 +79,38 @@ $(document).ready(function() {
                         loginButton.removeClass('error');
                     }, 1000);
 
-                    console.error('Login error:', error);
-                });
-        } else {
-            // Fallback to PHP if Firebase is not available (local development)
-            $.ajax({
-                type: 'POST',
-                url: 'ajax_login.php',
-                data: $(this).serialize(),
-                dataType: 'json',
-                success: function(response) {
-                    if (response.status === 'success') {
-                        loginButton.addClass('success');
-                        setTimeout(function() {
-                            window.location.href = response.redirect || 'index.html';
-                        }, 1000);
-                    } else {
-                        loadingOverlay.removeClass('active');
-                        showError(response.message || 'Login failed. Please try again.');
-                        loginButton.addClass('error');
-                        setTimeout(function() {
-                            loginButton.removeClass('error');
-                        }, 1000);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    loadingOverlay.removeClass('active');
-                    let errorMessage = 'Network error. Please try again.';
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        if (response && response.message) {
-                            errorMessage = response.message;
-                        }
-                    } catch (e) {
-                        if (xhr.responseText && xhr.responseText.includes('Fatal error')) {
-                            errorMessage = 'PHP Error: ' + xhr.responseText.split('<b>')[1].split('</b>')[0];
-                        }
-                    }
-                    showError(errorMessage);
-                    loginButton.addClass('error');
-                    setTimeout(function() {
-                        loginButton.removeClass('error');
-                    }, 1000);
+                    console.error('Login error:', response);
                 }
-            });
-        }
+            },
+            error: function(xhr, status, error) {
+                // Hide loading overlay
+                loadingOverlay.removeClass('active');
+
+                // Try to parse the response if it's JSON
+                let errorMessage = 'Network error. Please try again.';
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response && response.message) {
+                        errorMessage = response.message;
+                    }
+                } catch (e) {
+                    // If the response is not JSON, check if it contains HTML error messages
+                    if (xhr.responseText && xhr.responseText.includes('Fatal error')) {
+                        errorMessage = 'PHP Error: ' + xhr.responseText.split('<b>')[1].split('</b>')[0];
+                    }
+                }
+
+                // Show error message
+                showError(errorMessage);
+                console.error('AJAX Error:', status, error, xhr.responseText);
+
+                // Add error animation to button
+                loginButton.addClass('error');
+                setTimeout(function() {
+                    loginButton.removeClass('error');
+                }, 1000);
+            }
+        });
     });
 
 

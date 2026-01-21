@@ -7,21 +7,24 @@
 /* ===== RIGHT SIDEBAR CONTAINER ===== */
 .right-action-sidebar {
     position: fixed !important;
-    top: 50% !important;
-    right: 20px !important;
-    transform: translateY(-50%) !important;
-    z-index: 1500 !important;
+    top: 90px !important; /* Position below top-bar (5rem = 80px + 10px gap) */
+    left: 50% !important; /* Center horizontally */
+    right: auto !important;
+    transform: translateX(-50%) !important; /* Center horizontally */
+    z-index: 2001 !important; /* Higher than top-bar to ensure visibility */
     display: flex !important;
-    flex-direction: column !important;
+    flex-direction: row !important; /* Horizontal layout */
     gap: 15px !important;
-    padding: 20px 0 !important;
-    background: rgba(0, 0, 0, 0.05) !important;
+    padding: 10px 20px !important;
+    background: rgba(0, 0, 0, 0.85) !important; /* More opaque to stand out */
     border-radius: 15px !important;
     backdrop-filter: blur(10px) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    min-width: 100px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important; /* Stronger shadow */
+    border: 2px solid rgba(255, 215, 0, 0.5) !important; /* More visible border */
+    min-width: auto !important;
+    width: auto !important;
     align-items: center !important;
+    justify-content: center !important;
 }
 
 /* ===== BUTTON POSITIONING IN SIDEBAR ===== */

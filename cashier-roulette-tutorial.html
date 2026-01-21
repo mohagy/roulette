@@ -1,0 +1,2945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette Betting System - Cashier User Manual</title>
+    <style>
+        /* Professional CSS Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #d4af37;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 3px solid #d4af37;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            color: #fff;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .toc {
+            background: #f8f9fa;
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 40px;
+        }
+
+        .toc h2 {
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 10px;
+        }
+
+        .toc ul {
+            list-style: none;
+            columns: 2;
+            column-gap: 30px;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+            break-inside: avoid;
+        }
+
+        .toc a {
+            color: #2c3e50;
+            text-decoration: none;
+            padding: 5px 0;
+            display: block;
+            border-bottom: 1px dotted #ccc;
+            transition: all 0.3s ease;
+        }
+
+        .toc a:hover {
+            color: #d4af37;
+            border-bottom-color: #d4af37;
+            padding-left: 10px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+            scroll-margin-top: 20px;
+        }
+
+        .section h2 {
+            color: #1a1a1a;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #d4af37;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+            border-left: 4px solid #d4af37;
+        }
+
+        .section h4 {
+            color: #34495e;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+
+        .section p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(212, 175, 55, 0.2);
+        }
+
+        .highlight-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border: 2px solid #dc3545;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(220, 53, 69, 0.2);
+        }
+
+        .warning-box h4 {
+            color: #721c24;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+            border: 2px solid #17a2b8;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(23, 162, 184, 0.2);
+        }
+
+        .info-box h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .step-list {
+            counter-reset: step-counter;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #d4af37;
+            border-radius: 0 8px 8px 0;
+            position: relative;
+        }
+
+        .step-list li::before {
+            content: "Step " counter(step-counter);
+            font-weight: bold;
+            color: #d4af37;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .screenshot-placeholder {
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+            border: 3px dashed #6c757d;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 25px 0;
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .screenshot-placeholder h4 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .screenshot-placeholder p {
+            color: #6c757d;
+            font-style: italic;
+            margin-bottom: 10px;
+            max-width: 600px;
+        }
+
+        .screenshot-placeholder .capture-instructions {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: left;
+            max-width: 700px;
+            font-size: 0.9em;
+        }
+
+        .video-placeholder {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 3px dashed #28a745;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 25px 0;
+            text-align: center;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-placeholder h4 {
+            color: #155724;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .video-placeholder p {
+            color: #155724;
+            font-style: italic;
+            margin-bottom: 10px;
+            max-width: 600px;
+        }
+
+        .video-placeholder .capture-instructions {
+            background: #fff;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: left;
+            max-width: 700px;
+            font-size: 0.9em;
+        }
+
+        .workflow-diagram {
+            background: #fff;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .workflow-step {
+            display: inline-block;
+            background: linear-gradient(135deg, #d4af37 0%, #f5d76e 100%);
+            color: #1a1a1a;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .workflow-arrow {
+            font-size: 1.5em;
+            color: #d4af37;
+            margin: 0 10px;
+        }
+
+        .ui-element {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .keyboard-shortcut {
+            background: #343a40;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            margin: 0 2px;
+        }
+
+        /* Media Container Styles */
+        .media-container {
+            background: #fff;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .media-container h4 {
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #d4af37;
+            padding-bottom: 10px;
+        }
+
+        .tutorial-screenshot {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin: 15px 0;
+            transition: transform 0.3s ease;
+        }
+
+        .tutorial-screenshot:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .tutorial-video {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin: 15px 0;
+        }
+
+        .media-caption {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 12px;
+            margin-top: 15px;
+            text-align: left;
+            font-size: 0.9em;
+            color: #495057;
+        }
+
+        .media-fallback {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #721c24;
+            text-align: center;
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .media-grid .media-container {
+            margin: 0;
+        }
+
+        .footer {
+            background: #1a1a1a;
+            color: #d4af37;
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            
+            .header {
+                background: #1a1a1a !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+            }
+            
+            .screenshot-placeholder,
+            .video-placeholder {
+                border: 2px solid #000;
+                background: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 0;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .toc ul {
+                columns: 1;
+            }
+            
+            .section h2 {
+                font-size: 1.6em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎰 Roulette Betting System</h1>
+            <div class="subtitle">Comprehensive Cashier User Manual</div>
+        </div>
+
+        <div class="content">
+            <!-- Table of Contents -->
+            <div class="toc">
+                <h2>📋 Table of Contents</h2>
+                <ul>
+                    <li><a href="#introduction">1. Introduction to the System</a></li>
+                    <li><a href="#getting-started">2. Getting Started</a></li>
+                    <li><a href="#interface-overview">3. Interface Overview</a></li>
+                    <li><a href="#basic-operations">4. Basic Operations</a></li>
+                    <li><a href="#betting-workflow">5. Betting Workflow</a></li>
+                    <li><a href="#customer-interaction">6. Customer Interaction</a></li>
+                    <li><a href="#cash-management">7. Cash Management</a></li>
+                    <li><a href="#tv-display-system">8. Customer TV Display System</a></li>
+                    <li><a href="#slip-printing">9. Slip Printing & Validation</a></li>
+                    <li><a href="#troubleshooting">10. Troubleshooting</a></li>
+                    <li><a href="#security">11. Security & Best Practices</a></li>
+                    <li><a href="#keyboard-shortcuts">12. Keyboard Shortcuts</a></li>
+                    <li><a href="#faq">13. Frequently Asked Questions</a></li>
+                    <li><a href="#commission-management">14. Commission Management</a></li>
+                    <li><a href="#transaction-management">15. Transaction Management</a></li>
+                    <li><a href="#voucher-redemption">16. Voucher Redemption</a></li>
+                    <li><a href="#customer-cashout">17. Customer Cashout Processing</a></li>
+                </ul>
+            </div>
+
+            <!-- Section 1: Introduction -->
+            <div class="section" id="introduction">
+                <h2>1. Introduction to the Roulette Betting System</h2>
+
+                <p>Welcome to the professional roulette betting system designed specifically for casino cashiers. This comprehensive manual will guide you through all aspects of operating the system efficiently and securely.</p>
+
+                <div class="highlight-box">
+                    <h4>🎯 System Overview</h4>
+                    <p>The roulette betting system is a web-based application that allows cashiers to:</p>
+                    <ul>
+                        <li>Process customer bets on roulette games</li>
+                        <li>Manage cash transactions securely</li>
+                        <li>Print betting slips and receipts</li>
+                        <li>Track upcoming draws and results</li>
+                        <li>Handle customer inquiries and validations</li>
+                    </ul>
+                </div>
+
+                <h3>System Access</h3>
+                <p>The system is accessed through your web browser at: <strong>http://localhost:8080/slipp/index.php</strong></p>
+
+                <div class="info-box">
+                    <h4>🔐 Cashier Role Features</h4>
+                    <p>As a cashier user, you have access to:</p>
+                    <ul>
+                        <li>Customer betting interface</li>
+                        <li>Cash balance management</li>
+                        <li>Slip printing and reprinting</li>
+                        <li>Draw information and timing</li>
+                        <li>Basic customer service functions</li>
+                    </ul>
+                    <p><strong>Note:</strong> Administrative functions like slip cancellation are restricted to admin users for security purposes.</p>
+                </div>
+
+                <h3>Browser Requirements</h3>
+                <ul>
+                    <li>Modern web browser (Chrome, Firefox, Safari, Edge)</li>
+                    <li>JavaScript enabled</li>
+                    <li>Stable internet connection</li>
+                    <li>Screen resolution: 1024x768 minimum (1920x1080 recommended)</li>
+                </ul>
+            </div>
+
+            <!-- Section 2: Getting Started -->
+            <div class="section" id="getting-started">
+                <h2>2. Getting Started</h2>
+
+                <h3>Login Process</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Open your web browser</strong><br>
+                        Navigate to the system URL provided by your supervisor.
+                    </li>
+                    <li>
+                        <strong>Enter your credentials</strong><br>
+                        Use the username and password provided during your training.
+                    </li>
+                    <li>
+                        <strong>Verify your role</strong><br>
+                        Ensure you see the cashier interface (no administrative controls visible).
+                    </li>
+                </ol>
+
+                <div class="media-container">
+                    <h4>📸 Screenshot: Login Screen</h4>
+                    <img src="media/screenshots/01-login-screen.png"
+                         alt="Login screen showing username and password fields with casino branding"
+                         class="tutorial-screenshot"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Image not found:</strong> media/screenshots/01-login-screen.png</p>
+                        <p>Please ensure the screenshot file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h3>First Time Setup</h3>
+                <div class="warning-box">
+                    <h4>⚠️ Important Security Notice</h4>
+                    <p>Never share your login credentials with anyone. Each cashier must use their own account for proper audit trails and security compliance.</p>
+                </div>
+
+                <ol class="step-list">
+                    <li>
+                        <strong>Verify your cash drawer balance</strong><br>
+                        Check that your starting cash amount matches the system display.
+                    </li>
+                    <li>
+                        <strong>Test printer connectivity</strong><br>
+                        Print a test slip to ensure your printer is working correctly.
+                    </li>
+                    <li>
+                        <strong>Review current draw information</strong><br>
+                        Check the upcoming draw times and any special announcements.
+                    </li>
+                </ol>
+            </div>
+
+            <!-- Section 3: Interface Overview -->
+            <div class="section" id="interface-overview">
+                <h2>3. Interface Overview</h2>
+
+                <p>The cashier interface is designed for efficiency and ease of use. Understanding each component will help you serve customers quickly and accurately.</p>
+
+                <div class="media-container">
+                    <h4>📸 Screenshot: Main Interface Overview</h4>
+                    <img src="media/screenshots/02-main-interface-overview.png"
+                         alt="Complete POS roulette interface showing yellow header, left betting panel, green roulette table, right draw panel, and bottom controls"
+                         class="tutorial-screenshot"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Image not found:</strong> media/screenshots/02-main-interface-overview.png</p>
+                        <p>Please ensure the screenshot file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h3>Key Interface Components</h3>
+
+                <h4>🎰 Roulette Table (Center Area)</h4>
+                <p>The main betting area occupies the center of the screen with a green felt background:</p>
+                <ul>
+                    <li><strong>Number Grid:</strong> Individual numbers 0-36 arranged in the traditional roulette layout with red and black circles</li>
+                    <li><strong>Outside Betting Areas:</strong>
+                        <ul>
+                            <li>1st 12, 2nd 12, 3rd 12 (dozen bets) at the bottom</li>
+                            <li>1 to 18, EVEN, Red diamond, Black diamond, ODD, 19 to 36 in the lower section</li>
+                        </ul>
+                    </li>
+                    <li><strong>Stake Chips:</strong> Purple "100" chips visible on various betting positions</li>
+                    <li><strong>Interactive Betting:</strong> Click any number or betting area to place bets</li>
+                </ul>
+
+                <div class="media-container">
+                    <h4>📸 Screenshot: Roulette Table Detail</h4>
+                    <img src="media/screenshots/03-roulette-table-detail.png"
+                         alt="Close-up view of roulette betting table showing all bet types and number grid"
+                         class="tutorial-screenshot"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Image not found:</strong> media/screenshots/03-roulette-table-detail.png</p>
+                        <p>Please ensure the screenshot file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h4>💰 Left Sidebar - Betting Controls</h4>
+                <p>The left panel contains multiple betting options and stake management:</p>
+                <ul>
+                    <li><strong>Stake/Bet Section:</strong> Shows "Stake / Bet" with amount $100.00</li>
+                    <li><strong>Betting Options:</strong> Multiple colored sections including:
+                        <ul>
+                            <li><strong>STRAIGHT:</strong> Straight up bets ($100.00, Return: $3600.00)</li>
+                            <li><strong>CORNER:</strong> Four number bets ($100.00, Return: $900.00)</li>
+                            <li><strong>SPLIT:</strong> Split bets ($100.00, Return: $1800.00)</li>
+                            <li><strong>STREET:</strong> Street bets ($100.00, Return: $1200.00)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Action Buttons:</strong> Each betting type has "GO ON" and "REMOVE" buttons</li>
+                    <li><strong>Calculate Change:</strong> Button at bottom for transaction calculations</li>
+                </ul>
+
+                <h4>📊 Top Header - Upcoming Draws</h4>
+                <p>The yellow header bar shows upcoming draw information:</p>
+                <ul>
+                    <li><strong>Draw Schedule:</strong> Multiple upcoming draws displayed with times (e.g., #478 22:29, #479 22:25, etc.)</li>
+                    <li><strong>Current Status:</strong> Shows "UPCOMING DRAWS" with navigation arrows</li>
+                    <li><strong>Draw Numbers:</strong> Sequential draw identifiers (#478, #479, #480, etc.)</li>
+                    <li><strong>Time Display:</strong> Countdown timers for each upcoming draw</li>
+                </ul>
+
+                <h4>🎯 Right Panel - Draw Information</h4>
+                <p>The right sidebar contains current draw details:</p>
+                <ul>
+                    <li><strong>DRAW NUMBERS:</strong> Section header with current draw info</li>
+                    <li><strong>Current Draw:</strong> Large display showing "#478" as the active draw</li>
+                    <li><strong>Next Draw Alert:</strong> "Next betting draw will be assigned to this draw" notification</li>
+                    <li><strong>Previous Draw:</strong> Shows "#477" as the completed draw</li>
+                    <li><strong>Winning Statistics:</strong>
+                        <ul>
+                            <li>Winning Number: 5</li>
+                            <li>Total Slips: 0</li>
+                            <li>Winning Slips: 0</li>
+                            <li>Win Rate: 0%</li>
+                        </ul>
+                    </li>
+                    <li><strong>Reprint Slip:</strong> Button for reprinting betting slips</li>
+                </ul>
+
+                <h4>💰 Center Top - Cashier Info & Betting Limits</h4>
+                <p>The center header displays important cashier and betting information:</p>
+                <ul>
+                    <li><strong>ROULETTE:</strong> Large game title prominently displayed</li>
+                    <li><strong>Betting Limits:</strong> "MIN: $100.00 MAX: $50000" clearly shown</li>
+                    <li><strong>Cashier Info Panel:</strong> Dropdown showing:
+                        <ul>
+                            <li>Cashier ID: 12345678912</li>
+                            <li>Transactions</li>
+                            <li>Redeem Voucher</li>
+                            <li>Commission</li>
+                            <li>Admin Panel</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h4>⚡ Bottom Panel - Quick Actions</h4>
+                <p>The bottom area contains essential betting controls:</p>
+                <ul>
+                    <li><strong>NEXT DRAW IN:</strong> Countdown timer display</li>
+                    <li><strong>BLOCK NUMBERS - PARTS 1-1:</strong> Number blocking functionality</li>
+                    <li><strong>QCancel Bets:</strong> Quick cancel button for current bets</li>
+                    <li><strong>Print Betting Slip:</strong> Generate physical betting slip</li>
+                </ul>
+            </div>
+
+            <!-- Section 4: Basic Operations -->
+            <div class="section" id="basic-operations">
+                <h2>4. Basic Operations</h2>
+
+                <h3>Placing Bets</h3>
+                <p>The core function of the system is processing customer bets efficiently and accurately.</p>
+
+                <ol class="step-list">
+                    <li>
+                        <strong>Select bet type from left panel</strong><br>
+                        Choose from STRAIGHT, CORNER, SPLIT, or STREET betting options. Each shows the stake amount ($100.00) and potential return. Click "GO ON" to activate the selected bet type.
+                    </li>
+                    <li>
+                        <strong>Click betting area on roulette table</strong><br>
+                        Click on the desired number or betting area on the green roulette table. Purple "100" chips will appear on selected positions.
+                    </li>
+                    <li>
+                        <strong>Monitor betting limits</strong><br>
+                        Ensure bets stay within the displayed limits: MIN: $100.00 MAX: $50000. The system will enforce these automatically.
+                    </li>
+                    <li>
+                        <strong>Use "Calculate Change" if needed</strong><br>
+                        Click the "Calculate Change" button at the bottom of the left panel for payment calculations.
+                    </li>
+                    <li>
+                        <strong>Print betting slip</strong><br>
+                        Use the "Print Betting Slip" button in the bottom panel to generate the official slip for the customer.
+                    </li>
+                    <li>
+                        <strong>Cancel bets if necessary</strong><br>
+                        Use "QCancel Bets" button or individual "REMOVE" buttons for each bet type to cancel unwanted bets.
+                    </li>
+                </ol>
+
+                <div class="media-container">
+                    <h4>🎥 Video: Placing a Straight-Up Bet</h4>
+                    <video controls class="tutorial-video"
+                           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <source src="http://localhost:8080/slipp/media/videos/01-placing-straight-up-bet.mp4" type="video/mp4">
+                        <source src="media/videos/01-placing-straight-up-bet.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Video not found:</strong> media/videos/01-placing-straight-up-bet.mp4</p>
+                        <p>Please ensure the video file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h3>Bet Types and Payouts</h3>
+                <div class="highlight-box">
+                    <h4>📊 Common Bet Types</h4>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <tr style="background: #f8f9fa; font-weight: bold;">
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">Bet Type</td>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">Description</td>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">Payout</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">Straight Up</td>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">Single number bet</td>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">35:1</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">Red/Black</td>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">Color bet</td>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">1:1</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">Odd/Even</td>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">Number parity</td>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">1:1</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">Column</td>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">12 numbers</td>
+                            <td style="padding: 8px; border: 1px solid #dee2e6;">2:1</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h3>Removing Bets</h3>
+                <p>Customers may want to modify or remove bets before the draw closes:</p>
+                <ol class="step-list">
+                    <li>
+                        <strong>Locate the bet</strong><br>
+                        Find the bet in the betting slip area or on the table.
+                    </li>
+                    <li>
+                        <strong>Right-click or use remove button</strong><br>
+                        Use the designated removal method for your interface.
+                    </li>
+                    <li>
+                        <strong>Confirm removal</strong><br>
+                        Verify the bet is removed and cash is returned to available balance.
+                    </li>
+                </ol>
+            </div>
+
+            <!-- Section 5: Betting Workflow -->
+            <div class="section" id="betting-workflow">
+                <h2>5. Betting Workflow</h2>
+
+                <p>Understanding the complete betting workflow ensures smooth customer service and accurate transaction processing.</p>
+
+                <div class="workflow-diagram">
+                    <h3>Complete Betting Process</h3>
+                    <div style="margin: 20px 0;">
+                        <span class="workflow-step">Customer Arrives</span>
+                        <span class="workflow-arrow">→</span>
+                        <span class="workflow-step">Verify Cash</span>
+                        <span class="workflow-arrow">→</span>
+                        <span class="workflow-step">Place Bets</span>
+                        <span class="workflow-arrow">→</span>
+                        <span class="workflow-step">Print Slip</span>
+                        <span class="workflow-arrow">→</span>
+                        <span class="workflow-step">Collect Payment</span>
+                    </div>
+                </div>
+
+                <h3>Pre-Betting Checklist</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Verify draw status</strong><br>
+                        Ensure betting is open for the current draw. Check the countdown timer.
+                    </li>
+                    <li>
+                        <strong>Confirm customer cash</strong><br>
+                        Verify the customer has sufficient funds for their intended bets.
+                    </li>
+                    <li>
+                        <strong>Check system status</strong><br>
+                        Ensure all systems are operational (printer, network, etc.).
+                    </li>
+                </ol>
+
+                <div class="media-container">
+                    <h4>📸 Screenshot: Draw Status Indicators</h4>
+                    <img src="media/screenshots/04-draw-status-indicators.png"
+                         alt="Draw information panel showing countdown timer, draw number, and betting status"
+                         class="tutorial-screenshot"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Image not found:</strong> media/screenshots/04-draw-status-indicators.png</p>
+                        <p>Please ensure the screenshot file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h3>During Betting Process</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Guide customer selections</strong><br>
+                        Help customers understand bet types and assist with placement.
+                    </li>
+                    <li>
+                        <strong>Monitor bet totals</strong><br>
+                        Keep track of total bet amounts to ensure customer has sufficient funds.
+                    </li>
+                    <li>
+                        <strong>Verify bet accuracy</strong><br>
+                        Confirm each bet with the customer before finalizing.
+                    </li>
+                    <li>
+                        <strong>Watch for betting deadline</strong><br>
+                        Monitor the countdown timer to ensure bets are placed before cutoff.
+                    </li>
+                </ol>
+
+                <div class="warning-box">
+                    <h4>⏰ Betting Deadline Management</h4>
+                    <p>Betting typically closes 2-3 minutes before each draw. Always inform customers of remaining time and avoid accepting bets too close to the deadline.</p>
+                </div>
+            </div>
+
+            <!-- Section 6: Customer Interaction -->
+            <div class="section" id="customer-interaction">
+                <h2>6. Customer Interaction</h2>
+
+                <h3>Professional Customer Service</h3>
+                <p>Excellent customer service is essential for a positive gaming experience and customer retention.</p>
+
+                <div class="highlight-box">
+                    <h4>🤝 Customer Service Best Practices</h4>
+                    <ul>
+                        <li>Greet customers warmly and professionally</li>
+                        <li>Explain bet types clearly for new players</li>
+                        <li>Confirm all bets before processing payment</li>
+                        <li>Handle disputes calmly and follow procedures</li>
+                        <li>Maintain confidentiality of customer information</li>
+                    </ul>
+                </div>
+
+                <h3>Common Customer Questions</h3>
+                <h4>Q: "What are the odds for different bet types?"</h4>
+                <p><strong>A:</strong> Refer to the payout table. Straight-up bets pay 35:1, outside bets like red/black pay 1:1, and column bets pay 2:1.</p>
+
+                <h4>Q: "Can I change my bet after placing it?"</h4>
+                <p><strong>A:</strong> Yes, bets can be modified or removed until betting closes for the draw, typically 2-3 minutes before the draw time.</p>
+
+                <h4>Q: "How do I know if I won?"</h4>
+                <p><strong>A:</strong> Winning numbers are announced after each draw. You can check your slip against the results or ask for assistance.</p>
+
+                <h3>Handling Difficult Situations</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Stay calm and professional</strong><br>
+                        Maintain composure even if customers become upset or frustrated.
+                    </li>
+                    <li>
+                        <strong>Listen actively</strong><br>
+                        Let customers explain their concerns fully before responding.
+                    </li>
+                    <li>
+                        <strong>Follow procedures</strong><br>
+                        Adhere to established protocols for disputes and escalations.
+                    </li>
+                    <li>
+                        <strong>Escalate when necessary</strong><br>
+                        Contact supervisors for issues beyond your authority to resolve.
+                    </li>
+                </ol>
+            </div>
+
+            <!-- Section 7: Cash Management -->
+            <div class="section" id="cash-management">
+                <h2>7. Cash Management & Cashier Functions</h2>
+
+                <p>The system provides comprehensive cash management through the Cashier Info panel and left sidebar controls.</p>
+
+                <div class="media-container">
+                    <h4>📸 Screenshot: Cash Management Panel</h4>
+                    <img src="media/screenshots/05-cash-management-panel.png"
+                         alt="Cash management interface showing balance display and transaction controls"
+                         class="tutorial-screenshot"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Image not found:</strong> media/screenshots/05-cash-management-panel.png</p>
+                        <p>Please ensure the screenshot file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h3>Daily Cash Operations</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Starting balance verification</strong><br>
+                        Verify your cash drawer matches the system balance at shift start.
+                    </li>
+                    <li>
+                        <strong>Transaction recording</strong><br>
+                        All cash movements are automatically recorded in the system.
+                    </li>
+                    <li>
+                        <strong>Regular reconciliation</strong><br>
+                        Periodically verify physical cash matches system records.
+                    </li>
+                    <li>
+                        <strong>End-of-shift reporting</strong><br>
+                        Complete cash count and reconciliation before shift end.
+                    </li>
+                </ol>
+
+                <h3>Cash Transaction Types</h3>
+                <ul>
+                    <li><strong>Bet Collection:</strong> Customer payments for betting slips</li>
+                    <li><strong>Payout Processing:</strong> Winnings paid to customers</li>
+                    <li><strong>Change Making:</strong> Providing change for customer payments</li>
+                    <li><strong>Drawer Adjustments:</strong> Adding or removing cash as authorized</li>
+                </ul>
+
+                <div class="warning-box">
+                    <h4>🔒 Security Protocols</h4>
+                    <p>Never leave your cash drawer unattended. Always lock your terminal when stepping away, even briefly. Report any discrepancies immediately to your supervisor.</p>
+                </div>
+            </div>
+
+            <!-- Section 8: Customer TV Display System -->
+            <div class="section" id="tv-display-system">
+                <h2>8. Customer TV Display System</h2>
+
+                <p>The customer TV display system provides real-time information to players about current draws, betting status, and results. Understanding how this system works helps you better assist customers and coordinate your cashier operations.</p>
+
+                <div class="highlight-box">
+                    <h4>🖥️ TV Display Overview</h4>
+                    <p>The customer-facing TV display is accessible at: <strong>http://localhost:8080/slipp/tvdisplay/index.html</strong></p>
+                    <ul>
+                        <li>Real-time draw information and countdown timers</li>
+                        <li>Live roulette wheel animation and results</li>
+                        <li>Betting status indicators (open/closed/drawing)</li>
+                        <li>Analytics and statistics for customer reference</li>
+                        <li>Previous winning numbers history</li>
+                    </ul>
+                </div>
+
+                <h3>TV Display Interface Components</h3>
+
+                <h4>📊 Analytics Dashboard (Left Panel)</h4>
+                <p>The left side of the TV display shows comprehensive betting analytics:</p>
+                <ul>
+                    <li><strong>Hot Numbers:</strong> Most frequently drawn numbers with statistics (e.g., #25, #3, #31, #6)</li>
+                    <li><strong>Cold Numbers:</strong> Least frequently drawn numbers (e.g., #27, #17, #29, #30)</li>
+                    <li><strong>Last 8 Spins:</strong> Recent winning numbers with color coding</li>
+                    <li><strong>Color Distribution:</strong> RED (49%), BLACK (43%), GREEN (8%)</li>
+                    <li><strong>Odd/Even Statistics:</strong> ODD (56%), EVEN (56%)</li>
+                    <li><strong>High/Low Distribution:</strong> Low 1-18 (54%), High 19-36 (46%)</li>
+                    <li><strong>Dozens Analysis:</strong> 1st 12 (37%), 2nd 12 (29%), 3rd 12 (34%)</li>
+                    <li><strong>Columns Statistics:</strong> 1st (35%), 2nd (33%), 3rd (32%)</li>
+                </ul>
+
+                <div class="media-container">
+                    <h4>📸 Screenshot: TV Display - Betting Phase</h4>
+                    <img src="media/screenshots/08-tv-display-betting-phase.png"
+                         alt="Customer TV display showing active betting phase with analytics, roulette table, countdown timer, and betting status"
+                         class="tutorial-screenshot"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Image not found:</strong> media/screenshots/08-tv-display-betting-phase.png</p>
+                        <p>Please ensure the screenshot file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h4>🎰 Central Roulette Display</h4>
+                <p>The center area features the main roulette interface:</p>
+                <ul>
+                    <li><strong>Roulette Table:</strong> Full betting grid with numbers 0-36 in traditional layout</li>
+                    <li><strong>Outside Betting Areas:</strong> 1st 12, 2nd 12, 3rd 12, 1 TO 18, EVEN, ODD, 19 TO 36</li>
+                    <li><strong>Color Sections:</strong> Red and black number indicators</li>
+                    <li><strong>Countdown Timer:</strong> "NEXT SPIN IN" with minutes and seconds display</li>
+                    <li><strong>Current Cash Display:</strong> Shows available betting balance ($1000.00)</li>
+                    <li><strong>Chip Denominations:</strong> Visual chips showing values (5, 10, 20, 50, 100, 200)</li>
+                </ul>
+
+                <h4>🎯 Live Roulette Wheel</h4>
+                <p>During draws, the display shows an animated roulette wheel:</p>
+                <ul>
+                    <li><strong>Spinning Animation:</strong> Realistic wheel rotation during draws</li>
+                    <li><strong>Ball Movement:</strong> Visual ball tracking around the wheel</li>
+                    <li><strong>Winning Number Highlight:</strong> Clear indication of the winning number</li>
+                    <li><strong>Result Display:</strong> Large winning number announcement (e.g., "32" with EVEN/HIGH indicators)</li>
+                </ul>
+
+                <div class="media-container">
+                    <h4>📸 Screenshot: TV Display - Results Phase</h4>
+                    <img src="media/screenshots/09-tv-display-results-phase.png"
+                         alt="Customer TV display showing results with winning number, roulette wheel, and payout information"
+                         class="tutorial-screenshot"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Image not found:</strong> media/screenshots/09-tv-display-results-phase.png</p>
+                        <p>Please ensure the screenshot file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h4>📈 Right Panel - Distributions</h4>
+                <p>The right side displays betting distribution statistics:</p>
+                <ul>
+                    <li><strong>Color Distribution:</strong> Visual breakdown of red/black/green percentages</li>
+                    <li><strong>Odd/Even Analysis:</strong> Statistical distribution of number parity</li>
+                    <li><strong>High/Low Breakdown:</strong> 1-18 vs 19-36 number distribution</li>
+                    <li><strong>Dozens Statistics:</strong> Performance of 1st, 2nd, and 3rd dozen bets</li>
+                    <li><strong>Columns Analysis:</strong> Distribution across the three column bets</li>
+                </ul>
+
+                <h3>Customer Experience Workflow</h3>
+
+                <div class="workflow-diagram">
+                    <h4>Customer TV Display Cycle</h4>
+                    <div style="margin: 20px 0;">
+                        <span class="workflow-step">Betting Open</span>
+                        <span class="workflow-arrow">→</span>
+                        <span class="workflow-step">Countdown Timer</span>
+                        <span class="workflow-arrow">→</span>
+                        <span class="workflow-step">Betting Closed</span>
+                        <span class="workflow-arrow">→</span>
+                        <span class="workflow-step">Wheel Spin</span>
+                        <span class="workflow-arrow">→</span>
+                        <span class="workflow-step">Results Display</span>
+                    </div>
+                </div>
+
+                <h4>🕐 Betting Open Phase</h4>
+                <p>When betting is open, customers see:</p>
+                <ul>
+                    <li>Active countdown timer showing time remaining to place bets</li>
+                    <li>Full roulette table available for reference</li>
+                    <li>Current statistics and hot/cold numbers</li>
+                    <li>Clear indication that betting is accepting</li>
+                    <li>Available cash balance display</li>
+                </ul>
+
+                <h4>⏰ Countdown Phase</h4>
+                <p>As the betting deadline approaches:</p>
+                <ul>
+                    <li>Timer counts down to zero (e.g., "NEXT SPIN IN 02:26")</li>
+                    <li>Visual urgency indicators may appear</li>
+                    <li>Customers know to finalize their bets</li>
+                    <li>Last chance for bet modifications</li>
+                </ul>
+
+                <h4>🚫 Betting Closed Phase</h4>
+                <p>When betting closes:</p>
+                <ul>
+                    <li>Clear "BETTING CLOSED" or similar indicator</li>
+                    <li>No more bets accepted</li>
+                    <li>Anticipation builds for the draw</li>
+                    <li>Preparation for wheel animation</li>
+                </ul>
+
+                <h4>🎡 Drawing Phase</h4>
+                <p>During the actual draw:</p>
+                <ul>
+                    <li>Animated roulette wheel appears and spins</li>
+                    <li>Ball animation shows realistic movement</li>
+                    <li>Suspenseful timing builds excitement</li>
+                    <li>All betting areas remain visible for reference</li>
+                </ul>
+
+                <h4>🎉 Results Phase</h4>
+                <p>When results are announced:</p>
+                <ul>
+                    <li>Large winning number display (e.g., "32")</li>
+                    <li>Color and parity indicators (EVEN, HIGH, RED/BLACK)</li>
+                    <li>Updated statistics reflect the new result</li>
+                    <li>Hot/cold numbers may change</li>
+                    <li>Preparation for next betting cycle</li>
+                </ul>
+
+                <h3>Cashier Integration with TV Display</h3>
+
+                <div class="info-box">
+                    <h4>🔄 Synchronization</h4>
+                    <p>The TV display is synchronized with your cashier POS system:</p>
+                    <ul>
+                        <li>Draw numbers match between systems</li>
+                        <li>Countdown timers are identical</li>
+                        <li>Betting status updates simultaneously</li>
+                        <li>Results appear at the same time</li>
+                    </ul>
+                </div>
+
+                <h4>How Your Actions Affect Customer Display</h4>
+                <ol class="step-list">
+                    <li>
+                        <strong>When you process bets</strong><br>
+                        Customer bets don't appear on the TV display, but the betting window remains open for all customers to see.
+                    </li>
+                    <li>
+                        <strong>When betting closes</strong><br>
+                        The TV display automatically shows "betting closed" status, informing all customers simultaneously.
+                    </li>
+                    <li>
+                        <strong>When results are drawn</strong><br>
+                        Winning numbers appear on both your POS system and the customer TV display at the same time.
+                    </li>
+                    <li>
+                        <strong>When new draws begin</strong><br>
+                        Both systems reset and show the new draw number and countdown timer.
+                    </li>
+                </ol>
+
+                <h4>Customer Communication</h4>
+                <p>Use the TV display to help customers:</p>
+                <ul>
+                    <li><strong>Timing:</strong> "You can see the countdown timer on the screen - we have 3 minutes left for this draw."</li>
+                    <li><strong>Statistics:</strong> "The hot numbers are shown on the left side of the display if you're interested."</li>
+                    <li><strong>Results:</strong> "The winning number will appear on the big screen when the draw completes."</li>
+                    <li><strong>Next Draw:</strong> "Watch the screen for the next draw countdown to start."</li>
+                </ul>
+
+                <div class="media-container">
+                    <h4>🎥 Video: Complete TV Display Cycle</h4>
+                    <video controls class="tutorial-video"
+                           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <source src="http://localhost:8080/slipp/media/videos/02-tv-display-complete-cycle.mp4" type="video/mp4">
+                        <source src="media/videos/02-tv-display-complete-cycle.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Video not found:</strong> media/videos/02-tv-display-complete-cycle.mp4</p>
+                        <p>Please ensure the video file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h3>Customer Behavior Patterns</h3>
+
+                <h4>👀 How Customers Use the TV Display</h4>
+                <ul>
+                    <li><strong>Monitoring Timing:</strong> Customers watch the countdown to know when to approach your window</li>
+                    <li><strong>Studying Statistics:</strong> Many customers review hot/cold numbers before betting</li>
+                    <li><strong>Waiting for Results:</strong> Customers gather around the display during draws</li>
+                    <li><strong>Planning Next Bets:</strong> Using displayed statistics to plan future betting strategies</li>
+                </ul>
+
+                <h4>🎯 Optimal Customer Service</h4>
+                <p>Understanding customer TV display usage helps you provide better service:</p>
+                <ul>
+                    <li>Anticipate rushes when countdown shows 3-4 minutes remaining</li>
+                    <li>Be prepared to explain statistics shown on the display</li>
+                    <li>Direct customers to watch the display for results</li>
+                    <li>Use display timing to manage your workflow efficiently</li>
+                </ul>
+
+                <div class="warning-box">
+                    <h4>⚠️ Important Notes</h4>
+                    <ul>
+                        <li>The TV display is for customer information only - all official betting must be done through your POS system</li>
+                        <li>If customers report discrepancies between the TV display and your system, immediately contact technical support</li>
+                        <li>Never rely solely on the TV display for official draw information - always use your POS system as the authoritative source</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Section 9: Slip Printing -->
+            <div class="section" id="slip-printing">
+                <h2>9. Slip Printing & Validation</h2>
+
+                <p>Betting slips serve as official records of customer bets and must be handled with care.</p>
+
+                <h3>Printing Process</h3>
+                <ol class="step-list">
+                    <li>
+                        <strong>Review bet summary</strong><br>
+                        Verify all bets are correct before printing.
+                    </li>
+                    <li>
+                        <strong>Collect payment</strong><br>
+                        Ensure customer payment is received before printing slip.
+                    </li>
+                    <li>
+                        <strong>Print betting slip</strong><br>
+                        Use the print function to generate the official betting slip.
+                    </li>
+                    <li>
+                        <strong>Verify slip details</strong><br>
+                        Check that all information on the slip is accurate.
+                    </li>
+                    <li>
+                        <strong>Provide to customer</strong><br>
+                        Hand the slip to the customer and explain key information.
+                    </li>
+                </ol>
+
+                <div class="media-container">
+                    <h4>🎥 Video: Complete Betting Transaction</h4>
+                    <video controls class="tutorial-video"
+                           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <source src="http://localhost:8080/slipp/media/videos/02-complete-betting-transaction.mp4" type="video/mp4">
+                        <source src="media/videos/02-complete-betting-transaction.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Video not found:</strong> media/videos/02-complete-betting-transaction.mp4</p>
+                        <p>Please ensure the video file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h3>Slip Information</h3>
+                <p>Each betting slip contains:</p>
+                <ul>
+                    <li><strong>Draw Number:</strong> Identifies which game the bets apply to</li>
+                    <li><strong>Bet Details:</strong> List of all bets with amounts and types</li>
+                    <li><strong>Total Amount:</strong> Sum of all bets on the slip</li>
+                    <li><strong>Timestamp:</strong> When the slip was generated</li>
+                    <li><strong>Slip ID:</strong> Unique identifier for tracking</li>
+                    <li><strong>Validation Code:</strong> Security code for verification</li>
+                </ul>
+
+                <h3>Reprinting Slips</h3>
+                <p>Customers may request reprints of lost or damaged slips:</p>
+                <ol class="step-list">
+                    <li>
+                        <strong>Verify customer identity</strong><br>
+                        Confirm the customer's identity and right to the slip.
+                    </li>
+                    <li>
+                        <strong>Locate original slip</strong><br>
+                        Use the slip ID or other identifying information to find the record.
+                    </li>
+                    <li>
+                        <strong>Use reprint function</strong><br>
+                        Access the reprint feature in the system.
+                    </li>
+                    <li>
+                        <strong>Mark as reprint</strong><br>
+                        Ensure the reprinted slip is clearly marked as a duplicate.
+                    </li>
+                </ol>
+
+                <div class="media-container">
+                    <h4>📸 Screenshot: Reprint Interface</h4>
+                    <img src="media/screenshots/06-reprint-interface.png"
+                         alt="Slip reprinting interface showing search fields and reprint controls"
+                         class="tutorial-screenshot"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Image not found:</strong> media/screenshots/06-reprint-interface.png</p>
+                        <p>Please ensure the screenshot file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Section 10: Troubleshooting -->
+            <div class="section" id="troubleshooting">
+                <h2>10. Troubleshooting</h2>
+
+                <p>Quick solutions to common issues that may arise during operation.</p>
+
+                <h3>Common Issues and Solutions</h3>
+
+                <h4>🖥️ System Not Loading</h4>
+                <div class="info-box">
+                    <h4>Symptoms:</h4>
+                    <p>Page won't load, blank screen, or error messages</p>
+                    <h4>Solutions:</h4>
+                    <ol>
+                        <li>Refresh the browser page (<span class="keyboard-shortcut">F5</span> or <span class="keyboard-shortcut">Ctrl+R</span>)</li>
+                        <li>Check internet connection</li>
+                        <li>Clear browser cache and cookies</li>
+                        <li>Try a different browser</li>
+                        <li>Contact IT support if problem persists</li>
+                    </ol>
+                </div>
+
+                <h4>🖨️ Printer Not Working</h4>
+                <div class="info-box">
+                    <h4>Symptoms:</h4>
+                    <p>Slips not printing, printer errors, or poor print quality</p>
+                    <h4>Solutions:</h4>
+                    <ol>
+                        <li>Check printer power and connections</li>
+                        <li>Verify paper supply and alignment</li>
+                        <li>Clear any paper jams</li>
+                        <li>Restart printer and try again</li>
+                        <li>Use backup printer if available</li>
+                    </ol>
+                </div>
+
+                <h4>💰 Cash Balance Discrepancy</h4>
+                <div class="warning-box">
+                    <h4>Symptoms:</h4>
+                    <p>Physical cash doesn't match system balance</p>
+                    <h4>Immediate Actions:</h4>
+                    <ol>
+                        <li>Stop all transactions immediately</li>
+                        <li>Recount physical cash carefully</li>
+                        <li>Review recent transaction history</li>
+                        <li>Document the discrepancy amount</li>
+                        <li>Contact supervisor immediately</li>
+                    </ol>
+                </div>
+
+                <h4>🎲 Betting Closed Unexpectedly</h4>
+                <div class="info-box">
+                    <h4>Symptoms:</h4>
+                    <p>Cannot place bets, "betting closed" message appears</p>
+                    <h4>Solutions:</h4>
+                    <ol>
+                        <li>Check draw countdown timer</li>
+                        <li>Verify current draw status</li>
+                        <li>Wait for next draw to open</li>
+                        <li>Explain timing to customer</li>
+                        <li>Offer to place bets on next available draw</li>
+                    </ol>
+                </div>
+
+                <h3>Emergency Procedures</h3>
+                <div class="warning-box">
+                    <h4>🚨 System Emergency Protocol</h4>
+                    <ol>
+                        <li><strong>Secure cash drawer</strong> - Lock and secure all cash immediately</li>
+                        <li><strong>Document current state</strong> - Note any pending transactions</li>
+                        <li><strong>Inform customers</strong> - Explain situation professionally</li>
+                        <li><strong>Contact supervisor</strong> - Report issue immediately</li>
+                        <li><strong>Follow backup procedures</strong> - Use manual processes if authorized</li>
+                    </ol>
+                </div>
+
+                <h3>Commission System Issues</h3>
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Commission interface won't load or shows error message</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Check internet connection</strong> - Verify network connectivity</li>
+                        <li><strong>Clear browser cache</strong> - Refresh browser and clear cached data</li>
+                        <li><strong>Try direct URL</strong> - Navigate directly to https://roulette.aruka.app/slipp/commission.php</li>
+                        <li><strong>Verify login status</strong> - Ensure you're properly logged into the system</li>
+                        <li><strong>Contact IT support</strong> - Report persistent access issues</li>
+                    </ol>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Commission amounts appear incorrect or don't match expectations</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Verify calculation</strong> - Check: Total Bets × Commission Rate = Expected Commission</li>
+                        <li><strong>Review time period</strong> - Ensure you're viewing the correct date range</li>
+                        <li><strong>Check for excluded bets</strong> - Remember cancelled/voided bets don't count</li>
+                        <li><strong>Confirm commission rate</strong> - Verify your current rate with supervisor</li>
+                        <li><strong>Document discrepancy</strong> - Record specific details and report to management</li>
+                    </ol>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Commission chart shows no data or incomplete information</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Switch time periods</strong> - Try different tabs (Hour, Day, Week, Month)</li>
+                        <li><strong>Check date range</strong> - Ensure you're looking at periods with betting activity</li>
+                        <li><strong>Refresh the page</strong> - Reload to update data display</li>
+                        <li><strong>Verify bet processing</strong> - Confirm bets were successfully processed in main POS</li>
+                        <li><strong>Wait for data sync</strong> - Allow time for real-time updates to populate</li>
+                    </ol>
+                </div>
+
+                <h3>Transaction Management Issues</h3>
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Transaction interface loads slowly or times out</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Check internet connection</strong> - Verify stable network connectivity</li>
+                        <li><strong>Reduce date range</strong> - Use smaller time periods to improve loading performance</li>
+                        <li><strong>Clear browser cache</strong> - Remove cached data and refresh the page</li>
+                        <li><strong>Close other browser tabs</strong> - Free up system resources</li>
+                        <li><strong>Try direct URL access</strong> - Navigate directly to the transaction interface</li>
+                        <li><strong>Contact IT support</strong> - Report persistent performance issues</li>
+                    </ol>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Cannot find a specific transaction that should exist</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Verify search criteria</strong> - Double-check slip number, date, and amount details</li>
+                        <li><strong>Expand date range</strong> - Search broader time periods in case of date confusion</li>
+                        <li><strong>Clear all filters</strong> - Remove existing filters and search again</li>
+                        <li><strong>Check transaction status</strong> - Look for cancelled or voided transactions</li>
+                        <li><strong>Verify cashier account</strong> - Ensure transaction was processed under your account</li>
+                        <li><strong>Contact supervisor</strong> - Request assistance with transaction lookup</li>
+                    </ol>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Transaction statuses not updating or showing incorrect information</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Refresh the page</strong> - Use browser refresh or the "Refresh" button</li>
+                        <li><strong>Check draw completion</strong> - Verify that the associated draw has finished</li>
+                        <li><strong>Wait for processing</strong> - Allow time for automatic status updates</li>
+                        <li><strong>Compare with main POS</strong> - Cross-reference status with main betting interface</li>
+                        <li><strong>Clear browser cache</strong> - Remove cached data that might show outdated information</li>
+                        <li><strong>Report data inconsistencies</strong> - Document and report any persistent status errors</li>
+                    </ol>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Performance metrics don't match expected calculations</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Verify time period</strong> - Ensure you're viewing the correct date range</li>
+                        <li><strong>Check for excluded transactions</strong> - Remember cancelled bets don't count</li>
+                        <li><strong>Review calculation method</strong> - Understand how ROI and win rates are calculated</li>
+                        <li><strong>Compare with commission data</strong> - Cross-reference with commission interface</li>
+                        <li><strong>Document discrepancies</strong> - Record specific differences and report to management</li>
+                        <li><strong>Request data audit</strong> - Ask supervisor to verify calculation accuracy</li>
+                    </ol>
+                </div>
+
+                <h3>Voucher Redemption Issues</h3>
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Voucher code appears valid but system rejects it</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Verify code entry</strong> - Check for typos, extra spaces, or incorrect characters</li>
+                        <li><strong>Check code format</strong> - Ensure code matches expected format patterns</li>
+                        <li><strong>Confirm voucher status</strong> - Verify voucher hasn't been used or expired</li>
+                        <li><strong>Try different browser</strong> - Test in another browser or clear cache</li>
+                        <li><strong>Check system connectivity</strong> - Ensure stable internet connection</li>
+                        <li><strong>Contact supervisor</strong> - Escalate for manual verification and processing</li>
+                    </ol>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Voucher redemption interface won't load or shows errors</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Refresh the page</strong> - Use browser refresh or F5 key</li>
+                        <li><strong>Clear browser cache</strong> - Remove cached data and cookies</li>
+                        <li><strong>Check URL accuracy</strong> - Verify correct redemption page URL</li>
+                        <li><strong>Try direct navigation</strong> - Access via direct URL rather than menu links</li>
+                        <li><strong>Verify login status</strong> - Ensure you're properly logged into the system</li>
+                        <li><strong>Contact IT support</strong> - Report persistent interface issues</li>
+                    </ol>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Credits don't appear in customer account after successful redemption</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Wait for processing</strong> - Allow time for system synchronization</li>
+                        <li><strong>Refresh account balance</strong> - Update customer account display</li>
+                        <li><strong>Check transaction history</strong> - Verify redemption appears in transaction records</li>
+                        <li><strong>Verify customer account</strong> - Ensure credits were added to correct account</li>
+                        <li><strong>Document the issue</strong> - Record voucher code, amount, and customer details</li>
+                        <li><strong>Contact supervisor</strong> - Request manual credit adjustment if needed</li>
+                    </ol>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Customer claims voucher was already used but they haven't redeemed it</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Verify customer identity</strong> - Confirm customer account and personal details</li>
+                        <li><strong>Check redemption history</strong> - Review when and where voucher was used</li>
+                        <li><strong>Investigate voucher source</strong> - Determine how customer obtained the voucher</li>
+                        <li><strong>Look for duplicate codes</strong> - Check if multiple customers have same code</li>
+                        <li><strong>Document the dispute</strong> - Record all details for investigation</li>
+                        <li><strong>Escalate to management</strong> - Involve supervisor for dispute resolution</li>
+                    </ol>
+                </div>
+
+                <h3>Customer Cashout Processing Issues</h3>
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Betting slip number won't verify or shows as invalid</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Verify number entry</strong> - Double-check slip number was entered correctly</li>
+                        <li><strong>Check slip condition</strong> - Ensure slip isn't damaged or illegible</li>
+                        <li><strong>Confirm slip age</strong> - Verify slip is within 7-day validity period</li>
+                        <li><strong>Try manual entry</strong> - If using scanner, try typing number manually</li>
+                        <li><strong>Check system connectivity</strong> - Ensure stable connection to verification system</li>
+                        <li><strong>Contact supervisor</strong> - Escalate for manual verification if slip appears legitimate</li>
+                    </ol>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Cashout modal won't open or displays incorrectly</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Refresh the page</strong> - Use browser refresh or F5 key</li>
+                        <li><strong>Clear browser cache</strong> - Remove cached data and cookies</li>
+                        <li><strong>Check browser compatibility</strong> - Ensure using supported browser version</li>
+                        <li><strong>Disable browser extensions</strong> - Turn off ad blockers or other extensions</li>
+                        <li><strong>Try different browser</strong> - Test in alternative browser if available</li>
+                        <li><strong>Contact IT support</strong> - Report persistent interface issues</li>
+                    </ol>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Payout calculation appears incorrect or doesn't match expected winnings</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Review bet details</strong> - Confirm bet types and amounts on original slip</li>
+                        <li><strong>Check winning number</strong> - Verify the drawn number matches system display</li>
+                        <li><strong>Understand payout rates</strong> - Confirm payout multipliers for different bet types</li>
+                        <li><strong>Review bet results</strong> - Check which specific bets won or lost</li>
+                        <li><strong>Document discrepancy</strong> - Record slip details and expected vs. actual payout</li>
+                        <li><strong>Escalate to supervisor</strong> - Request manual calculation verification</li>
+                    </ol>
+                </div>
+
+                <div class="troubleshoot-item">
+                    <h4>❌ Problem: Receipt won't generate or print after successful cashout</h4>
+                    <p><strong>Solution:</strong></p>
+                    <ol>
+                        <li><strong>Check printer status</strong> - Ensure printer is online and has paper</li>
+                        <li><strong>Verify receipt settings</strong> - Confirm receipt generation is enabled</li>
+                        <li><strong>Try manual print</strong> - Use browser print function if automatic fails</li>
+                        <li><strong>Document transaction</strong> - Record cashout details manually if needed</li>
+                        <li><strong>Provide customer service</strong> - Explain situation and offer alternatives</li>
+                        <li><strong>Contact IT support</strong> - Report receipt generation issues</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Section 11: Security -->
+            <div class="section" id="security">
+                <h2>11. Security & Best Practices</h2>
+
+                <p>Security is paramount in casino operations. Following these practices protects both you and the business.</p>
+
+                <h3>Login Security</h3>
+                <ul>
+                    <li>Never share your username or password</li>
+                    <li>Log out completely when leaving your station</li>
+                    <li>Use strong passwords and change them regularly</li>
+                    <li>Report any suspicious login attempts</li>
+                </ul>
+
+                <h3>Cash Security</h3>
+                <ul>
+                    <li>Keep cash drawer locked when not in use</li>
+                    <li>Count cash discreetly, away from customer view</li>
+                    <li>Never leave cash unattended</li>
+                    <li>Follow proper cash handling procedures</li>
+                    <li>Report any cash discrepancies immediately</li>
+                </ul>
+
+                <h3>Customer Information</h3>
+                <ul>
+                    <li>Maintain confidentiality of all customer data</li>
+                    <li>Verify customer identity for sensitive requests</li>
+                    <li>Never discuss customer bets with other customers</li>
+                    <li>Follow privacy regulations and company policies</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <h4>🔐 Security Checklist</h4>
+                    <p>Daily security practices:</p>
+                    <ul>
+                        <li>✅ Secure login with personal credentials</li>
+                        <li>✅ Verify cash drawer balance at start</li>
+                        <li>✅ Lock terminal when stepping away</li>
+                        <li>✅ Handle customer information confidentially</li>
+                        <li>✅ Report any security concerns immediately</li>
+                        <li>✅ Complete proper logout at shift end</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Section 12: Keyboard Shortcuts -->
+            <div class="section" id="keyboard-shortcuts">
+                <h2>12. Keyboard Shortcuts</h2>
+
+                <p>Learn these shortcuts to work more efficiently and serve customers faster.</p>
+
+                <h3>General Navigation</h3>
+                <ul>
+                    <li><span class="keyboard-shortcut">F5</span> - Refresh page</li>
+                    <li><span class="keyboard-shortcut">Ctrl + R</span> - Refresh page (alternative)</li>
+                    <li><span class="keyboard-shortcut">Ctrl + L</span> - Focus address bar</li>
+                    <li><span class="keyboard-shortcut">Alt + Tab</span> - Switch between windows</li>
+                </ul>
+
+                <h3>Betting Operations</h3>
+                <ul>
+                    <li><span class="keyboard-shortcut">1-9</span> - Quick stake amounts</li>
+                    <li><span class="keyboard-shortcut">Enter</span> - Confirm bet placement</li>
+                    <li><span class="keyboard-shortcut">Escape</span> - Cancel current action</li>
+                    <li><span class="keyboard-shortcut">Ctrl + P</span> - Print betting slip</li>
+                </ul>
+
+                <h3>System Functions</h3>
+                <ul>
+                    <li><span class="keyboard-shortcut">Ctrl + Shift + L</span> - Logout</li>
+                    <li><span class="keyboard-shortcut">F1</span> - Help documentation</li>
+                    <li><span class="keyboard-shortcut">Ctrl + Z</span> - Undo last action</li>
+                </ul>
+            </div>
+
+            <!-- Section 13: FAQ -->
+            <div class="section" id="faq">
+                <h2>13. Frequently Asked Questions</h2>
+
+                <h3>System Operation</h3>
+                <h4>Q: What should I do if the system freezes?</h4>
+                <p><strong>A:</strong> First try refreshing the page. If that doesn't work, close and reopen your browser. Contact IT support if the problem continues.</p>
+
+                <h4>Q: Can I process bets for multiple customers at once?</h4>
+                <p><strong>A:</strong> No, complete each customer's transaction fully before starting the next one to avoid confusion and errors.</p>
+
+                <h4>Q: How long do I have to place bets before a draw?</h4>
+                <p><strong>A:</strong> Betting typically closes 2-3 minutes before each draw. Watch the countdown timer and inform customers of remaining time.</p>
+
+                <h3>Customer Service</h3>
+                <h4>Q: What if a customer claims their slip is wrong?</h4>
+                <p><strong>A:</strong> Review the slip details with the customer, check the system records, and contact a supervisor if you cannot resolve the issue.</p>
+
+                <h4>Q: Can customers change bets after printing a slip?</h4>
+                <p><strong>A:</strong> Generally no, but follow your casino's specific policy. Some venues allow cancellations within a short time frame.</p>
+
+                <h4>Q: What if a customer loses their betting slip?</h4>
+                <p><strong>A:</strong> You can reprint slips if you can verify the customer's identity and locate the original transaction in the system.</p>
+
+                <h3>Technical Issues</h3>
+                <h4>Q: The printer is out of paper. What should I do?</h4>
+                <p><strong>A:</strong> Replace the paper following the printer manual instructions. If you're unsure, ask a colleague or supervisor for help.</p>
+
+                <h4>Q: I accidentally logged out. Will I lose current bets?</h4>
+                <p><strong>A:</strong> Unsaved bets may be lost. Always complete transactions before logging out. Contact IT support if you need to recover data.</p>
+
+                <h3>Commission Management</h3>
+                <h4>Q: How often are commissions calculated and updated?</h4>
+                <p><strong>A:</strong> Commissions are calculated in real-time as you process bets. The commission interface updates immediately after each successful bet transaction, and daily totals are finalized at the end of each business day.</p>
+
+                <h4>Q: Why doesn't my commission match what I calculated manually?</h4>
+                <p><strong>A:</strong> Only successfully processed and paid bets count toward commission. Cancelled bets, voided transactions, or failed payments are excluded. Also verify you're using the correct commission rate, which may vary based on performance or time periods.</p>
+
+                <h4>Q: Can I access commission information from previous months?</h4>
+                <p><strong>A:</strong> Yes, the commission interface provides historical data. Use the "Month" and "Year" tabs in the chart view, and scroll through the commission history table to see detailed records from previous periods.</p>
+
+                <h4>Q: What should I do if I notice an error in my commission calculation?</h4>
+                <p><strong>A:</strong> Document the discrepancy with specific details (date, expected amount, actual amount shown) and contact your supervisor immediately. Do not attempt to adjust commission figures yourself - only management can authorize commission corrections.</p>
+
+                <h4>Q: How do commission rates get determined?</h4>
+                <p><strong>A:</strong> Commission rates are set by management based on factors such as experience level, performance metrics, bet volume processed, and casino policies. Rates may be reviewed periodically during performance evaluations.</p>
+
+                <h3>Transaction Management</h3>
+                <h4>Q: How far back can I view my transaction history?</h4>
+                <p><strong>A:</strong> The transaction management system typically maintains records for the current fiscal year and previous year. For older records, contact your supervisor or IT support. Use date filters to navigate through different time periods efficiently.</p>
+
+                <h4>Q: What should I do if I can't find a specific transaction a customer is asking about?</h4>
+                <p><strong>A:</strong> First, verify the slip number, date, and approximate bet amount with the customer. Use multiple search criteria (slip number, date range, amount range) in the transaction interface. If still not found, check if the transaction was processed by a different cashier or contact your supervisor for assistance.</p>
+
+                <h4>Q: Why do some transactions show "pending" status for a long time?</h4>
+                <p><strong>A:</strong> Pending status usually indicates the draw hasn't completed yet or there's a technical delay in result processing. Check the draw time and current time. If the draw should have completed, refresh the page or contact IT support if the status doesn't update within a reasonable timeframe.</p>
+
+                <h4>Q: How do I generate a report of my transactions for a specific time period?</h4>
+                <p><strong>A:</strong> Use the date range filters in the transaction interface to select your desired time period. You can then use your browser's print function or screenshot capability to document the filtered results. For official reports, contact your supervisor about approved reporting procedures.</p>
+
+                <h4>Q: What's the difference between "Total Bets" in transactions and commission calculations?</h4>
+                <p><strong>A:</strong> Both should match, but transaction "Total Bets" includes all processed bets while commission calculations may exclude cancelled or voided transactions. If you notice discrepancies, verify that all transactions have proper status indicators and report any inconsistencies to management.</p>
+
+                <h3>Voucher Redemption</h3>
+                <h4>Q: What should I do if a customer's voucher code doesn't work?</h4>
+                <p><strong>A:</strong> First, verify the code was entered correctly without typos. Check if the voucher has expired or was already used. If the code appears valid but still fails, contact your supervisor for assistance. Document the voucher code and customer information for follow-up investigation.</p>
+
+                <h4>Q: How can I tell if a voucher is legitimate or potentially fraudulent?</h4>
+                <p><strong>A:</strong> Legitimate vouchers follow standard format patterns, come from official sources, and validate successfully in the system. Be suspicious of handwritten codes, unusual formatting, customers who can't explain how they got the voucher, or multiple high-value redemptions from the same customer.</p>
+
+                <h4>Q: What's the maximum voucher value I can process without supervisor approval?</h4>
+                <p><strong>A:</strong> This varies by casino policy, but typically vouchers over $500 may require supervisor approval. Check with your supervisor about your specific authorization limits and when escalation is required for high-value voucher redemptions.</p>
+
+                <h4>Q: Can customers use multiple vouchers at the same time?</h4>
+                <p><strong>A:</strong> This depends on the specific voucher terms and casino policy. Some promotions allow multiple voucher usage while others restrict customers to one voucher per account or time period. Always check the voucher terms and ask your supervisor if you're unsure.</p>
+
+                <h4>Q: What should I do if the voucher redemption system is down or not working?</h4>
+                <p><strong>A:</strong> Document the customer's voucher information (code, value, customer details) and contact IT support immediately. Follow your casino's backup procedures for voucher redemption, which may include manual processing with supervisor approval and later system entry when service is restored.</p>
+
+                <h3>Customer Cashout Processing</h3>
+                <h4>Q: What should I do if a customer's betting slip number doesn't verify in the cashout system?</h4>
+                <p><strong>A:</strong> First, double-check that you entered the slip number correctly. Verify the slip appears legitimate and hasn't been damaged. If the number still doesn't verify, check if the slip has expired (over 7 days old). Contact your supervisor if the slip appears valid but won't verify in the system.</p>
+
+                <h4>Q: How do I handle a customer who claims their losing slip should have won?</h4>
+                <p><strong>A:</strong> Politely show the customer the bet results display in the cashout system, explaining which number won and how their bets didn't match. Refer to the original betting slip to confirm their bet selections. If the customer remains unsatisfied, escalate to your supervisor for resolution.</p>
+
+                <h4>Q: What's the maximum payout amount I can process without supervisor approval?</h4>
+                <p><strong>A:</strong> This varies by casino policy, but typically large payouts (often $1,000 or more) require supervisor approval. Check with your supervisor about your specific authorization limits and when escalation is required for high-value cashouts.</p>
+
+                <h4>Q: What should I do if I suspect a betting slip might be fraudulent?</h4>
+                <p><strong>A:</strong> Do not process the cashout. Politely tell the customer you need to verify the slip with your supervisor. Look for signs like poor print quality, altered numbers, or unusual paper. Document the slip details and contact your supervisor immediately for guidance.</p>
+
+                <h4>Q: How long are betting slips valid for cashout, and what happens to expired slips?</h4>
+                <p><strong>A:</strong> Betting slips are valid for 7 days after purchase. The system will automatically reject expired slips. Explain the policy to customers and refer them to management if they have concerns about expired winning slips. Some casinos may have procedures for handling expired winners.</p>
+
+                <div class="info-box">
+                    <h4>📞 Support Contacts</h4>
+                    <p>Keep these contact numbers readily available:</p>
+                    <ul>
+                        <li><strong>IT Support:</strong> Extension 1234</li>
+                        <li><strong>Supervisor:</strong> Extension 5678</li>
+                        <li><strong>Security:</strong> Extension 9999</li>
+                        <li><strong>Emergency:</strong> 911</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Section 14: Commission Management -->
+            <div class="section" id="commission-management">
+                <h2>14. Commission Management</h2>
+
+                <p>The commission management system allows cashiers to track their earnings from betting activities. This system provides detailed insights into your commission performance and helps you monitor your daily, weekly, and monthly earnings.</p>
+
+                <div class="highlight-box">
+                    <h4>💰 Commission System Overview</h4>
+                    <p>The commission interface is accessible at: <strong>https://roulette.aruka.app/slipp/commission.php</strong></p>
+                    <ul>
+                        <li>Track total bets processed and commission earned</li>
+                        <li>View commission rates and calculation methods</li>
+                        <li>Generate detailed commission reports</li>
+                        <li>Monitor performance across different time periods</li>
+                        <li>Access historical commission data</li>
+                    </ul>
+                </div>
+
+                <h3>Accessing the Commission Interface</h3>
+                <p>You can access the commission system through multiple methods:</p>
+                <ol class="step-list">
+                    <li>
+                        <strong>From the main POS system</strong><br>
+                        Click on "Commission" in the Cashier Info dropdown panel in your main betting interface.
+                    </li>
+                    <li>
+                        <strong>Direct URL access</strong><br>
+                        Navigate directly to https://roulette.aruka.app/slipp/commission.php using your web browser.
+                    </li>
+                    <li>
+                        <strong>When to check commissions</strong><br>
+                        Review your commission status at the end of each shift, weekly for performance tracking, or when requested by management.
+                    </li>
+                </ol>
+
+                <div class="media-container">
+                    <h4>📸 Screenshot: Commission Interface Overview</h4>
+                    <img src="media/screenshots/10-commission-interface.png"
+                         alt="Complete commission management interface showing total bets, commission earned, commission rate, performance chart, and commission history"
+                         class="tutorial-screenshot"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Image not found:</strong> media/screenshots/10-commission-interface.png</p>
+                        <p>Please ensure the screenshot file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h3>Interface Components</h3>
+
+                <h4>📊 Commission Summary Cards</h4>
+                <p>The top section displays three key performance indicators:</p>
+                <ul>
+                    <li><strong>Your Total Bets (Blue Card):</strong> Shows the total amount of bets you've processed (e.g., $14,600.00) for the selected period (Jun 21, 2025)</li>
+                    <li><strong>Your Commission (Green Card):</strong> Displays your total commission earned (e.g., $584.00) for the same period</li>
+                    <li><strong>Your Commission Rate (Teal Card):</strong> Shows your current commission percentage rate (e.g., 4%)</li>
+                </ul>
+
+                <div class="info-box">
+                    <h4>💡 Understanding Commission Rates</h4>
+                    <p>Commission rates may vary based on:</p>
+                    <ul>
+                        <li>Your experience level and performance</li>
+                        <li>Volume of bets processed</li>
+                        <li>Time of day or special promotions</li>
+                        <li>Management discretion and casino policies</li>
+                    </ul>
+                </div>
+
+                <h4>📈 Commission Chart</h4>
+                <p>The interactive chart section provides detailed performance visualization:</p>
+                <ul>
+                    <li><strong>Time Period Tabs:</strong> Switch between Hour, Day, Week, Month, and Year views</li>
+                    <li><strong>Dual Data Display:</strong>
+                        <ul>
+                            <li>Blue bars represent "Total Bets" processed</li>
+                            <li>Green dots represent "Commission" earned</li>
+                        </ul>
+                    </li>
+                    <li><strong>Date Range:</strong> X-axis shows specific dates or time periods</li>
+                    <li><strong>Amount Scale:</strong> Y-axis displays monetary values from $0 to maximum amounts</li>
+                    <li><strong>Interactive Features:</strong> Hover over data points for detailed information</li>
+                </ul>
+
+                <h4>📋 Commission History Table</h4>
+                <p>The bottom section shows detailed historical data:</p>
+                <ul>
+                    <li><strong>DATE Column:</strong> Specific dates of commission activity (e.g., 2025-06-21)</li>
+                    <li><strong>TOTAL BETS Column:</strong> Amount of bets processed on each date (e.g., $14,600.00)</li>
+                    <li><strong>COMMISSION (4%) Column:</strong> Commission earned with rate indicator (e.g., $584.00)</li>
+                    <li><strong>Sorting and Filtering:</strong> Click column headers to sort data chronologically or by amount</li>
+                </ul>
+
+                <h3>Commission Calculation Process</h3>
+
+                <h4>🧮 How Commissions Are Calculated</h4>
+                <ol class="step-list">
+                    <li>
+                        <strong>Base calculation</strong><br>
+                        Commission = Total Bets Processed × Commission Rate
+                        <br><em>Example: $14,600.00 × 4% = $584.00</em>
+                    </li>
+                    <li>
+                        <strong>Real-time tracking</strong><br>
+                        Each bet you process is automatically added to your total bets for commission calculation.
+                    </li>
+                    <li>
+                        <strong>Daily accumulation</strong><br>
+                        Commissions accumulate throughout your shift and are calculated at the end of each day.
+                    </li>
+                    <li>
+                        <strong>Rate application</strong><br>
+                        Your current commission rate is applied to all qualifying bets processed during your shift.
+                    </li>
+                </ol>
+
+                <div class="warning-box">
+                    <h4>⚠️ Commission Calculation Notes</h4>
+                    <ul>
+                        <li>Only successfully processed and paid bets count toward commission</li>
+                        <li>Cancelled or voided bets are excluded from commission calculations</li>
+                        <li>Commission rates may change based on performance metrics</li>
+                        <li>Special promotions or bonuses may affect commission calculations</li>
+                    </ul>
+                </div>
+
+                <h3>Cashier Workflow for Commission Management</h3>
+
+                <h4>📅 Daily Commission Check</h4>
+                <ol class="step-list">
+                    <li>
+                        <strong>End-of-shift review</strong><br>
+                        Access the commission interface at the end of your shift to review daily performance.
+                    </li>
+                    <li>
+                        <strong>Verify total bets</strong><br>
+                        Compare the "Total Bets" amount with your shift activity to ensure accuracy.
+                    </li>
+                    <li>
+                        <strong>Check commission calculation</strong><br>
+                        Verify that commission amount matches: Total Bets × Commission Rate.
+                    </li>
+                    <li>
+                        <strong>Review chart data</strong><br>
+                        Use the "Day" view to see hourly performance throughout your shift.
+                    </li>
+                    <li>
+                        <strong>Report discrepancies</strong><br>
+                        Contact your supervisor immediately if you notice any calculation errors.
+                    </li>
+                </ol>
+
+                <h4>📊 Weekly Performance Analysis</h4>
+                <ol class="step-list">
+                    <li>
+                        <strong>Switch to weekly view</strong><br>
+                        Click the "Week" tab in the commission chart to see 7-day performance.
+                    </li>
+                    <li>
+                        <strong>Identify trends</strong><br>
+                        Look for patterns in your daily performance and commission earnings.
+                    </li>
+                    <li>
+                        <strong>Compare periods</strong><br>
+                        Use the chart to compare current week performance with previous weeks.
+                    </li>
+                    <li>
+                        <strong>Set performance goals</strong><br>
+                        Use historical data to establish realistic targets for improvement.
+                    </li>
+                </ol>
+
+                <h4>📈 Monthly Reporting</h4>
+                <ol class="step-list">
+                    <li>
+                        <strong>Generate monthly summary</strong><br>
+                        Use the "Month" view to see complete monthly commission performance.
+                    </li>
+                    <li>
+                        <strong>Review commission history</strong><br>
+                        Scroll through the history table to see detailed daily breakdowns.
+                    </li>
+                    <li>
+                        <strong>Calculate averages</strong><br>
+                        Determine your average daily commission and total monthly earnings.
+                    </li>
+                    <li>
+                        <strong>Prepare for reviews</strong><br>
+                        Use this data for performance reviews or commission discussions with management.
+                    </li>
+                </ol>
+
+                <h3>Integration with Main POS System</h3>
+
+                <h4>🔄 Real-Time Synchronization</h4>
+                <p>The commission system is fully integrated with your main POS betting interface:</p>
+                <ul>
+                    <li><strong>Automatic bet tracking:</strong> Every bet you process is immediately recorded for commission calculation</li>
+                    <li><strong>Live updates:</strong> Commission totals update in real-time as you process customer bets</li>
+                    <li><strong>Unified login:</strong> Use the same credentials for both POS and commission systems</li>
+                    <li><strong>Consistent data:</strong> All systems share the same database for accurate reporting</li>
+                </ul>
+
+                <h4>💼 Daily Operations Impact</h4>
+                <p>Understanding how commission affects your daily work:</p>
+                <ul>
+                    <li><strong>Performance motivation:</strong> Higher bet volumes lead to increased commission earnings</li>
+                    <li><strong>Customer service focus:</strong> Better service encourages repeat customers and larger bets</li>
+                    <li><strong>Accuracy importance:</strong> Mistakes in bet processing can affect commission calculations</li>
+                    <li><strong>Shift planning:</strong> Busy periods offer opportunities for higher commission earnings</li>
+                </ul>
+
+                <h4>🎯 Best Practices for Commission Optimization</h4>
+                <ul>
+                    <li><strong>Efficient processing:</strong> Quick, accurate bet processing serves more customers</li>
+                    <li><strong>Customer education:</strong> Help customers understand betting options to increase engagement</li>
+                    <li><strong>Professional service:</strong> Excellent customer service builds loyalty and repeat business</li>
+                    <li><strong>System knowledge:</strong> Understanding all betting options helps customers make informed choices</li>
+                    <li><strong>Regular monitoring:</strong> Check commission progress throughout your shift to track performance</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <h4>🏆 Commission Success Tips</h4>
+                    <ul>
+                        <li>Greet every customer warmly to encourage betting activity</li>
+                        <li>Explain betting options clearly to help customers feel confident</li>
+                        <li>Process bets quickly and accurately to serve more customers</li>
+                        <li>Monitor busy periods and prepare for higher volume</li>
+                        <li>Use commission data to identify your most productive times</li>
+                        <li>Maintain professional standards to build customer trust</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Section 15: Transaction Management -->
+            <div class="section" id="transaction-management">
+                <h2>15. Transaction Management</h2>
+
+                <p>The transaction management system provides cashiers with comprehensive access to their betting transaction history. This powerful interface allows you to search, filter, and review all betting activities processed through your account, supporting audit requirements and daily reconciliation tasks.</p>
+
+                <div class="highlight-box">
+                    <h4>📊 Transaction System Overview</h4>
+                    <p>The transaction interface is accessible at: <strong>https://roulette.aruka.app/slipp/my_transactions_new.php</strong></p>
+                    <ul>
+                        <li>View complete betting transaction history</li>
+                        <li>Search and filter transactions by multiple criteria</li>
+                        <li>Access detailed bet information and customer data</li>
+                        <li>Monitor transaction statuses and outcomes</li>
+                        <li>Generate reports for audit and reconciliation purposes</li>
+                        <li>Track performance metrics and betting patterns</li>
+                    </ul>
+                </div>
+
+                <h3>Accessing the Transaction Interface</h3>
+                <p>You can access the transaction management system through several methods:</p>
+                <ol class="step-list">
+                    <li>
+                        <strong>From the main POS system</strong><br>
+                        Click on "My Transactions" in the navigation menu or cashier dashboard.
+                    </li>
+                    <li>
+                        <strong>Direct URL access</strong><br>
+                        Navigate directly to https://roulette.aruka.app/slipp/my_transactions_new.php using your web browser.
+                    </li>
+                    <li>
+                        <strong>When to use transaction management</strong><br>
+                        Access for daily reconciliation, customer inquiries, audit requirements, dispute resolution, or performance analysis.
+                    </li>
+                </ol>
+
+                <div class="media-container">
+                    <h4>📸 Screenshot: Transaction Management Interface</h4>
+                    <img src="media/screenshots/11-transaction-interface.png"
+                         alt="Complete transaction management interface showing user welcome panel, balance summary, performance metrics, and detailed transaction table with filtering options"
+                         class="tutorial-screenshot"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Image not found:</strong> media/screenshots/11-transaction-interface.png</p>
+                        <p>Please ensure the screenshot file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h3>Interface Components</h3>
+
+                <h4>👤 User Welcome Panel</h4>
+                <p>The top purple header section displays essential account information:</p>
+                <ul>
+                    <li><strong>Welcome Message:</strong> Shows your user ID (e.g., "Welcome, 123456789013")</li>
+                    <li><strong>Role Indicator:</strong> Displays your account role (e.g., "Role: admin")</li>
+                    <li><strong>Win Rate Badge:</strong> Shows your current win rate percentage with color coding</li>
+                    <li><strong>Current Balance:</strong> Displays your account balance (e.g., "$395,995.00") in large, prominent text</li>
+                </ul>
+
+                <h4>📈 Performance Metrics Cards</h4>
+                <p>Four color-coded cards provide key performance indicators:</p>
+                <ul>
+                    <li><strong>Total Bets (Purple Card):</strong> Shows total amount of bets processed (e.g., "$64,900.00")</li>
+                    <li><strong>Total Wins (Green Card):</strong> Displays total winnings amount (e.g., "$0.00")</li>
+                    <li><strong>Net Profit/Loss (Orange Card):</strong> Shows net financial result (e.g., "-$64,900.00")</li>
+                    <li><strong>ROI (Blue Card):</strong> Displays Return on Investment percentage (e.g., "-100.00%")</li>
+                </ul>
+
+                <div class="info-box">
+                    <h4>💡 Understanding Performance Metrics</h4>
+                    <p>Performance metrics help you understand:</p>
+                    <ul>
+                        <li><strong>Betting Volume:</strong> Total amount of customer bets you've processed</li>
+                        <li><strong>Win Tracking:</strong> Customer winnings paid out through your terminal</li>
+                        <li><strong>Net Position:</strong> Overall financial impact of betting activity</li>
+                        <li><strong>Efficiency Metrics:</strong> ROI and win rate indicators for performance analysis</li>
+                    </ul>
+                </div>
+
+                <h4>🔄 Real-Time Updates</h4>
+                <p>The system provides live data synchronization:</p>
+                <ul>
+                    <li><strong>Update Notification:</strong> Blue banner shows "Real-time updates active. Last updated: Just now"</li>
+                    <li><strong>Automatic Refresh:</strong> Data updates automatically as new transactions are processed</li>
+                    <li><strong>Manual Refresh:</strong> "Refresh" button available for immediate data updates</li>
+                    <li><strong>Live Status:</strong> Transaction statuses update in real-time as draws complete</li>
+                </ul>
+
+                <h4>📋 Navigation Tabs</h4>
+                <p>Three main sections organize different types of data:</p>
+                <ul>
+                    <li><strong>Betting Slips:</strong> Detailed view of individual betting slips and customer transactions</li>
+                    <li><strong>Transactions:</strong> Comprehensive transaction history with filtering and search capabilities</li>
+                    <li><strong>Analytics:</strong> Performance analysis tools and reporting features</li>
+                </ul>
+
+                <h4>📊 Transaction Table</h4>
+                <p>The detailed transaction table displays comprehensive bet information:</p>
+                <ul>
+                    <li><strong>SLIP #:</strong> Unique transaction identifier (e.g., "20487778", "57130907")</li>
+                    <li><strong>DATE:</strong> Transaction date and time (e.g., "2025-06-22 00:05")</li>
+                    <li><strong>DRAW #:</strong> Roulette draw number (e.g., "482")</li>
+                    <li><strong>DRAW TIME:</strong> Time when the draw occurred (e.g., "14:22")</li>
+                    <li><strong>TOTAL STAKE:</strong> Amount bet by customer (e.g., "$2,000.00", "$2,300.00")</li>
+                    <li><strong>POTENTIAL WIN:</strong> Maximum possible payout (e.g., "$23,400.00", "$27,000.00")</li>
+                    <li><strong>STATUS:</strong> Transaction outcome with color-coded indicators:
+                        <ul>
+                            <li>Red circle (●) = Loss</li>
+                            <li>Green "WIN" badge = Win</li>
+                            <li>Other status indicators as applicable</li>
+                        </ul>
+                    </li>
+                    <li><strong>DETAILS:</strong> Action buttons including "View" for detailed transaction information</li>
+                </ul>
+
+                <h3>Transaction Search and Filtering</h3>
+
+                <h4>🔍 Search Functionality</h4>
+                <p>The transaction interface provides multiple search options:</p>
+                <ol class="step-list">
+                    <li>
+                        <strong>Slip Number Search</strong><br>
+                        Enter specific slip numbers in the search field to locate individual transactions quickly.
+                    </li>
+                    <li>
+                        <strong>Date Range Filtering</strong><br>
+                        Use date selectors to filter transactions within specific time periods (daily, weekly, monthly).
+                    </li>
+                    <li>
+                        <strong>Amount Filtering</strong><br>
+                        Filter by bet amounts, stake ranges, or potential win amounts to find specific transaction types.
+                    </li>
+                    <li>
+                        <strong>Status Filtering</strong><br>
+                        Filter by transaction outcomes (wins, losses, pending) to analyze specific result types.
+                    </li>
+                    <li>
+                        <strong>Draw Number Search</strong><br>
+                        Search by specific draw numbers to find all bets placed on particular roulette draws.
+                    </li>
+                </ol>
+
+                <h4>📅 Advanced Filtering Options</h4>
+                <p>Utilize advanced filtering for detailed analysis:</p>
+                <ul>
+                    <li><strong>Time Period Selection:</strong> Filter by hour, day, week, month, or custom date ranges</li>
+                    <li><strong>Bet Type Filtering:</strong> Separate different types of roulette bets (straight, split, corner, etc.)</li>
+                    <li><strong>Customer Information:</strong> Search by customer details when available</li>
+                    <li><strong>Transaction Amount Ranges:</strong> Set minimum and maximum stake amounts for filtering</li>
+                    <li><strong>Performance Metrics:</strong> Filter by win/loss ratios or ROI ranges</li>
+                </ul>
+
+                <div class="warning-box">
+                    <h4>⚠️ Search and Filter Best Practices</h4>
+                    <ul>
+                        <li>Use specific date ranges to improve search performance and accuracy</li>
+                        <li>Combine multiple filters for more precise results</li>
+                        <li>Clear filters between different search sessions to avoid confusion</li>
+                        <li>Document search criteria when generating reports for audit purposes</li>
+                        <li>Verify search results match your intended criteria before proceeding</li>
+                    </ul>
+                </div>
+
+                <h3>Transaction Details and Records</h3>
+
+                <h4>📄 Understanding Transaction Data</h4>
+                <p>Each transaction record contains comprehensive information:</p>
+                <ul>
+                    <li><strong>Transaction Identification:</strong>
+                        <ul>
+                            <li>Unique slip number for tracking and reference</li>
+                            <li>Date and time stamps for chronological organization</li>
+                            <li>Draw number linking to specific roulette results</li>
+                        </ul>
+                    </li>
+                    <li><strong>Financial Information:</strong>
+                        <ul>
+                            <li>Total stake amount paid by customer</li>
+                            <li>Potential win calculation based on bet type and odds</li>
+                            <li>Actual payout amount (for winning bets)</li>
+                            <li>Commission earned from the transaction</li>
+                        </ul>
+                    </li>
+                    <li><strong>Bet Details:</strong>
+                        <ul>
+                            <li>Specific numbers or combinations bet</li>
+                            <li>Bet type classification (straight, split, corner, etc.)</li>
+                            <li>Odds and payout ratios applied</li>
+                            <li>Multiple bet combinations if applicable</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h4>🔍 Viewing Detailed Transaction Information</h4>
+                <ol class="step-list">
+                    <li>
+                        <strong>Click "View" button</strong><br>
+                        In the DETAILS column, click the purple "View" button to access complete transaction details.
+                    </li>
+                    <li>
+                        <strong>Review bet specifics</strong><br>
+                        Examine the detailed bet breakdown, including all numbers played and bet types.
+                    </li>
+                    <li>
+                        <strong>Verify calculations</strong><br>
+                        Confirm that stake amounts, odds, and potential payouts are calculated correctly.
+                    </li>
+                    <li>
+                        <strong>Check customer information</strong><br>
+                        Review any available customer details associated with the transaction.
+                    </li>
+                    <li>
+                        <strong>Document findings</strong><br>
+                        Note any discrepancies or important information for follow-up actions.
+                    </li>
+                </ol>
+
+                <h4>📊 Interpreting Transaction Statuses</h4>
+                <p>Transaction status indicators provide immediate outcome information:</p>
+                <ul>
+                    <li><strong>Red Circle (●):</strong> Indicates a losing bet - customer stake was lost</li>
+                    <li><strong>Green "WIN" Badge:</strong> Indicates a winning bet - customer received payout</li>
+                    <li><strong>Pending Status:</strong> Bet placed but draw not yet completed</li>
+                    <li><strong>Cancelled Status:</strong> Transaction was voided or cancelled before draw</li>
+                    <li><strong>Processing Status:</strong> Payment or payout currently being processed</li>
+                </ul>
+
+                <h3>Integration with Main POS System</h3>
+
+                <h4>🔄 Real-Time Synchronization</h4>
+                <p>The transaction management system maintains seamless integration with your main POS interface:</p>
+                <ul>
+                    <li><strong>Automatic Transaction Recording:</strong> Every bet processed in the main POS is immediately recorded in transaction history</li>
+                    <li><strong>Live Status Updates:</strong> Transaction statuses update automatically as draws complete and results are determined</li>
+                    <li><strong>Unified Data Source:</strong> Both systems access the same database ensuring data consistency</li>
+                    <li><strong>Cross-Reference Capability:</strong> Transaction records can be cross-referenced with commission calculations and daily reports</li>
+                </ul>
+
+                <h4>💼 Daily Operations Support</h4>
+                <p>Transaction management supports essential daily cashier activities:</p>
+                <ul>
+                    <li><strong>Shift Reconciliation:</strong> Review all transactions processed during your shift for accuracy</li>
+                    <li><strong>Customer Service:</strong> Quickly locate customer transactions for inquiries or disputes</li>
+                    <li><strong>Audit Compliance:</strong> Provide detailed transaction records for audit and compliance requirements</li>
+                    <li><strong>Performance Monitoring:</strong> Track your daily betting volume and transaction efficiency</li>
+                    <li><strong>Error Resolution:</strong> Identify and document any transaction discrepancies for correction</li>
+                </ul>
+
+                <h4>📈 Commission Tracking Integration</h4>
+                <p>Transaction data directly supports commission calculations:</p>
+                <ul>
+                    <li><strong>Commission Base Calculation:</strong> Total stakes from transaction records form the basis for commission calculations</li>
+                    <li><strong>Qualifying Transaction Identification:</strong> Only successfully processed transactions count toward commission</li>
+                    <li><strong>Real-Time Commission Updates:</strong> Commission totals update as new transactions are recorded</li>
+                    <li><strong>Historical Commission Verification:</strong> Use transaction history to verify commission calculations for any time period</li>
+                </ul>
+
+                <h4>🎯 Best Practices for Transaction Management</h4>
+                <ul>
+                    <li><strong>Regular Review:</strong> Check transaction records at least once per shift for accuracy</li>
+                    <li><strong>Immediate Investigation:</strong> Address any discrepancies or unusual transactions immediately</li>
+                    <li><strong>Documentation:</strong> Keep notes on any transaction issues or customer interactions</li>
+                    <li><strong>Audit Preparation:</strong> Maintain organized records and be prepared to explain any transactions</li>
+                    <li><strong>Customer Service:</strong> Use transaction details to provide accurate information to customers</li>
+                    <li><strong>Performance Analysis:</strong> Review transaction patterns to identify opportunities for improvement</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <h4>🏆 Transaction Management Success Tips</h4>
+                    <ul>
+                        <li>Familiarize yourself with all transaction table columns and their meanings</li>
+                        <li>Use filtering options to quickly locate specific transactions during customer inquiries</li>
+                        <li>Regularly verify that your transaction totals match your shift activity</li>
+                        <li>Keep transaction records organized for easy reference during audits</li>
+                        <li>Use the "View" details function to understand complex bet combinations</li>
+                        <li>Monitor real-time updates to stay current with transaction statuses</li>
+                        <li>Cross-reference transaction data with commission reports for accuracy</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Section 16: Voucher Redemption -->
+            <div class="section" id="voucher-redemption">
+                <h2>16. Voucher Redemption</h2>
+
+                <p>The voucher redemption system enables cashiers to process customer voucher codes, validate promotional offers, and add credits to customer accounts. This system is essential for handling promotional campaigns, customer rewards, and special bonus offers while maintaining security and fraud prevention protocols.</p>
+
+                <div class="highlight-box">
+                    <h4>🎫 Voucher Redemption System Overview</h4>
+                    <p>The voucher redemption interface is accessible at: <strong>https://roulette.aruka.app/slipp/redeem_voucher.php</strong></p>
+                    <ul>
+                        <li>Process customer voucher codes and promotional offers</li>
+                        <li>Validate voucher authenticity and eligibility requirements</li>
+                        <li>Add credits directly to customer accounts</li>
+                        <li>Track voucher usage and prevent duplicate redemptions</li>
+                        <li>Handle various voucher types and promotional campaigns</li>
+                        <li>Maintain security protocols and fraud prevention measures</li>
+                    </ul>
+                </div>
+
+                <h3>Accessing the Voucher Redemption Interface</h3>
+                <p>You can access the voucher redemption system through multiple methods:</p>
+                <ol class="step-list">
+                    <li>
+                        <strong>From the main navigation menu</strong><br>
+                        Click on "Redeem Voucher" in the top navigation bar of the roulette system.
+                    </li>
+                    <li>
+                        <strong>Direct URL access</strong><br>
+                        Navigate directly to https://roulette.aruka.app/slipp/redeem_voucher.php using your web browser.
+                    </li>
+                    <li>
+                        <strong>When to use voucher redemption</strong><br>
+                        Process customer vouchers during account setup, promotional campaigns, customer service requests, or special bonus distributions.
+                    </li>
+                </ol>
+
+                <div class="media-container">
+                    <h4>📸 Screenshot: Voucher Redemption Interface</h4>
+                    <img src="media/screenshots/12-voucher-redemption-interface.png"
+                         alt="Complete voucher redemption interface showing user welcome panel, voucher code input section, redemption button, and sample voucher codes with values"
+                         class="tutorial-screenshot"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Image not found:</strong> media/screenshots/12-voucher-redemption-interface.png</p>
+                        <p>Please ensure the screenshot file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h3>Interface Components</h3>
+
+                <h4>👤 User Welcome Header</h4>
+                <p>The blue header section displays essential account information:</p>
+                <ul>
+                    <li><strong>Welcome Message:</strong> Shows the user ID (e.g., "Welcome, 123456789013")</li>
+                    <li><strong>Role Display:</strong> Indicates account role (e.g., "Role: admin")</li>
+                    <li><strong>Current Balance:</strong> Shows account balance prominently (e.g., "$395,995.00")</li>
+                    <li><strong>Balance Context:</strong> Displays "Current Balance" label for clarity</li>
+                </ul>
+
+                <h4>🎫 Voucher Code Input Section</h4>
+                <p>The main redemption area provides voucher processing functionality:</p>
+                <ul>
+                    <li><strong>Section Header:</strong> Blue "Enter Voucher Code" banner clearly identifies the input area</li>
+                    <li><strong>Voucher Code Field:</strong> Text input field with placeholder "ENTER VOUCHER CODE"</li>
+                    <li><strong>Input Instructions:</strong> Guidance text "Enter the voucher code to add credits to your account"</li>
+                    <li><strong>Redeem Button:</strong> Blue "Redeem Voucher" button to process the entered code</li>
+                    <li><strong>Input Validation:</strong> Real-time validation of voucher code format and structure</li>
+                </ul>
+
+                <h4>📋 Sample Voucher Codes Section</h4>
+                <p>The teal section provides testing and reference information:</p>
+                <ul>
+                    <li><strong>Section Title:</strong> "Sample Voucher Codes" clearly identifies the reference area</li>
+                    <li><strong>Testing Purpose:</strong> "For testing purposes, you can use the following voucher codes:"</li>
+                    <li><strong>Voucher Examples:</strong> List of sample codes with values:
+                        <ul>
+                            <li><strong>BONUS100</strong> - Adds $100.00 to your account</li>
+                            <li><strong>BONUS200</strong> - Adds $200.00 to your account</li>
+                            <li><strong>BONUS500</strong> - Adds $500.00 to your account</li>
+                            <li><strong>WELCOME1000</strong> - Adds $1,000.00 to your account</li>
+                        </ul>
+                    </li>
+                    <li><strong>Usage Limitation:</strong> "Note: Each voucher can only be used once" warning</li>
+                </ul>
+
+                <div class="info-box">
+                    <h4>💡 Understanding Voucher Types</h4>
+                    <p>Different voucher categories serve various purposes:</p>
+                    <ul>
+                        <li><strong>Bonus Vouchers:</strong> Standard promotional credits (BONUS100, BONUS200, BONUS500)</li>
+                        <li><strong>Welcome Vouchers:</strong> New customer incentives (WELCOME1000)</li>
+                        <li><strong>Promotional Codes:</strong> Campaign-specific offers with time limitations</li>
+                        <li><strong>Loyalty Rewards:</strong> Customer retention and appreciation vouchers</li>
+                        <li><strong>Compensation Vouchers:</strong> Service recovery and customer service credits</li>
+                    </ul>
+                </div>
+
+                <h3>Voucher Processing Workflow</h3>
+
+                <h4>🔍 Step-by-Step Redemption Process</h4>
+                <ol class="step-list">
+                    <li>
+                        <strong>Customer presents voucher</strong><br>
+                        Customer provides voucher code verbally, on paper, or through digital means (email, SMS, app).
+                    </li>
+                    <li>
+                        <strong>Verify customer identity</strong><br>
+                        Confirm customer account details and eligibility for voucher redemption.
+                    </li>
+                    <li>
+                        <strong>Enter voucher code</strong><br>
+                        Type the voucher code exactly as provided into the "ENTER VOUCHER CODE" field.
+                    </li>
+                    <li>
+                        <strong>Review code format</strong><br>
+                        Ensure the code follows expected format patterns and contains no typos.
+                    </li>
+                    <li>
+                        <strong>Click "Redeem Voucher"</strong><br>
+                        Press the blue redemption button to initiate the validation and processing.
+                    </li>
+                    <li>
+                        <strong>Confirm successful redemption</strong><br>
+                        Verify that credits are added to the customer account and balance updates correctly.
+                    </li>
+                    <li>
+                        <strong>Provide confirmation to customer</strong><br>
+                        Inform customer of successful redemption and new account balance.
+                    </li>
+                </ol>
+
+                <h4>🎯 Different Voucher Type Processing</h4>
+                <p>Handle various voucher categories with appropriate procedures:</p>
+                <ul>
+                    <li><strong>Standard Bonus Vouchers:</strong>
+                        <ul>
+                            <li>Process immediately without additional verification</li>
+                            <li>Standard credit amounts ($100, $200, $500)</li>
+                            <li>Single-use limitation applies</li>
+                        </ul>
+                    </li>
+                    <li><strong>High-Value Vouchers:</strong>
+                        <ul>
+                            <li>Verify customer identity more thoroughly</li>
+                            <li>May require supervisor approval for amounts over $500</li>
+                            <li>Document redemption details for audit purposes</li>
+                        </ul>
+                    </li>
+                    <li><strong>Promotional Campaign Vouchers:</strong>
+                        <ul>
+                            <li>Check campaign validity dates and terms</li>
+                            <li>Verify customer meets campaign requirements</li>
+                            <li>Apply any campaign-specific restrictions</li>
+                        </ul>
+                    </li>
+                    <li><strong>Compensation Vouchers:</strong>
+                        <ul>
+                            <li>Verify authorization from management</li>
+                            <li>Document reason for compensation</li>
+                            <li>Follow special handling procedures if applicable</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>Validation and Security</h3>
+
+                <h4>🔒 Voucher Authentication Process</h4>
+                <p>The system employs multiple security measures to prevent fraud:</p>
+                <ul>
+                    <li><strong>Code Format Validation:</strong> Voucher codes must match expected patterns and structures</li>
+                    <li><strong>Database Verification:</strong> Codes are checked against the valid voucher database</li>
+                    <li><strong>Single-Use Enforcement:</strong> Each voucher can only be redeemed once to prevent duplicate usage</li>
+                    <li><strong>Expiration Date Checking:</strong> System automatically validates voucher expiration dates</li>
+                    <li><strong>Account Eligibility:</strong> Verifies customer account status and redemption eligibility</li>
+                    <li><strong>Real-Time Processing:</strong> Immediate validation prevents delayed fraud detection</li>
+                </ul>
+
+                <h4>🛡️ Fraud Prevention Measures</h4>
+                <p>Implement security protocols to protect against voucher fraud:</p>
+                <ol class="step-list">
+                    <li>
+                        <strong>Verify voucher source</strong><br>
+                        Confirm how the customer obtained the voucher (official promotion, email, legitimate source).
+                    </li>
+                    <li>
+                        <strong>Check for tampering</strong><br>
+                        Examine physical vouchers for signs of alteration or forgery.
+                    </li>
+                    <li>
+                        <strong>Validate customer information</strong><br>
+                        Ensure customer details match voucher eligibility requirements.
+                    </li>
+                    <li>
+                        <strong>Monitor redemption patterns</strong><br>
+                        Watch for suspicious activity like multiple high-value redemptions.
+                    </li>
+                    <li>
+                        <strong>Document unusual requests</strong><br>
+                        Record any suspicious voucher redemption attempts for security review.
+                    </li>
+                    <li>
+                        <strong>Escalate concerns</strong><br>
+                        Contact supervisor immediately if fraud is suspected.
+                    </li>
+                </ol>
+
+                <div class="warning-box">
+                    <h4>⚠️ Security Alert Indicators</h4>
+                    <p>Watch for these red flags that may indicate fraudulent voucher activity:</p>
+                    <ul>
+                        <li>Customer cannot explain how they obtained the voucher</li>
+                        <li>Voucher code appears handwritten or altered</li>
+                        <li>Customer attempts to redeem multiple high-value vouchers</li>
+                        <li>Voucher format doesn't match standard promotional materials</li>
+                        <li>Customer becomes agitated when asked for verification</li>
+                        <li>System shows voucher was already redeemed</li>
+                        <li>Voucher code contains unusual characters or formatting</li>
+                    </ul>
+                </div>
+
+                <h4>📅 Expiration Date Management</h4>
+                <p>Handle voucher expiration dates properly:</p>
+                <ul>
+                    <li><strong>Automatic Validation:</strong> System checks expiration dates automatically during redemption</li>
+                    <li><strong>Grace Period Policy:</strong> Understand casino policy on expired vouchers (if any grace period applies)</li>
+                    <li><strong>Customer Communication:</strong> Clearly explain expiration policies to customers</li>
+                    <li><strong>Alternative Solutions:</strong> Offer alternatives for expired vouchers when authorized</li>
+                    <li><strong>Documentation:</strong> Record expired voucher attempts for promotional analysis</li>
+                </ul>
+
+                <h3>Integration with Main POS System</h3>
+
+                <h4>🔄 Real-Time Account Integration</h4>
+                <p>The voucher redemption system maintains seamless integration with customer accounts:</p>
+                <ul>
+                    <li><strong>Immediate Balance Updates:</strong> Credits are added to customer accounts instantly upon successful redemption</li>
+                    <li><strong>Transaction Recording:</strong> All voucher redemptions are recorded in the transaction management system</li>
+                    <li><strong>Account History:</strong> Voucher redemptions appear in customer account history for reference</li>
+                    <li><strong>Balance Synchronization:</strong> Account balances update across all system interfaces simultaneously</li>
+                </ul>
+
+                <h4>💼 Daily Operations Integration</h4>
+                <p>Voucher redemption supports essential cashier activities:</p>
+                <ul>
+                    <li><strong>Customer Service:</strong> Quickly process promotional offers and customer rewards</li>
+                    <li><strong>Account Management:</strong> Add credits to customer accounts for various business purposes</li>
+                    <li><strong>Promotional Support:</strong> Handle marketing campaign vouchers and special offers</li>
+                    <li><strong>Problem Resolution:</strong> Process compensation vouchers for service recovery</li>
+                    <li><strong>Audit Trail:</strong> Maintain complete records of all voucher redemptions for compliance</li>
+                </ul>
+
+                <h4>📊 Reporting and Tracking</h4>
+                <p>Voucher redemption data supports business intelligence and analysis:</p>
+                <ul>
+                    <li><strong>Redemption Tracking:</strong> Monitor voucher usage rates and campaign effectiveness</li>
+                    <li><strong>Customer Behavior:</strong> Analyze customer response to promotional offers</li>
+                    <li><strong>Fraud Detection:</strong> Track patterns that may indicate fraudulent activity</li>
+                    <li><strong>Financial Reconciliation:</strong> Account for promotional costs and customer credits</li>
+                    <li><strong>Campaign Analysis:</strong> Evaluate success of different voucher types and values</li>
+                </ul>
+
+                <h4>🎯 Best Practices for Voucher Redemption</h4>
+                <ul>
+                    <li><strong>Accurate Code Entry:</strong> Double-check voucher codes before processing to avoid errors</li>
+                    <li><strong>Customer Verification:</strong> Always verify customer identity for high-value vouchers</li>
+                    <li><strong>Clear Communication:</strong> Explain voucher terms and conditions to customers</li>
+                    <li><strong>Security Awareness:</strong> Stay alert for signs of fraudulent voucher activity</li>
+                    <li><strong>Documentation:</strong> Keep records of unusual voucher redemption requests</li>
+                    <li><strong>System Knowledge:</strong> Understand different voucher types and their specific requirements</li>
+                    <li><strong>Customer Service:</strong> Handle voucher issues professionally and efficiently</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <h4>🏆 Voucher Redemption Success Tips</h4>
+                    <ul>
+                        <li>Familiarize yourself with current promotional campaigns and their voucher codes</li>
+                        <li>Keep a reference list of common voucher types and their values</li>
+                        <li>Practice entering voucher codes accurately to minimize processing time</li>
+                        <li>Understand your authority limits for different voucher values</li>
+                        <li>Know when to escalate unusual voucher requests to supervisors</li>
+                        <li>Maintain professional demeanor when handling voucher disputes</li>
+                        <li>Use voucher redemption as an opportunity to enhance customer experience</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Section 17: Customer Cashout Processing -->
+            <div class="section" id="customer-cashout">
+                <h2>17. Customer Cashout Processing</h2>
+
+                <p>The customer cashout processing system enables cashiers to handle winning ticket redemptions and customer withdrawal requests. This critical system validates betting slips, calculates winnings, processes payouts, and maintains accurate financial records while ensuring security and preventing fraudulent cashout attempts.</p>
+
+                <div class="highlight-box">
+                    <h4>💰 Cashout System Overview</h4>
+                    <p>The cashout processing interface is integrated into the main betting system and accessible through the "CASHOUT BETTING SLIP" modal dialog.</p>
+                    <ul>
+                        <li>Process winning betting slip redemptions and customer payouts</li>
+                        <li>Validate slip authenticity and verify winning status</li>
+                        <li>Calculate accurate payout amounts based on bet results</li>
+                        <li>Generate official cashout receipts for customer records</li>
+                        <li>Maintain transaction records and audit trails</li>
+                        <li>Integrate with cash drawer management and daily reconciliation</li>
+                    </ul>
+                </div>
+
+                <h3>Accessing the Cashout Processing Interface</h3>
+                <p>The cashout system is accessed through the main betting interface when customers present winning tickets:</p>
+                <ol class="step-list">
+                    <li>
+                        <strong>From the main betting interface</strong><br>
+                        Click the "Cashout" button or use the cashout shortcut in the main roulette betting system.
+                    </li>
+                    <li>
+                        <strong>Customer-initiated request</strong><br>
+                        When customers present betting slips for redemption, access the cashout modal to process their request.
+                    </li>
+                    <li>
+                        <strong>When to use cashout processing</strong><br>
+                        Process winning ticket redemptions, handle customer payout requests, validate betting slip authenticity, and generate official receipts.
+                    </li>
+                </ol>
+
+                <div class="media-container">
+                    <h4>📸 Screenshot: Cashout Processing Interface</h4>
+                    <img src="media/screenshots/13-cashout-interface.png"
+                         alt="Complete cashout processing interface showing slip number input, verification controls, bet results display, winning calculations, and process cashout button"
+                         class="tutorial-screenshot"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Image not found:</strong> media/screenshots/13-cashout-interface.png</p>
+                        <p>Please ensure the screenshot file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <div class="media-container">
+                    <h4>🎥 Video: Complete Cashout Workflow Demonstration</h4>
+                    <video controls class="tutorial-video"
+                           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <source src="media/videos/04-cashout-process-demo.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="media-fallback" style="display: none;">
+                        <p><strong>Video not found:</strong> media/videos/04-cashout-process-demo.mp4</p>
+                        <p>Please ensure the video file is placed in the correct location.</p>
+                    </div>
+
+                </div>
+
+                <h3>Interface Components</h3>
+
+                <h4>🎫 Slip Input and Verification Section</h4>
+                <p>The top section handles betting slip identification and validation:</p>
+                <ul>
+                    <li><strong>Modal Header:</strong> "CASHOUT BETTING SLIP" title with close button (X)</li>
+                    <li><strong>Input Label:</strong> "Enter Slip Number or Scan Barcode" instruction</li>
+                    <li><strong>Slip Number Field:</strong> Text input with barcode scanner icon for manual entry or scanning</li>
+                    <li><strong>Validity Notice:</strong> "Note: Betting slips are valid for 7 days after purchase" warning</li>
+                    <li><strong>Action Buttons:</strong> "Cancel" (gray) and "Verify Slip" (orange) buttons</li>
+                    <li><strong>Input Validation:</strong> Real-time validation of slip number format and structure</li>
+                </ul>
+
+                <h4>📋 Slip Details Display</h4>
+                <p>After verification, detailed slip information is displayed:</p>
+                <ul>
+                    <li><strong>Slip Identification:</strong> Slip number prominently displayed (e.g., "Slip #49946645")</li>
+                    <li><strong>Draw Information:</strong> Associated draw number (e.g., "Draw #679")</li>
+                    <li><strong>Purchase Details:</strong> Date and time of purchase with validity period</li>
+                    <li><strong>Winning Number:</strong> Large display of the drawn winning number</li>
+                    <li><strong>Status Indicators:</strong> Visual indicators for slip validity and processing status</li>
+                </ul>
+
+                <h4>🎯 Bet Results Section</h4>
+                <p>The results area shows detailed bet outcomes and calculations:</p>
+                <ul>
+                    <li><strong>Bet Type Display:</strong> Shows each bet type placed (e.g., "Straight")</li>
+                    <li><strong>Bet Details:</strong> Specific bet information (e.g., "Straight Up on 17")</li>
+                    <li><strong>Stake Amount:</strong> Original bet amount (e.g., "$100.00")</li>
+                    <li><strong>Winning Status:</strong> Visual indicators for winning vs. losing bets</li>
+                    <li><strong>Payout Calculation:</strong> Individual bet winnings (e.g., "$3600.00")</li>
+                    <li><strong>Result Highlighting:</strong> Winning bets highlighted with green borders/colors</li>
+                </ul>
+
+                <h4>💰 Payout Summary</h4>
+                <p>The bottom section provides payout totals and processing controls:</p>
+                <ul>
+                    <li><strong>Total Winnings:</strong> Large, prominent display of total payout amount</li>
+                    <li><strong>Currency Formatting:</strong> Proper monetary formatting with dollar signs and decimals</li>
+                    <li><strong>Process Button:</strong> Green "Process Cashout" button for final transaction</li>
+                    <li><strong>Success Confirmation:</strong> "Cashout processed successfully!" message after completion</li>
+                    <li><strong>Receipt Generation:</strong> Automatic receipt creation and display</li>
+                </ul>
+
+                <div class="info-box">
+                    <h4>💡 Understanding Cashout Scenarios</h4>
+                    <p>Different cashout situations require specific handling:</p>
+                    <ul>
+                        <li><strong>Winning Slips:</strong> Display winning bets with green highlighting and payout amounts</li>
+                        <li><strong>Losing Slips:</strong> Show "Sorry, none of your bets won for this draw" message</li>
+                        <li><strong>Partial Wins:</strong> Some bets win while others lose on the same slip</li>
+                        <li><strong>High-Value Payouts:</strong> Large winnings may require additional verification</li>
+                        <li><strong>Expired Slips:</strong> Slips older than 7 days cannot be processed</li>
+                    </ul>
+                </div>
+
+                <h3>Cashout Processing Workflow</h3>
+
+                <h4>🔍 Step-by-Step Cashout Process</h4>
+                <ol class="step-list">
+                    <li>
+                        <strong>Customer presents betting slip</strong><br>
+                        Customer approaches with physical betting slip requesting cashout or payout.
+                    </li>
+                    <li>
+                        <strong>Open cashout interface</strong><br>
+                        Click "Cashout" button in main interface to open the cashout modal dialog.
+                    </li>
+                    <li>
+                        <strong>Enter slip number</strong><br>
+                        Type the slip number manually or use barcode scanner to input slip identification.
+                    </li>
+                    <li>
+                        <strong>Verify slip details</strong><br>
+                        Click "Verify Slip" to validate slip authenticity and retrieve bet information.
+                    </li>
+                    <li>
+                        <strong>Review slip information</strong><br>
+                        Confirm slip number, draw number, purchase date, and validity period.
+                    </li>
+                    <li>
+                        <strong>Check winning status</strong><br>
+                        Review bet results, winning number, and individual bet outcomes.
+                    </li>
+                    <li>
+                        <strong>Calculate total payout</strong><br>
+                        Verify total winnings calculation and payout amount accuracy.
+                    </li>
+                    <li>
+                        <strong>Process cashout</strong><br>
+                        Click "Process Cashout" button to complete the transaction.
+                    </li>
+                    <li>
+                        <strong>Generate receipt</strong><br>
+                        System automatically creates official cashout receipt for customer.
+                    </li>
+                    <li>
+                        <strong>Complete transaction</strong><br>
+                        Provide cash payout to customer and give them the receipt.
+                    </li>
+                </ol>
+
+                <h4>🎯 Different Cashout Scenarios</h4>
+                <p>Handle various cashout situations with appropriate procedures:</p>
+                <ul>
+                    <li><strong>Standard Winning Slips:</strong>
+                        <ul>
+                            <li>Process immediately after verification</li>
+                            <li>Confirm winning bets and payout calculations</li>
+                            <li>Generate receipt and provide cash payment</li>
+                        </ul>
+                    </li>
+                    <li><strong>High-Value Payouts:</strong>
+                        <ul>
+                            <li>Verify customer identity thoroughly</li>
+                            <li>May require supervisor approval for large amounts</li>
+                            <li>Document transaction details for audit purposes</li>
+                            <li>Follow cash handling procedures for large payouts</li>
+                        </ul>
+                    </li>
+                    <li><strong>Losing Slips:</strong>
+                        <ul>
+                            <li>Politely explain that no bets won</li>
+                            <li>Show customer the losing bet results</li>
+                            <li>Encourage future participation</li>
+                            <li>No payout or receipt generation required</li>
+                        </ul>
+                    </li>
+                    <li><strong>Expired Slips:</strong>
+                        <ul>
+                            <li>Explain 7-day validity policy to customer</li>
+                            <li>System will prevent processing of expired slips</li>
+                            <li>Refer customer to management if needed</li>
+                            <li>Document expired slip attempts</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>Security and Verification</h3>
+
+                <h4>🔒 Slip Authentication Process</h4>
+                <p>The system employs multiple security measures to prevent fraudulent cashouts:</p>
+                <ul>
+                    <li><strong>Slip Number Validation:</strong> Betting slip numbers must match database records exactly</li>
+                    <li><strong>Purchase Verification:</strong> System confirms slip was legitimately purchased and paid for</li>
+                    <li><strong>Draw Matching:</strong> Verifies slip corresponds to correct draw number and results</li>
+                    <li><strong>Validity Period Check:</strong> Automatically enforces 7-day expiration policy</li>
+                    <li><strong>Duplicate Prevention:</strong> Prevents multiple cashouts of the same winning slip</li>
+                    <li><strong>Real-Time Validation:</strong> Immediate verification prevents delayed fraud detection</li>
+                </ul>
+
+                <h4>🛡️ Fraud Prevention Measures</h4>
+                <p>Implement security protocols to protect against cashout fraud:</p>
+                <ol class="step-list">
+                    <li>
+                        <strong>Examine physical slip</strong><br>
+                        Check betting slip for signs of tampering, alteration, or forgery.
+                    </li>
+                    <li>
+                        <strong>Verify slip authenticity</strong><br>
+                        Confirm slip paper, printing quality, and format match official standards.
+                    </li>
+                    <li>
+                        <strong>Cross-reference customer</strong><br>
+                        For high-value payouts, verify customer identity matches slip purchaser if possible.
+                    </li>
+                    <li>
+                        <strong>Check system alerts</strong><br>
+                        Watch for any system warnings or flags during slip verification.
+                    </li>
+                    <li>
+                        <strong>Monitor payout patterns</strong><br>
+                        Be alert for unusual cashout requests or suspicious customer behavior.
+                    </li>
+                    <li>
+                        <strong>Escalate concerns</strong><br>
+                        Contact supervisor immediately if fraud is suspected.
+                    </li>
+                </ol>
+
+                <div class="warning-box">
+                    <h4>⚠️ Fraud Alert Indicators</h4>
+                    <p>Watch for these red flags that may indicate fraudulent cashout attempts:</p>
+                    <ul>
+                        <li>Betting slip appears damaged, altered, or poorly printed</li>
+                        <li>Customer cannot provide reasonable explanation for slip possession</li>
+                        <li>Slip number format doesn't match standard patterns</li>
+                        <li>Customer becomes agitated when asked for verification</li>
+                        <li>Multiple high-value slips presented by same customer</li>
+                        <li>System shows slip was already cashed out</li>
+                        <li>Slip details don't match system records</li>
+                        <li>Customer rushes the cashout process or avoids questions</li>
+                    </ul>
+                </div>
+
+                <h4>💳 Customer Identity Verification</h4>
+                <p>For high-value payouts, implement appropriate verification procedures:</p>
+                <ul>
+                    <li><strong>ID Requirements:</strong> Request government-issued photo identification for large payouts</li>
+                    <li><strong>Verification Limits:</strong> Understand casino policy on when ID verification is required</li>
+                    <li><strong>Documentation:</strong> Record customer information for significant transactions</li>
+                    <li><strong>Signature Verification:</strong> Compare signatures when applicable</li>
+                    <li><strong>Supervisor Approval:</strong> Obtain management authorization for exceptionally large payouts</li>
+                </ul>
+
+                <h4>📊 Payout Limits and Authorization</h4>
+                <p>Understand authorization requirements for different payout amounts:</p>
+                <ul>
+                    <li><strong>Standard Payouts:</strong> Process routine winnings within normal limits independently</li>
+                    <li><strong>High-Value Thresholds:</strong> Know dollar amounts that require supervisor approval</li>
+                    <li><strong>Cash Drawer Limits:</strong> Ensure sufficient cash availability for large payouts</li>
+                    <li><strong>Daily Limits:</strong> Understand any daily payout restrictions or reporting requirements</li>
+                    <li><strong>Documentation Requirements:</strong> Complete necessary forms for regulated payout amounts</li>
+                </ul>
+
+                <h3>Integration with Main POS System</h3>
+
+                <h4>🔄 Real-Time Transaction Integration</h4>
+                <p>The cashout system maintains seamless integration with all casino systems:</p>
+                <ul>
+                    <li><strong>Immediate Processing:</strong> Cashouts are recorded instantly in transaction management</li>
+                    <li><strong>Cash Drawer Integration:</strong> Payouts automatically update cash drawer balances</li>
+                    <li><strong>Audit Trail Creation:</strong> Complete transaction records for compliance and reconciliation</li>
+                    <li><strong>Receipt Generation:</strong> Official receipts created automatically for customer records</li>
+                    <li><strong>System Synchronization:</strong> All interfaces update simultaneously with cashout data</li>
+                </ul>
+
+                <h4>💼 Daily Operations Integration</h4>
+                <p>Cashout processing supports essential daily cashier activities:</p>
+                <ul>
+                    <li><strong>Shift Reconciliation:</strong> Cashout totals included in daily cash drawer balancing</li>
+                    <li><strong>Customer Service:</strong> Efficient processing enhances customer satisfaction</li>
+                    <li><strong>Financial Reporting:</strong> Cashout data feeds into daily, weekly, and monthly reports</li>
+                    <li><strong>Inventory Management:</strong> Cash drawer levels monitored for adequate payout funds</li>
+                    <li><strong>Compliance Support:</strong> Transaction records support regulatory requirements</li>
+                </ul>
+
+                <h4>📋 Receipt and Documentation</h4>
+                <p>Proper documentation ensures accurate record-keeping and customer service:</p>
+                <ul>
+                    <li><strong>Official Receipts:</strong> System-generated receipts include all transaction details</li>
+                    <li><strong>Receipt Information:</strong> Slip number, draw number, purchase date, winning bets, payout amount, cashout date</li>
+                    <li><strong>Customer Copy:</strong> Provide receipt to customer as proof of transaction</li>
+                    <li><strong>Internal Records:</strong> Maintain copies for audit and reconciliation purposes</li>
+                    <li><strong>Digital Storage:</strong> Electronic records stored in transaction management system</li>
+                </ul>
+
+                <h4>🎯 Best Practices for Cashout Processing</h4>
+                <ul>
+                    <li><strong>Accurate Verification:</strong> Always verify slip numbers carefully before processing</li>
+                    <li><strong>Customer Communication:</strong> Clearly explain payout calculations to customers</li>
+                    <li><strong>Security Awareness:</strong> Stay alert for signs of fraudulent cashout attempts</li>
+                    <li><strong>Professional Service:</strong> Handle all cashout requests courteously and efficiently</li>
+                    <li><strong>Cash Management:</strong> Ensure adequate cash drawer funds for expected payouts</li>
+                    <li><strong>Documentation:</strong> Keep accurate records of all cashout transactions</li>
+                    <li><strong>System Knowledge:</strong> Understand payout calculations and verification procedures</li>
+                    <li><strong>Problem Resolution:</strong> Handle cashout disputes professionally and escalate when needed</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <h4>🏆 Cashout Processing Success Tips</h4>
+                    <ul>
+                        <li>Double-check slip numbers before verification to avoid processing errors</li>
+                        <li>Familiarize yourself with common bet types and their payout calculations</li>
+                        <li>Practice using the barcode scanner for efficient slip number entry</li>
+                        <li>Understand your authorization limits for different payout amounts</li>
+                        <li>Know when to escalate unusual cashout requests to supervisors</li>
+                        <li>Maintain professional demeanor when handling cashout disputes</li>
+                        <li>Use cashout processing as an opportunity to enhance customer experience</li>
+                        <li>Keep cash drawer organized and adequately stocked for payouts</li>
+                    </ul>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="footer">
+            <p>© 2024 Casino Roulette Betting System - Cashier User Manual</p>
+            <p>For additional support, contact your supervisor or IT department</p>
+            <p>Last updated: <span id="lastUpdated"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Set last updated date
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString();
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

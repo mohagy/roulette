@@ -41,31 +41,75 @@ try {
     
     if ($hasAutomaticModeColumn) {
         // Using direct column approach
-        $stmt = $conn->prepare("
-            UPDATE roulette_settings 
-            SET automatic_mode = ?,
-                updated_at = NOW() 
-            WHERE id = 1
-        ");
-        $stmt->bind_param("i", $mode);
+        // First check if record exists
+        $checkStmt = $conn->prepare("SELECT id FROM roulette_settings WHERE id = 1 LIMIT 1");
+        $checkStmt->execute();
+        $checkResult = $checkStmt->get_result();
+        $checkStmt->close();
+        
+        if ($checkResult->num_rows === 0) {
+            // Insert new record
+            $stmt = $conn->prepare("
+                INSERT INTO roulette_settings (id, automatic_mode, updated_at) 
+                VALUES (1, ?, NOW())
+            ");
+            $stmt->bind_param("i", $mode);
+        } else {
+            // Update existing record
+            $stmt = $conn->prepare("
+                UPDATE roulette_settings 
+                SET automatic_mode = ?,
+                    updated_at = NOW() 
+                WHERE id = 1
+            ");
+            $stmt->bind_param("i", $mode);
+        }
     } else {
         // Using setting_name/setting_value approach
         $modeStr = (string)$mode;
-        $stmt = $conn->prepare("
-            UPDATE roulette_settings 
-            SET setting_value = ?,
-                updated_at = NOW() 
-            WHERE setting_name = 'automatic_mode'
+        
+        // Check if record exists
+        $checkStmt = $conn->prepare("
+            SELECT id FROM roulette_settings 
+            WHERE setting_name = 'automatic_mode' 
+            LIMIT 1
         ");
-        $stmt->bind_param("s", $modeStr);
+        $checkStmt->execute();
+        $checkResult = $checkStmt->get_result();
+        $checkStmt->close();
+        
+        if ($checkResult->num_rows === 0) {
+            // Insert new record
+            $stmt = $conn->prepare("
+                INSERT INTO roulette_settings (setting_name, setting_value, updated_at) 
+                VALUES ('automatic_mode', ?, NOW())
+            ");
+            $stmt->bind_param("s", $modeStr);
+        } else {
+            // Update existing record
+            $stmt = $conn->prepare("
+                UPDATE roulette_settings 
+                SET setting_value = ?,
+                    updated_at = NOW() 
+                WHERE setting_name = 'automatic_mode'
+            ");
+            $stmt->bind_param("s", $modeStr);
+        }
     }
     
     $success = $stmt->execute();
-    $stmt->close();
     
     if (!$success) {
-        throw new Exception("Failed to update automatic mode: " . $conn->error);
+        $error = $stmt->error ?: $conn->error;
+        $stmt->close();
+        throw new Exception("Failed to update automatic mode: " . $error);
     }
+    
+    $affectedRows = $stmt->affected_rows;
+    $stmt->close();
+    
+    // Log the result
+    logModeChange("Mode set to $modeText (affected rows: $affectedRows)", 'INFO');
     
     // If switching to manual mode, clear any existing winning number
     if ($mode === 0) {

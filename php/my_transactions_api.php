@@ -117,15 +117,12 @@ function getTransactionSummary($conn, $userId) {
             bs.is_cancelled,
             bs.status,
             bs.winning_number,
-            (bs.status = 'won') as is_winner,
+            (bs.status = 'won' OR bs.status = 'cashed_out') as is_winner,
+            bs.paid_out_amount,
             bs.paid_out_amount as winning_amount,
-            bs.transaction_id,
-            ddr.winning_number AS actual_winning_number,
-            ddr.color as winning_color,
-            ddr.timestamp as draw_time
+            bs.transaction_id
         FROM betting_slips bs
         LEFT JOIN transactions t ON bs.transaction_id = t.transaction_id
-        LEFT JOIN detailed_draw_results ddr ON bs.draw_number = ddr.draw_number
         WHERE t.user_id = ?
         ORDER BY bs.created_at DESC
         LIMIT 50
@@ -146,15 +143,24 @@ function getTransactionSummary($conn, $userId) {
         $totalPotentialWins += $row['potential_payout'];
 
         // Calculate actual wins from betting slips
-        if ($row['is_winner'] || $row['status'] === 'won') {
-            $winAmount = isset($row['winning_amount']) && $row['winning_amount'] > 0
-                ? $row['winning_amount']
-                : (isset($row['paid_out_amount']) ? $row['paid_out_amount'] : 0);
+        // Only count slips that actually have winnings (paid_out_amount > 0)
+        // Don't count slips just because status = 'won' if they have $0 winnings
+        $winAmount = 0;
+        
+        // Priority 1: Use paid_out_amount (what was actually paid out)
+        if (isset($row['paid_out_amount']) && $row['paid_out_amount'] > 0) {
+            $winAmount = $row['paid_out_amount'];
+        }
+        // Priority 2: Use winning_amount if paid_out_amount is not available
+        else if (isset($row['winning_amount']) && $row['winning_amount'] > 0) {
+            $winAmount = $row['winning_amount'];
+        }
+        // Don't count if status = 'won' but no actual winnings were paid
 
-            if ($winAmount > 0) {
-                $totalActualWins += $winAmount;
-                $winningSlips++;
-            }
+        // Only add to total if there are actual winnings (> 0)
+        if ($winAmount > 0) {
+            $totalActualWins += $winAmount;
+            $winningSlips++;
         }
     }
 

@@ -331,30 +331,36 @@ try {
  */
 function getCurrentDrawNumber($conn) {
     try {
-        // Try to get draw information from roulette_state table
-        $stmt = $conn->prepare("SELECT id FROM roulette_state LIMIT 1");
-
+        // First try to get from roulette_analytics which is the source of truth for admin
+        $stmt = $conn->prepare("SELECT current_draw_number FROM roulette_analytics WHERE id = 1");
+        
         if ($stmt) {
             $stmt->execute();
             $result = $stmt->get_result();
-
+            
             if ($result->num_rows > 0) {
-                // If we have a roulette_state record, use a default draw number
-                return 1;
+                $row = $result->fetch_assoc();
+                // If we have a valid draw number (> 1), use it
+                if ($row['current_draw_number'] > 1) {
+                    return $row['current_draw_number'];
+                }
             }
         }
 
-        // If that fails, try to get the max draw_number from detailed_draw_results
+        // If that fails or returns 1 (which might be wrong if we have history), 
+        // check detailed_draw_results to see if we should be higher
         $stmt = $conn->prepare("SELECT MAX(draw_number) as max_draw FROM detailed_draw_results");
-
+        
         if ($stmt) {
             $stmt->execute();
             $result = $stmt->get_result();
-
+            
             if ($result->num_rows > 0) {
                 $row = $result->fetch_assoc();
                 if ($row['max_draw']) {
-                    return $row['max_draw'] + 1;
+                    $nextDraw = $row['max_draw'] + 1;
+                    // If history shows we should be at a higher draw, use that
+                    return $nextDraw;
                 }
             }
         }
@@ -362,7 +368,7 @@ function getCurrentDrawNumber($conn) {
         logMessage("Error getting current draw number: " . $e->getMessage(), 'ERROR');
     }
 
-    // Default to draw number 1 if we couldn't get it from the database
+    // Default to draw number 1 only if we really have no other info
     return 1;
 }
 ?>

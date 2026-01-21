@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette POS System - Daily Maintenance Checklist</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 25px;
+            background: #f9f9f9;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: "📋";
+            font-size: 1.2em;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .task-item.completed {
+            border-left-color: #4caf50;
+            background: #f1f8f4;
+            opacity: 0.8;
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .task-description {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .task-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .task-link {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.85em;
+            transition: background 0.3s;
+        }
+
+        .task-link:hover {
+            background: #5568d3;
+        }
+
+        .priority-high {
+            border-left-color: #f44336;
+        }
+
+        .priority-high .task-title::before {
+            content: "🔴 ";
+        }
+
+        .priority-medium {
+            border-left-color: #ff9800;
+        }
+
+        .priority-medium .task-title::before {
+            content: "🟡 ";
+        }
+
+        .priority-low {
+            border-left-color: #2196f3;
+        }
+
+        .priority-low .task-title::before {
+            content: "🔵 ";
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .midnight-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+        }
+
+        .midnight-section .section-title {
+            color: white;
+            border-bottom-color: white;
+        }
+
+        .midnight-section .task-item {
+            background: rgba(255,255,255,0.95);
+        }
+
+        .note-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .note-box strong {
+            color: #856404;
+        }
+
+        .note-box ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .note-box li {
+            margin-bottom: 5px;
+            color: #856404;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .task-checkbox {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎰 Roulette POS System</h1>
+            <p>Daily Maintenance Checklist</p>
+        </div>
+
+        <div class="content">
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalTasks">0</div>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="completedTasks">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="remainingTasks">0</div>
+                    <div class="stat-label">Remaining</div>
+                </div>
+            </div>
+
+            <!-- MIDNIGHT DRAW RESET SECTION -->
+            <div class="section midnight-section">
+                <div class="section-title">Midnight Draw Reset (CRITICAL)</div>
+                
+                <div class="task-item priority-high">
+                    <input type="checkbox" class="task-checkbox" id="task-1">
+                    <div class="task-content">
+                        <div class="task-title">Verify Draw Reset at Midnight (00:00:00)</div>
+                        <div class="task-description">
+                            Ensure the draw number automatically resets to #1 at midnight. Check that:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Current draw number resets to 1</li>
+                                <li>Next draw number is set to 2</li>
+                                <li>All draw history is preserved (not deleted)</li>
+                                <li>Analytics data is reset but historical data is archived</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="api/draw_info.php" class="task-link" target="_blank">Check Current Draw</a>
+                            <a href="api/calculate_draw_number_by_time.php" class="task-link" target="_blank">Verify Draw Number</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-high">
+                    <input type="checkbox" class="task-checkbox" id="task-2">
+                    <div class="task-content">
+                        <div class="task-title">Set Up Automated Midnight Reset (If Not Already Configured)</div>
+                        <div class="task-description">
+                            Configure a scheduled task (cron job on Linux or Task Scheduler on Windows) to run at midnight:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Windows: Create scheduled task to run <code>php reset_draw_midnight.php</code> at 00:00 daily</li>
+                                <li>Linux: Add cron job: <code>0 0 * * * php /path/to/reset_draw_midnight.php</code></li>
+                                <li>Verify the script resets: roulette_analytics.current_draw_number = 1</li>
+                                <li>Verify the script resets: roulette_state.current_draw_number = 1</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="api/sync_draw_number_to_time.php?force=true" class="task-link" target="_blank">Sync Draw Number</a>
+                            <a href="reset_database.php" class="task-link" target="_blank">Database Reset</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-high">
+                    <input type="checkbox" class="task-checkbox" id="task-3">
+                    <div class="task-content">
+                        <div class="task-title">Verify Draw Number Synchronization After Reset</div>
+                        <div class="task-description">
+                            After midnight reset, verify that:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>MySQL database shows draw #1</li>
+                                <li>Firebase Realtime Database shows draw #1</li>
+                                <li>TV Display shows draw #1</li>
+                                <li>Main application shows draw #1</li>
+                                <li>All clients are synchronized</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="api/sync_draw_number_to_firestore.php" class="task-link" target="_blank">Check Sync Status</a>
+                            <a href="api/calculate_draw_number_by_time.php" class="task-link" target="_blank">Monitor Draw Numbers</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAILY DRAW VERIFICATION -->
+            <div class="section">
+                <div class="section-title">Daily Draw Verification</div>
+                
+                <div class="task-item priority-high">
+                    <input type="checkbox" class="task-checkbox" id="task-4">
+                    <div class="task-content">
+                        <div class="task-title">Verify Current Draw Number is Correct</div>
+                        <div class="task-description">
+                            Check that the application is displaying the correct draw number:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Compare draw number in database vs. application display</li>
+                                <li>Verify draw sequence is continuous (no skipped draws)</li>
+                                <li>Check for duplicate draw numbers</li>
+                                <li>Ensure next draw number = current draw number + 1</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="api/draw_info.php" class="task-link" target="_blank">Check Current Draw</a>
+                            <a href="api/calculate_draw_number_by_time.php" class="task-link" target="_blank">Check Draw Tables</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-high">
+                    <input type="checkbox" class="task-checkbox" id="task-4b">
+                    <div class="task-content">
+                        <div class="task-title">Verify and Set Draw Number Based on Current Time</div>
+                        <div class="task-description">
+                            Check the current time and verify the draw number matches what it should be for that time. If incorrect, automatically set it:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Calculates expected draw number based on time (draws every 3 minutes starting at midnight)</li>
+                                <li>Compares database draw number with expected draw number</li>
+                                <li>Automatically corrects draw number if it doesn't match the time</li>
+                                <li>Updates both roulette_analytics and roulette_game_state tables</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="api/sync_draw_number_to_time.php" class="task-link" target="_blank">Verify & Set Draw by Time</a>
+                            <a href="api/draw_info.php" class="task-link" target="_blank">Check Current Draw</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-medium">
+                    <input type="checkbox" class="task-checkbox" id="task-5">
+                    <div class="task-content">
+                        <div class="task-title">Verify Draw Number Assignment to Betting Slips</div>
+                        <div class="task-description">
+                            Ensure all new betting slips are assigned to the correct upcoming draw number:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Check that new bets are assigned to next draw</li>
+                                <li>Verify no bets are assigned to past draws</li>
+                                <li>Confirm DOM-based draw detection is working as fallback</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="admin/bet_distribution.php" class="task-link" target="_blank">Bet Distribution</a>
+                            <a href="admin/" class="task-link" target="_blank">Admin Panel</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-medium">
+                    <input type="checkbox" class="task-checkbox" id="task-6">
+                    <div class="task-content">
+                        <div class="task-title">Monitor Draw Sequence for Skips or Duplicates</div>
+                        <div class="task-description">
+                            Review draw history to ensure no sequence issues:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Check for missing draw numbers in sequence</li>
+                                <li>Identify any duplicate draw numbers</li>
+                                <li>Verify draw advancement is working correctly</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="api/draw_info.php" class="task-link" target="_blank">Monitor Draws</a>
+                            <a href="api/calculate_draw_number_by_time.php" class="task-link" target="_blank">Check Draw Info</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DATABASE MAINTENANCE -->
+            <div class="section">
+                <div class="section-title">Database Maintenance</div>
+                
+                <div class="task-item priority-high">
+                    <input type="checkbox" class="task-checkbox" id="task-7">
+                    <div class="task-content">
+                        <div class="task-title">Create Daily Database Backup</div>
+                        <div class="task-description">
+                            Create a backup of the MySQL database before midnight reset:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Backup all roulette tables</li>
+                                <li>Backup betting_slips, bets, transactions</li>
+                                <li>Backup user data and balances</li>
+                                <li>Store backup in /backups directory with timestamp</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="admin/factory_reset.php" class="task-link" target="_blank">Backup Tool</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-medium">
+                    <input type="checkbox" class="task-checkbox" id="task-8">
+                    <div class="task-content">
+                        <div class="task-title">Verify Database Synchronization (MySQL ↔ Firebase)</div>
+                        <div class="task-description">
+                            Ensure data consistency between MySQL and Firebase:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Compare draw numbers in both systems</li>
+                                <li>Verify game state synchronization</li>
+                                <li>Check analytics data consistency</li>
+                                <li>Resolve any discrepancies</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="api/sync_draw_number_to_firestore.php" class="task-link" target="_blank">Monitor Firestore Sync</a>
+                            <a href="api/draw_info.php" class="task-link" target="_blank">Monitor Draw Info</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-low">
+                    <input type="checkbox" class="task-checkbox" id="task-9">
+                    <div class="task-content">
+                        <div class="task-title">Clean Up Old Log Files</div>
+                        <div class="task-description">
+                            Remove or archive log files older than 30 days from /logs directory to free up disk space.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-low">
+                    <input type="checkbox" class="task-checkbox" id="task-10">
+                    <div class="task-content">
+                        <div class="task-title">Archive Old Database Backups</div>
+                        <div class="task-description">
+                            Move backups older than 90 days to long-term storage or delete if no longer needed.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FINANCIAL VERIFICATION -->
+            <div class="section">
+                <div class="section-title">Financial Verification</div>
+                
+                <div class="task-item priority-high">
+                    <input type="checkbox" class="task-checkbox" id="task-11">
+                    <div class="task-content">
+                        <div class="task-title">Verify Cash Balance Accuracy</div>
+                        <div class="task-description">
+                            Check that all cash balances are correct:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Verify user cash balances match transaction history</li>
+                                <li>Check for any discrepancies in cashier balances</li>
+                                <li>Reconcile beginning balance + transactions = ending balance</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="admin/" class="task-link" target="_blank">Admin Panel</a>
+                            <a href="admin/bet_distribution.php" class="task-link" target="_blank">Bet Distribution</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-medium">
+                    <input type="checkbox" class="task-checkbox" id="task-12">
+                    <div class="task-content">
+                        <div class="task-title">Verify Commission Calculations</div>
+                        <div class="task-description">
+                            Ensure commission calculations are accurate:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Check commission summary totals</li>
+                                <li>Verify commission triggers are working</li>
+                                <li>Review commission constraints</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="admin/" class="task-link" target="_blank">Admin Panel</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-medium">
+                    <input type="checkbox" class="task-checkbox" id="task-13">
+                    <div class="task-content">
+                        <div class="task-title">Verify Transaction Integrity</div>
+                        <div class="task-description">
+                            Check for any missing or incorrect transactions:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Verify all bets have corresponding transactions</li>
+                                <li>Check for orphaned transactions</li>
+                                <li>Ensure transaction types are correct</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="admin/" class="task-link" target="_blank">Admin Panel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SYSTEM HEALTH -->
+            <div class="section">
+                <div class="section-title">System Health Checks</div>
+                
+                <div class="task-item priority-medium">
+                    <input type="checkbox" class="task-checkbox" id="task-14">
+                    <div class="task-content">
+                        <div class="task-title">Verify Firebase Connection</div>
+                        <div class="task-description">
+                            Ensure Firebase Realtime Database is accessible and responding:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Check Firebase connection status</li>
+                                <li>Verify real-time synchronization is working</li>
+                                <li>Test Firebase read/write operations</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="test-firestore-connection.html" class="task-link" target="_blank">Test Firebase</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-medium">
+                    <input type="checkbox" class="task-checkbox" id="task-15">
+                    <div class="task-content">
+                        <div class="task-title">Verify MySQL Database Connection</div>
+                        <div class="task-description">
+                            Ensure MySQL database is accessible and responding:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Test database connection</li>
+                                <li>Verify all required tables exist</li>
+                                <li>Check database performance</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="api/draw_info.php" class="task-link" target="_blank">Check Database</a>
+                            <a href="api/calculate_draw_number_by_time.php" class="task-link" target="_blank">Check Structure</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-low">
+                    <input type="checkbox" class="task-checkbox" id="task-16">
+                    <div class="task-content">
+                        <div class="task-title">Check TV Display Synchronization</div>
+                        <div class="task-description">
+                            Verify TV display is showing correct information:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Check draw number display</li>
+                                <li>Verify countdown timer accuracy</li>
+                                <li>Ensure winning numbers are displayed correctly</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="tvdisplay/" class="task-link" target="_blank">TV Display</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-low">
+                    <input type="checkbox" class="task-checkbox" id="task-17">
+                    <div class="task-content">
+                        <div class="task-title">Verify Print System</div>
+                        <div class="task-description">
+                            Test that betting slip printing is working correctly.
+                        </div>
+                        <div class="task-actions">
+                            <a href="admin/" class="task-link" target="_blank">Admin Panel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WEEKLY TASKS -->
+            <div class="section">
+                <div class="section-title">Weekly Maintenance Tasks</div>
+                
+                <div class="task-item priority-medium">
+                    <input type="checkbox" class="task-checkbox" id="task-18">
+                    <div class="task-content">
+                        <div class="task-title">Review Analytics Data</div>
+                        <div class="task-description">
+                            Review and verify analytics data accuracy:
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li>Check number frequency statistics</li>
+                                <li>Verify spin history is complete</li>
+                                <li>Review analytics for anomalies</li>
+                            </ul>
+                        </div>
+                        <div class="task-actions">
+                            <a href="admin/bet_distribution.php" class="task-link" target="_blank">Analytics Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-low">
+                    <input type="checkbox" class="task-checkbox" id="task-19">
+                    <div class="task-content">
+                        <div class="task-title">Review User Accounts and Permissions</div>
+                        <div class="task-description">
+                            Check user accounts, roles, and permissions for accuracy and security.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-item priority-low">
+                    <input type="checkbox" class="task-checkbox" id="task-20">
+                    <div class="task-content">
+                        <div class="task-title">Test System Backup and Restore</div>
+                        <div class="task-description">
+                            Periodically test that backups can be restored successfully to ensure backup integrity.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOTES SECTION -->
+            <div class="note-box">
+                <strong>📝 Important Notes:</strong>
+                <ul>
+                    <li><strong>Midnight Reset:</strong> The draw MUST reset to #1 at exactly 00:00:00 (midnight) every day. This is critical for daily operations.</li>
+                    <li><strong>Draw Number Verification:</strong> Always verify the draw number is correct before starting operations each day.</li>
+                    <li><strong>Backup Before Reset:</strong> Always create a database backup before the midnight reset occurs.</li>
+                    <li><strong>Synchronization:</strong> After any reset or manual change, verify all systems (MySQL, Firebase, TV Display) are synchronized.</li>
+                    <li><strong>Emergency Reset:</strong> If draw numbers get out of sync, use <code>complete_system_reset.php</code> or <code>reset_database.php</code> to reset manually.</li>
+                    <li><strong>Monitoring:</strong> Use <code>draw_number_monitor.html</code> to continuously monitor draw numbers throughout the day.</li>
+                    <li><strong>Firebase Sync:</strong> If Firebase and MySQL get out of sync, check the sync status and manually sync if needed.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load saved checkboxes from localStorage
+        function loadCheckboxes() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            checkboxes.forEach(checkbox => {
+                const saved = localStorage.getItem(checkbox.id);
+                if (saved === 'true') {
+                    checkbox.checked = true;
+                    checkbox.closest('.task-item').classList.add('completed');
+                }
+            });
+            updateStats();
+        }
+
+        // Save checkbox state to localStorage
+        function saveCheckbox(checkbox) {
+            localStorage.setItem(checkbox.id, checkbox.checked);
+            if (checkbox.checked) {
+                checkbox.closest('.task-item').classList.add('completed');
+            } else {
+                checkbox.closest('.task-item').classList.remove('completed');
+            }
+            updateStats();
+        }
+
+        // Update statistics
+        function updateStats() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const total = checkboxes.length;
+            const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const remaining = total - completed;
+
+            document.getElementById('totalTasks').textContent = total;
+            document.getElementById('completedTasks').textContent = completed;
+            document.getElementById('remainingTasks').textContent = remaining;
+        }
+
+        // Add event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCheckboxes();
+            
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    saveCheckbox(this);
+                });
+            });
+        });
+
+        // Reset all checkboxes (useful for new day)
+        function resetAll() {
+            if (confirm('Are you sure you want to reset all checkboxes? This will clear all progress.')) {
+                const checkboxes = document.querySelectorAll('.task-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                    localStorage.removeItem(checkbox.id);
+                    checkbox.closest('.task-item').classList.remove('completed');
+                });
+                updateStats();
+            }
+        }
+
+        // Add reset button to header
+        document.addEventListener('DOMContentLoaded', function() {
+            const header = document.querySelector('.header');
+            const resetBtn = document.createElement('button');
+            resetBtn.textContent = 'Reset All';
+            resetBtn.style.cssText = 'margin-top: 15px; padding: 10px 20px; background: rgba(255,255,255,0.2); border: 2px solid white; color: white; border-radius: 5px; cursor: pointer; font-size: 1em;';
+            resetBtn.onclick = resetAll;
+            resetBtn.onmouseover = function() { this.style.background = 'rgba(255,255,255,0.3)'; };
+            resetBtn.onmouseout = function() { this.style.background = 'rgba(255,255,255,0.2)'; };
+            header.appendChild(resetBtn);
+        });
+    </script>
+</body>
+</html>

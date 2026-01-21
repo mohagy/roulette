@@ -77,6 +77,9 @@ class DrawNumberManager {
             // Log the successful advancement
             $this->logDrawAdvancement($currentDraw, $nextDraw);
             
+            // Sync to Firestore (non-blocking)
+            $this->syncDrawNumberToFirestore($nextDraw, $nextDraw + 1);
+            
             return [
                 'success' => true,
                 'message' => 'Draw advanced successfully',
@@ -339,6 +342,36 @@ class DrawNumberManager {
      */
     private function logInfo($message) {
         error_log("[DrawNumberManager] INFO: $message");
+    }
+    
+    /**
+     * Sync draw number to Firestore (non-blocking)
+     * @param int $currentDraw Current draw number
+     * @param int $nextDraw Next draw number
+     */
+    private function syncDrawNumberToFirestore($currentDraw, $nextDraw) {
+        try {
+            // Use cURL to call the sync endpoint (non-blocking)
+            $url = 'http://localhost/slipp/api/sync_draw_number_to_firestore.php';
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 2); // 2 second timeout (non-blocking)
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+                'current_draw' => $currentDraw,
+                'next_draw' => $nextDraw
+            ]));
+            
+            // Execute asynchronously (don't wait for response)
+            curl_exec($ch);
+            curl_close($ch);
+            
+            $this->logInfo("Draw number sync requested to Firestore: Current=$currentDraw, Next=$nextDraw");
+        } catch (Exception $e) {
+            // Don't throw - this is non-critical
+            $this->logWarning("Failed to sync draw number to Firestore: " . $e->getMessage());
+        }
     }
 }
 

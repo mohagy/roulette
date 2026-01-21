@@ -362,21 +362,10 @@ if ($method === 'GET') {
             $conn->commit();
 
             // Save game state when slip is saved
-            if (isset($_POST['winning_number']) && isset($_POST['winning_color']) && isset($_POST['draw_id'])) {
-                $winning_number = $_POST['winning_number'];
-                $winning_color = $_POST['winning_color'];
-                $draw_id = $_POST['draw_id'];
-
-                $gameStmt = $conn->prepare("
-                    INSERT INTO game_history (
-                        winning_number, winning_color, draw_id
-                    ) VALUES (?, ?, ?)
-                ");
-
-                $gameStmt->bind_param("iss", $winning_number, $winning_color, $draw_id);
-                $gameStmt->execute();
-                $gameStmt->close();
-            }
+            // NOTE: Removed redundant write to game_history
+            // All draw results are now stored only in detailed_draw_results (primary source)
+            // Aggregated analytics are stored in roulette_analytics
+            // If winning number needs to be saved, use detailed_draw_results instead
 
             $response = array(
                 'status' => 'success',

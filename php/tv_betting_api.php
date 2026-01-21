@@ -219,15 +219,28 @@ function handleSaveState($db) {
         $latestResult = $db->query($getLatestQuery);
         $latestState = $latestResult->fetch_assoc();
 
-        // Insert a new record with updated values
+        //Update or insert state with id=1 (single row pattern)
         $stmt = $db->prepare("INSERT INTO roulette_state
-                             (roll_history, roll_colors, last_draw, next_draw, countdown_time, end_time,
+                             (id, roll_history, roll_colors, last_draw, next_draw, countdown_time, end_time,
                               current_draw_number, winning_number, next_draw_winning_number, manual_mode,
-                              last_updated, current_countdown, last_draw_number, next_draw_number)
-                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?)");
-
-        $countdown = isset($data['countdown_time']) ? $data['countdown_time'] : 120;
-        $lastDrawNumber = $drawNumber - 1;
+                              last_updated, current_countdown, last_draw_number, next_draw_number, updated_at)
+                             VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, NOW())
+                             ON DUPLICATE KEY UPDATE
+                                 roll_history = VALUES(roll_history),
+                                 roll_colors = VALUES(roll_colors),
+                                 last_draw = VALUES(last_draw),
+                                 next_draw = VALUES(next_draw),
+                                 countdown_time = VALUES(countdown_time),
+                                 end_time = VALUES(end_time),
+                                 current_draw_number = VALUES(current_draw_number),
+                                 winning_number = VALUES(winning_number),
+                                 next_draw_winning_number = VALUES(next_draw_winning_number),
+                                 manual_mode = VALUES(manual_mode),
+                                 last_updated = NOW(),
+                                 current_countdown = VALUES(current_countdown),
+                                 last_draw_number = VALUES(last_draw_number),
+                                 next_draw_number = VALUES(next_draw_number),
+                                 updated_at = NOW()");
 
         $stmt->bind_param('ssssiiiiiiiii',
             $latestState['roll_history'],
@@ -246,57 +259,14 @@ function handleSaveState($db) {
         );
 
         if (!$stmt->execute()) {
-            throw new Exception("Failed to insert new roulette state record: " . $stmt->error);
+            throw new Exception("Failed to update roulette state: " . $stmt->error);
         }
 
-        // Update game_history with roll history if available
-        if (!empty($data['roll_history']) && !empty($data['roll_colors'])) {
-            // Check if we need to insert or update - get the latest draw in game_history
-            $stmt = $db->prepare("SELECT * FROM game_history WHERE draw_number = ? LIMIT 1");
-            $stmt->bind_param('i', $lastDrawNumber);
-            $stmt->execute();
-            $result = $stmt->get_result();
+        // NOTE: Removed redundant writes to game_history
+        // All draw results are now stored only in detailed_draw_results (primary source)
+        // Aggregated analytics are stored in roulette_analytics
 
-            if ($result->num_rows > 0) {
-                // Update existing record
-                $lastNumber = end($data['roll_history']);
-                $lastColor = end($data['roll_colors']);
-
-                $stmt = $db->prepare("UPDATE game_history SET
-                                     number = ?,
-                                     color = ?,
-                                     timestamp = NOW()
-                                     WHERE draw_number = ?");
-
-                $stmt->bind_param('isi',
-                    $lastNumber,
-                    $lastColor,
-                    $lastDrawNumber
-                );
-
-                if (!$stmt->execute()) {
-                    throw new Exception("Failed to update game history: " . $stmt->error);
-                }
-            } else {
-                // Insert new record
-                $lastNumber = end($data['roll_history']);
-                $lastColor = end($data['roll_colors']);
-
-                $stmt = $db->prepare("INSERT INTO game_history (draw_number, number, color, timestamp)
-                                     VALUES (?, ?, ?, NOW())");
-
-                $stmt->bind_param('iis',
-                    $lastDrawNumber,
-                    $lastNumber,
-                    $lastColor
-                );
-
-                if (!$stmt->execute()) {
-                    throw new Exception("Failed to insert game history: " . $stmt->error);
-                }
-            }
-
-            // Also update detailed_draw_results (if the table exists)
+        // Update detailed_draw_results (if the table exists)
             $tableCheckStmt = $db->prepare("SHOW TABLES LIKE 'detailed_draw_results'");
             $tableCheckStmt->execute();
             if ($tableCheckStmt->get_result()->num_rows > 0) {

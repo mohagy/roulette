@@ -800,6 +800,23 @@ div {
   background-color: rgba(255, 255, 255, 0.5) !important;
 }
 
+/* Tutorial highlighting for betting area buttons */
+.bottom-column.tutorial-highlight {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
+  transition: all 0.3s ease;
+}
+
+.bet2to1-1.tutorial-highlight,
+.bet2to1-2.tutorial-highlight,
+.bet2to1-3.tutorial-highlight {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
+  transition: all 0.3s ease;
+}
+
 .active-chip {
   -webkit-filter: drop-shadow(0 3px 10px white) !important;
           filter: drop-shadow(0 3px 10px white) !important;

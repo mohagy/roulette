@@ -1,0 +1,199 @@
+/**
+ * Right Action Sidebar - Horizontal Layout Under Top Bar
+ * Positions the action buttons horizontally centered under the top-bar
+ */
+
+/* Position sidebar horizontally centered under top-bar */
+.right-action-sidebar {
+  position: fixed !important;
+  top: 120px !important; /* Moved down to avoid header (was 90px) */
+  left: 50% !important; /* Center horizontally */
+  right: auto !important;
+  transform: translateX(-50%) !important; /* Center horizontally */
+  z-index: 2001 !important; /* Higher than top-bar to ensure visibility */
+  display: flex !important;
+  flex-direction: row !important; /* Horizontal layout */
+  gap: 20px !important; /* Increased gap for better spacing */
+  padding: 15px 25px !important; /* Increased padding for better appearance */
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(42, 42, 62, 0.95) 100%) !important; /* Beautiful gradient background */
+  border-radius: 20px !important; /* More rounded corners */
+  backdrop-filter: blur(15px) !important; /* Enhanced blur */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.2) !important; /* Enhanced shadow with glow */
+  border: 2px solid rgba(255, 215, 0, 0.6) !important; /* More visible gold border */
+  min-width: auto !important;
+  width: auto !important;
+  height: auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* UNIFORM BUTTON STYLING - All buttons same size and style */
+.right-action-sidebar #independent-floating-complete-btn,
+.right-action-sidebar .reprint-slip-button,
+.right-action-sidebar .cashout-button {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+  width: 100px !important; /* Uniform width */
+  height: 100px !important; /* Uniform height */
+  border-radius: 15px !important; /* Beautiful rounded corners */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* Button hover effect - uniform for all */
+.right-action-sidebar #independent-floating-complete-btn:hover,
+.right-action-sidebar .reprint-slip-button:hover,
+.right-action-sidebar .cashout-button:hover {
+  transform: translateY(-3px) scale(1.05) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.4) !important;
+  border-color: rgba(255, 215, 0, 0.8) !important;
+}
+
+/* Button active effect */
+.right-action-sidebar #independent-floating-complete-btn:active,
+.right-action-sidebar .reprint-slip-button:active,
+.right-action-sidebar .cashout-button:active {
+  transform: translateY(0) scale(0.98) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Complete Button - Beautiful styling */
+.right-action-sidebar #independent-floating-complete-btn {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%) !important; /* Gold gradient */
+  color: #1a1a1a !important; /* Dark text on gold */
+}
+
+/* Reprint Button - Beautiful styling */
+.right-action-sidebar .reprint-slip-button {
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%) !important; /* Green gradient */
+  color: white !important;
+  padding: 0 !important; /* Remove default padding */
+}
+
+.right-action-sidebar .reprint-slip-button .drag-handle {
+  display: none !important; /* Hide drag handle in sidebar */
+}
+
+.right-action-sidebar .reprint-slip-button .button-content {
+  flex-direction: column !important;
+  gap: 8px !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.right-action-sidebar .reprint-slip-button .icon {
+  margin: 0 !important;
+  font-size: 28px !important;
+}
+
+.right-action-sidebar .reprint-slip-button .text {
+  margin: 0 !important;
+  font-size: 12px !important;
+  font-weight: bold !important;
+}
+
+/* Cashout Button - Beautiful styling */
+.right-action-sidebar .cashout-button {
+  background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%) !important; /* Orange-red gradient */
+  color: white !important;
+  padding: 0 !important; /* Remove default padding */
+}
+
+.right-action-sidebar .cashout-button .icon {
+  font-size: 28px !important;
+  margin-bottom: 5px !important;
+}
+
+.right-action-sidebar .cashout-button .text {
+  font-size: 12px !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+}
+
+/* Override toggle override CSS for horizontal layout */
+.right-action-sidebar.sidebar-visible,
+.right-action-sidebar.sidebar-showing {
+  position: fixed !important;
+  top: 120px !important; /* Moved down to avoid header (was 90px) */
+  left: 50% !important; /* Center horizontally */
+  right: auto !important;
+  transform: translateX(-50%) !important; /* Center horizontally */
+  z-index: 2001 !important; /* Higher than top-bar */
+  flex-direction: row !important; /* Horizontal layout */
+  gap: 20px !important; /* Increased gap */
+  padding: 15px 25px !important; /* Increased padding */
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .right-action-sidebar {
+    gap: 12px !important;
+    padding: 8px 15px !important;
+  }
+  
+  .right-action-sidebar #independent-floating-complete-btn,
+  .right-action-sidebar .reprint-slip-button,
+  .right-action-sidebar .cashout-button {
+    width: 80px !important;
+    height: 80px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .right-action-sidebar {
+    gap: 10px !important;
+    padding: 8px 12px !important;
+    flex-wrap: wrap !important; /* Allow wrapping on small screens */
+    justify-content: center !important;
+  }
+  
+  .right-action-sidebar #independent-floating-complete-btn,
+  .right-action-sidebar .reprint-slip-button,
+  .right-action-sidebar .cashout-button {
+    width: 70px !important;
+    height: 70px !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .right-action-sidebar {
+    gap: 8px !important;
+    padding: 6px 10px !important;
+  }
+  
+  .right-action-sidebar #independent-floating-complete-btn,
+  .right-action-sidebar .reprint-slip-button,
+  .right-action-sidebar .cashout-button {
+    width: 60px !important;
+    height: 60px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* Ensure sidebar doesn't interfere with upcoming draws panel at top */
+.upcoming-draws-panel {
+  margin-top: 0 !important;
+}
+
+/* Adjust top-bar if needed to accommodate sidebar */
+.top-bar {
+  position: relative !important;
+  z-index: 2001 !important; /* Higher than sidebar */
+}
+

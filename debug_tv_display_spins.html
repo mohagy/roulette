@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug TV Display Spins</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        .warning { color: orange; }
+        .log-entry { 
+            font-family: monospace; 
+            font-size: 12px; 
+            padding: 5px; 
+            margin: 2px 0; 
+            border-left: 3px solid #007bff; 
+            background: #f8f9fa; 
+        }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug TV Display Spins</h1>
+    
+    <p class="info">This page helps debug why spins are not being saved from the TV display.</p>
+    
+    <div class="test-section">
+        <h2>🧪 Test 1: Check Triple Storage Availability</h2>
+        <button onclick="testTripleStorageAvailability()">Test Triple Storage</button>
+        <div id="triple-storage-test"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🧪 Test 2: Simulate recordSpinForAnalytics Call</h2>
+        <button onclick="simulateRecordSpinCall()">Simulate Spin Recording</button>
+        <div id="record-spin-test"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🧪 Test 3: Check Database Before/After</h2>
+        <button onclick="checkDatabaseState()">Check Database State</button>
+        <div id="database-state"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📝 Console Logs</h2>
+        <button onclick="clearLogs()">Clear Logs</button>
+        <div id="console-logs"></div>
+    </div>
+
+    <!-- Load the triple storage script to test -->
+    <script src="tvdisplay/js/triple-storage.js"></script>
+    
+    <script>
+        let logs = [];
+        
+        // Override console functions to capture logs
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            logs.push({type: 'log', message: args.join(' '), timestamp: new Date().toISOString()});
+            updateLogDisplay();
+            originalLog.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            logs.push({type: 'warn', message: args.join(' '), timestamp: new Date().toISOString()});
+            updateLogDisplay();
+            originalWarn.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            logs.push({type: 'error', message: args.join(' '), timestamp: new Date().toISOString()});
+            updateLogDisplay();
+            originalError.apply(console, args);
+        };
+        
+        function updateLogDisplay() {
+            const logDiv = document.getElementById('console-logs');
+            const recentLogs = logs.slice(-20);
+            
+            let html = '';
+            recentLogs.forEach(log => {
+                const className = log.type === 'error' ? 'error' : log.type === 'warn' ? 'warning' : 'info';
+                html += `<div class="log-entry ${className}">[${log.timestamp}] ${log.type.toUpperCase()}: ${log.message}</div>`;
+            });
+            
+            logDiv.innerHTML = html;
+        }
+        
+        function clearLogs() {
+            logs = [];
+            updateLogDisplay();
+        }
+        
+        function testTripleStorageAvailability() {
+            const results = document.getElementById('triple-storage-test');
+            results.innerHTML = '<p>Testing triple storage availability...</p>';
+            
+            console.log('🧪 Testing triple storage availability');
+            
+            let html = '<h3>Triple Storage Test Results:</h3>';
+            html += '<table>';
+            html += '<tr><th>Component</th><th>Available</th><th>Status</th></tr>';
+            
+            // Test TripleStorage object
+            const tripleStorageAvailable = typeof TripleStorage !== 'undefined';
+            html += `<tr><td>TripleStorage Object</td><td>${tripleStorageAvailable ? 'Yes' : 'No'}</td><td class="${tripleStorageAvailable ? 'success' : 'error'}">${tripleStorageAvailable ? '✅ Available' : '❌ Missing'}</td></tr>`;
+            
+            if (tripleStorageAvailable) {
+                // Test saveSpin method
+                const saveSpinAvailable = typeof TripleStorage.saveSpin === 'function';
+                html += `<tr><td>saveSpin Method</td><td>${saveSpinAvailable ? 'Yes' : 'No'}</td><td class="${saveSpinAvailable ? 'success' : 'error'}">${saveSpinAvailable ? '✅ Available' : '❌ Missing'}</td></tr>`;
+                
+                // Test other methods
+                const getColorAvailable = typeof TripleStorage.getColor === 'function';
+                html += `<tr><td>getColor Method</td><td>${getColorAvailable ? 'Yes' : 'No'}</td><td class="${getColorAvailable ? 'success' : 'error'}">${getColorAvailable ? '✅ Available' : '❌ Missing'}</td></tr>`;
+            }
+            
+            // Test EnhancedTripleSpinRecording
+            const enhancedRecordingAvailable = typeof EnhancedTripleSpinRecording !== 'undefined';
+            html += `<tr><td>EnhancedTripleSpinRecording</td><td>${enhancedRecordingAvailable ? 'Yes' : 'No'}</td><td class="${enhancedRecordingAvailable ? 'success' : 'error'}">${enhancedRecordingAvailable ? '✅ Available' : '❌ Missing'}</td></tr>`;
+            
+            html += '</table>';
+            
+            if (tripleStorageAvailable) {
+                html += '<p class="success">✅ Triple Storage is available and ready to use</p>';
+            } else {
+                html += '<p class="error">❌ Triple Storage is not available - this is why spins are not being saved</p>';
+            }
+            
+            results.innerHTML = html;
+        }
+        
+        async function simulateRecordSpinCall() {
+            const results = document.getElementById('record-spin-test');
+            results.innerHTML = '<p>Simulating recordSpinForAnalytics call...</p>';
+            
+            console.log('🧪 Simulating recordSpinForAnalytics call');
+            
+            try {
+                // Check if the function exists (it should be in the TV display)
+                if (typeof recordSpinForAnalytics === 'function') {
+                    console.log('✅ recordSpinForAnalytics function found');
+                    
+                    // Try to call it with a test number
+                    await recordSpinForAnalytics(25);
+                    
+                    results.innerHTML = '<div class="success"><h3>✅ Function Call Successful</h3><p>recordSpinForAnalytics(25) was called successfully. Check the console logs and database state.</p></div>';
+                } else {
+                    console.error('❌ recordSpinForAnalytics function not found');
+                    results.innerHTML = '<div class="error"><h3>❌ Function Not Found</h3><p>The recordSpinForAnalytics function is not available. This means the TV display scripts are not loaded properly.</p></div>';
+                }
+            } catch (error) {
+                console.error('❌ Error calling recordSpinForAnalytics:', error);
+                results.innerHTML = `<div class="error"><h3>❌ Function Call Failed</h3><p>Error: ${error.message}</p></div>`;
+            }
+        }
+        
+        async function checkDatabaseState() {
+            const results = document.getElementById('database-state');
+            results.innerHTML = '<p>Checking database state...</p>';
+            
+            console.log('🧪 Checking database state');
+            
+            try {
+                // Check analytics table
+                const analyticsResponse = await fetch('/slipp/load_analytics.php');
+                const analyticsData = await analyticsResponse.json();
+                
+                // Check detailed results
+                const detailedResponse = await fetch('/slipp/php/get_latest_detailed_results.php');
+                const detailedData = await detailedResponse.json();
+                
+                // Check roulette draws
+                const rouletteResponse = await fetch('/slipp/php/get_latest_roulette_draws.php');
+                const rouletteData = await rouletteResponse.json();
+                
+                let html = '<h3>Database State:</h3>';
+                html += '<table>';
+                html += '<tr><th>Table</th><th>Status</th><th>Records</th><th>Latest Activity</th></tr>';
+                
+                // Analytics
+                if (analyticsData.status === 'success') {
+                    const allSpins = JSON.parse(analyticsData.all_spins || '[]');
+                    html += `<tr><td>roulette_analytics</td><td class="success">✅ Active</td><td>${allSpins.length} spins</td><td>Draw #${analyticsData.current_draw_number}</td></tr>`;
+                } else {
+                    html += `<tr><td>roulette_analytics</td><td class="error">❌ Error</td><td>N/A</td><td>${analyticsData.message}</td></tr>`;
+                }
+                
+                // Detailed Results
+                if (detailedData.status === 'success') {
+                    html += `<tr><td>detailed_draw_results</td><td class="success">✅ Active</td><td>${detailedData.count} records</td><td>${detailedData.count > 0 ? 'Draw #' + detailedData.data[0].draw_number : 'No records'}</td></tr>`;
+                } else {
+                    html += `<tr><td>detailed_draw_results</td><td class="error">❌ Error</td><td>N/A</td><td>${detailedData.message}</td></tr>`;
+                }
+                
+                // Roulette Draws
+                if (rouletteData.status === 'success') {
+                    html += `<tr><td>roulette_draws</td><td class="success">✅ Active</td><td>${rouletteData.count} records</td><td>${rouletteData.count > 0 ? 'Draw #' + rouletteData.data[0].draw_number : 'No records'}</td></tr>`;
+                } else {
+                    html += `<tr><td>roulette_draws</td><td class="error">❌ Error</td><td>N/A</td><td>${rouletteData.message}</td></tr>`;
+                }
+                
+                html += '</table>';
+                
+                results.innerHTML = html;
+                
+            } catch (error) {
+                console.error('❌ Error checking database state:', error);
+                results.innerHTML = `<div class="error"><h3>❌ Database Check Failed</h3><p>Error: ${error.message}</p></div>`;
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 Debug TV Display Spins page loaded');
+            updateLogDisplay();
+            
+            // Auto-run tests
+            setTimeout(testTripleStorageAvailability, 1000);
+            setTimeout(checkDatabaseState, 2000);
+        });
+    </script>
+    
+    <p><a href="test_tv_display_integration.php">← Integration Test</a> | <a href="tvdisplay/index.html">TV Display →</a></p>
+</body>
+</html>

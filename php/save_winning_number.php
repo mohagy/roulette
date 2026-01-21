@@ -135,33 +135,9 @@ try {
 
     log_message("Saved winning number $winning_number for draw #$draw_number", 'info');
 
-    // Also update game_history if it exists, but check for duplicates first
-    $result = $conn->query("SHOW TABLES LIKE 'game_history'");
-    if ($result->num_rows > 0) {
-        // Check for duplicate in game_history
-        $checkGameSql = "SELECT COUNT(*) as count FROM game_history WHERE winning_number = ? AND DATE(played_at) = CURDATE()";
-        $checkGameStmt = $conn->prepare($checkGameSql);
-
-        if ($checkGameStmt) {
-            $checkGameStmt->bind_param("i", $winning_number);
-            $checkGameStmt->execute();
-            $checkGameResult = $checkGameStmt->get_result();
-            $gameRow = $checkGameResult->fetch_assoc();
-
-            if ($gameRow['count'] == 0) {
-                // Only insert if no duplicate exists
-                $sql = "INSERT INTO game_history (winning_number, winning_color, draw_id) VALUES (?, ?, ?)";
-                $stmt = $conn->prepare($sql);
-                if ($stmt) {
-                    $stmt->bind_param("iss", $winning_number, $winning_color, $draw_id);
-                    $stmt->execute();
-                    log_message("Updated game history", 'info');
-                }
-            } else {
-                log_message("Skipping game_history update, duplicate exists", 'info');
-            }
-        }
-    }
+    // NOTE: Removed redundant write to game_history
+    // All draw results are now stored only in detailed_draw_results (primary source)
+    // Aggregated analytics are stored in roulette_analytics
 
     // Return success response
     send_response('success', 'Winning number saved successfully', [

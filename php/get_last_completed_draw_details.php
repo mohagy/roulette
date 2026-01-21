@@ -27,31 +27,121 @@ try {
         throw new Exception("Database connection failed: " . $conn->connect_error);
     }
 
-    // Get the last completed draw details
-    $query = "
-        SELECT
-            ddr.draw_number,
-            ddr.winning_number,
-            ddr.timestamp,
-            COUNT(DISTINCT bs.slip_id) as total_slips,
-            COUNT(DISTINCT CASE WHEN bs.status = 'cashed_out' THEN bs.slip_id END) as winning_slips,
-            COUNT(DISTINCT CASE WHEN bs.status = 'active' THEN bs.slip_id END) as active_slips
-        FROM detailed_draw_results ddr
-        LEFT JOIN betting_slips bs ON ddr.draw_number = bs.draw_number
-        WHERE ddr.draw_number = (
-            SELECT MAX(draw_number)
-            FROM detailed_draw_results
-            WHERE winning_number IS NOT NULL
-        )
-        GROUP BY ddr.draw_number, ddr.winning_number, ddr.timestamp
-        ORDER BY ddr.draw_number DESC
-        LIMIT 1
-    ";
-
-    $result = $conn->query($query);
-
-    if ($result && $result->num_rows > 0) {
+    // ⚠️ CRITICAL: Get draw_number parameter if provided (server-time-based draw number)
+    // Otherwise, get the last completed draw from today
+    $drawNumberParam = isset($_GET['draw_number']) ? intval($_GET['draw_number']) : null;
+    
+    // Use server time to filter by today's draws only
+    date_default_timezone_set('America/Guyana');
+    $today = date('Y-m-d');
+    
+    // Check if analytics_history table exists
+    $tableCheck = $conn->query("SHOW TABLES LIKE 'analytics_history'");
+    $hasAnalyticsHistory = $tableCheck && $tableCheck->num_rows > 0;
+    
+    // Try to get from analytics_history first (has server-time-based draw numbers)
+    // Otherwise fall back to detailed_draw_results
+    $result = null;
+    $row = null;
+    
+    if ($drawNumberParam && $hasAnalyticsHistory) {
+        // First try: Query analytics_history by specific draw number
+        $query = "
+            SELECT
+                ah.draw_number,
+                ah.winning_number,
+                ah.draw_time as timestamp,
+                COUNT(DISTINCT bs.slip_id) as total_slips,
+                COUNT(DISTINCT CASE WHEN bs.status = 'cashed_out' THEN bs.slip_id END) as winning_slips,
+                COUNT(DISTINCT CASE WHEN bs.status = 'active' THEN bs.slip_id END) as active_slips
+            FROM analytics_history ah
+            LEFT JOIN betting_slips bs ON ah.draw_number = bs.draw_number
+            WHERE ah.draw_number = ? AND DATE(ah.draw_time) = ?
+            GROUP BY ah.draw_number, ah.winning_number, ah.draw_time
+            LIMIT 1
+        ";
+        
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('is', $drawNumberParam, $today);
+        $stmt->execute();
+        $result = $stmt->get_result();
         $row = $result->fetch_assoc();
+    }
+    
+    // If no result from analytics_history, try detailed_draw_results as fallback
+    if (!$row && $drawNumberParam) {
+        $query = "
+            SELECT
+                ddr.draw_number,
+                ddr.winning_number,
+                ddr.timestamp,
+                COUNT(DISTINCT bs.slip_id) as total_slips,
+                COUNT(DISTINCT CASE WHEN bs.status = 'cashed_out' THEN bs.slip_id END) as winning_slips,
+                COUNT(DISTINCT CASE WHEN bs.status = 'active' THEN bs.slip_id END) as active_slips
+            FROM detailed_draw_results ddr
+            LEFT JOIN betting_slips bs ON ddr.draw_number = bs.draw_number
+            WHERE ddr.draw_number = ?
+            GROUP BY ddr.draw_number, ddr.winning_number, ddr.timestamp
+            LIMIT 1
+        ";
+        
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('i', $drawNumberParam);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+    }
+    
+    // If still no result and no draw_number param, get the last completed draw from today
+    if (!$row && !$drawNumberParam && $hasAnalyticsHistory) {
+        $query = "
+            SELECT
+                ah.draw_number,
+                ah.winning_number,
+                ah.draw_time as timestamp,
+                COUNT(DISTINCT bs.slip_id) as total_slips,
+                COUNT(DISTINCT CASE WHEN bs.status = 'cashed_out' THEN bs.slip_id END) as winning_slips,
+                COUNT(DISTINCT CASE WHEN bs.status = 'active' THEN bs.slip_id END) as active_slips
+            FROM analytics_history ah
+            LEFT JOIN betting_slips bs ON ah.draw_number = bs.draw_number
+            WHERE DATE(ah.draw_time) = ? AND ah.winning_number IS NOT NULL
+            GROUP BY ah.draw_number, ah.winning_number, ah.draw_time
+            ORDER BY ah.draw_number DESC
+            LIMIT 1
+        ";
+        
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('s', $today);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+    }
+    
+    // Final fallback: Get MAX draw from detailed_draw_results
+    if (!$row) {
+        $query = "
+            SELECT
+                ddr.draw_number,
+                ddr.winning_number,
+                ddr.timestamp,
+                COUNT(DISTINCT bs.slip_id) as total_slips,
+                COUNT(DISTINCT CASE WHEN bs.status = 'cashed_out' THEN bs.slip_id END) as winning_slips,
+                COUNT(DISTINCT CASE WHEN bs.status = 'active' THEN bs.slip_id END) as active_slips
+            FROM detailed_draw_results ddr
+            LEFT JOIN betting_slips bs ON ddr.draw_number = bs.draw_number
+            WHERE ddr.draw_number = (
+                SELECT MAX(draw_number) FROM detailed_draw_results WHERE winning_number IS NOT NULL
+            )
+            GROUP BY ddr.draw_number, ddr.winning_number, ddr.timestamp
+            LIMIT 1
+        ";
+        
+        $result = $conn->query($query);
+        $row = $result ? $result->fetch_assoc() : null;
+    }
+
+    // $row is already fetched above
+    if ($row) {
 
         // Get additional details about the winning number
         $winningNumber = $row['winning_number'];

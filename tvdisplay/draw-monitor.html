@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Draw Monitor - Roulette TV</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .monitor-container {
+            padding: 20px;
+        }
+
+        .display-card {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #FFD700;
+            color: white;
+            height: 100%;
+        }
+
+        .display-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #FFD700;
+        }
+
+        .timer-display {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            background: #000;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+
+        .status-indicator {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .status-good {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-warning {
+            background: #ffc107;
+            color: black;
+        }
+
+        .status-error {
+            background: #dc3545;
+            color: white;
+        }
+
+        .sync-info {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        .iframe-container {
+            width: 100%;
+            height: 300px;
+            border: 2px solid #555;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+            background: #000;
+        }
+
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transform: scale(0.5);
+            transform-origin: 0 0;
+            width: 200%;
+            height: 200%;
+        }
+
+        .test-button {
+            background: #FFD700;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        .test-button:hover {
+            background: #e6c200;
+        }
+
+        .preset-schedule-table {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .number-badge {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            color: white;
+        }
+
+        .number-badge.red {
+            background-color: #dc3545;
+        }
+
+        .number-badge.black {
+            background-color: #212529;
+        }
+
+        .number-badge.green {
+            background-color: #198754;
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid monitor-container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="text-center mb-0"><i class="fas fa-desktop"></i> Draw Monitor System</h2>
+                <p class="text-center text-muted">Real-time synchronization and schedule monitoring</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Area 1: Master Display Monitor -->
+            <div class="col-lg-4">
+                <div class="display-card">
+                    <div class="display-title">👑 MASTER DISPLAY</div>
+                    <div class="timer-display" id="master-timer">--:--</div>
+                    <div class="status-indicator status-good" id="master-status">✅ Timer Active</div>
+                    <div class="sync-info" id="master-info">
+                        URL: index.html<br>
+                        Role: Master<br>
+                        Status: Initializing...
+                    </div>
+                    <div class="iframe-container">
+                        <iframe id="master-frame" src="index.html"></iframe>
+                    </div>
+                    <button class="test-button" onclick="refreshMaster()">🔄 Refresh Master</button>
+                </div>
+            </div>
+
+            <!-- Area 2: Preset Schedule -->
+            <div class="col-lg-5">
+                <div class="card shadow">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">📅 Preset Schedule</h6>
+                        <span id="presetScheduleStatus" class="badge bg-success">✅ Schedule Active</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex gap-2 mb-3">
+                            <button id="refreshScheduleBtn" class="btn btn-primary btn-sm">
+                                <i class="fas fa-sync"></i> Refresh Schedule
+                            </button>
+                            <button id="generatePresetScheduleBtn" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-magic"></i> Generate Smart Schedule
+                            </button>
+                        </div>
+                        <div class="preset-schedule-table">
+                            <table class="table table-sm table-hover table-bordered" id="presetScheduleTable">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>Draw #</th>
+                                        <th>Time</th>
+                                        <th>Number</th>
+                                        <th>Pattern/Puzzle</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="scheduleBody">
+                                    <!-- Data populated via JS -->
+                                    <tr>
+                                        <td colspan="4" class="text-center">Loading schedule...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Area 3: Forced Number Checker -->
+            <div class="col-lg-3">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">🎯 Forced Number Checker</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="autoApplyForcedNumber" checked>
+                            <label class="form-check-label" for="autoApplyForcedNumber">
+                                Auto-Apply from Preset Schedule
+                            </label>
+                        </div>
+                        <button id="checkForcedNumberBtn" class="btn btn-info btn-sm mb-3 w-100 text-white">
+                            <i class="fas fa-search"></i> Check Forced Number
+                        </button>
+                        <div id="forcedNumberInfo">
+                            <div class="alert alert-secondary mb-0">
+                                <small>No active forced number detected.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manual Number Control -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">✋ Manual Number Control</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label small">Current Mode:</label>
+                            <div class="d-flex align-items-center">
+                                <span id="currentModeDisplay" class="badge bg-secondary me-2">Auto</span>
+                                <button id="toggleModeBtn" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-toggle-off"></i> Switch to Manual
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="manualNumberInput" class="form-label small">Set Winning Number (0-36):</label>
+                            <input type="number" id="manualNumberInput" class="form-control form-control-sm" 
+                                   min="0" max="36" value="0" placeholder="Enter number">
+                        </div>
+                        <button id="setManualNumberBtn" class="btn btn-primary btn-sm w-100 mb-2">
+                            <i class="fas fa-hand-pointer"></i> Set Manual Number
+                        </button>
+                        <div id="manualNumberStatus" class="mt-2"></div>
+                    </div>
+                </div>
+
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">⚙️ System Info</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Server Time (Georgetown):</small>
+                            <strong id="serverTime">--:--:--</strong>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted d-block">Current Draw Number:</small>
+                            <strong id="currentDrawDisplay">#---</strong>
+                        </div>
+                        <div class="mb-0">
+                            <small class="text-muted d-block">Next Draw In:</small>
+                            <strong id="nextDrawIn">--:--</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Configuration
+        const API_BASE = '/slipp/api';
+        const PHP_BASE = '/slipp/php';
+
+        // State
+        let currentDrawNumber = 0;
+        let scheduleData = [];
+        let isManualMode = false;
+
+        function refreshMaster() {
+            document.getElementById('master-frame').src = 'index.html?' + Date.now();
+        }
+
+        function getTimerFromFrame() {
+            try {
+                const frame = document.getElementById('master-frame');
+                if (frame && frame.contentDocument) {
+                    const timerElement = frame.contentDocument.getElementById('countdown-timer');
+                    return timerElement ? timerElement.textContent : '--:--';
+                }
+            } catch (error) {
+                // Cross-origin might be an issue if not on same domain
+            }
+            return '--:--';
+        }
+
+        async function updateServerTime() {
+            try {
+                const response = await fetch(`${PHP_BASE}/get_georgetown_time.php?t=${Date.now()}`);
+                const data = await response.json();
+                if (data.status === 'success') {
+                    const time = data.georgetown_time.formatted.split(' ')[1];
+                    $('#serverTime').text(time);
+                    $('#nextDrawIn').text(data.countdown.display_format);
+                }
+            } catch (e) {
+                console.error('Error fetching server time:', e);
+            }
+        }
+
+        async function fetchCurrentDraw() {
+            try {
+                const response = await fetch(`${API_BASE}/get_current_draw.php?_cb=${Date.now()}`);
+                const data = await response.json();
+                if (data.status === 'success') {
+                    currentDrawNumber = parseInt(data.data.current_draw_number);
+                    $('#currentDrawDisplay').text(`#${currentDrawNumber}`);
+                    return currentDrawNumber;
+                }
+            } catch (e) {
+                console.error('Error fetching current draw:', e);
+            }
+            return 0;
+        }
+
+        async function loadSchedule() {
+            const drawNum = await fetchCurrentDraw();
+            if (!drawNum) return;
+
+            $('#scheduleBody').html('<tr><td colspan="4" class="text-center"><div class="spinner-border spinner-border-sm text-primary"></div> Loading schedule...</td></tr>');
+
+            try {
+                // Fetch the entire day's schedule
+                const response = await fetch(`${API_BASE}/load_preset_schedule.php?_cb=${Date.now()}`);
+                const result = await response.json();
+
+                if (result.status === 'success' && result.data) {
+                    const scheduleData = result.data.schedule_data || [];
+                    const patternData = result.data.pattern_data || [];
+                    const startDraw = result.data.start_draw_number || 1;
+
+                    let html = '';
+
+                    // We want to show a range around the current draw
+                    const displayStart = Math.max(1, drawNum - 10);
+                    const displayEnd = Math.min(480, drawNum + 40);
+
+                    for (let i = displayStart; i <= displayEnd; i++) {
+                        const isCurrent = i === drawNum;
+                        const rowClass = isCurrent ? 'table-warning' : (i < drawNum ? 'table-secondary' : '');
+
+                        // Calculate index in the schedule array
+                        // If startDraw is 1, then draw #1 is at index 0
+                        const dataIndex = i - startDraw;
+                        const winningNumber = (dataIndex >= 0 && dataIndex < scheduleData.length) ? scheduleData[dataIndex] : '--';
+                        const pattern = (dataIndex >= 0 && dataIndex < patternData.length) ? patternData[dataIndex] : 'N/A';
+
+                        // Calculate time (3-minute intervals from midnight)
+                        const totalMinutes = (i - 1) * 3;
+                        const hours = Math.floor(totalMinutes / 60) % 24;
+                        const minutes = totalMinutes % 60;
+                        const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+
+                        // Determine color
+                        const colorClass = winningNumber !== '--' ? getNumberColor(winningNumber) : 'black';
+
+                        html += `
+                            <tr class="${rowClass}" id="draw-row-${i}">
+                                <td>${i} ${isCurrent ? '<span class="badge bg-warning text-dark">Current</span>' : ''}</td>
+                                <td>${timeStr}</td>
+                                <td>
+                                    <span class="number-badge ${colorClass}">${winningNumber}</span>
+                                </td>
+                                <td class="text-muted small">${pattern}</td>
+                            </tr>
+                        `;
+                    }
+
+                    $('#scheduleBody').html(html || '<tr><td colspan="4" class="text-center">No schedule data found</td></tr>');
+
+                    // Scroll to current draw
+                    const currentDrawRow = document.getElementById(`draw-row-${drawNum}`);
+                    if (currentDrawRow) {
+                        currentDrawRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else {
+                    $('#scheduleBody').html('<tr><td colspan="4" class="text-center">No active schedule found for today</td></tr>');
+                }
+
+            } catch (e) {
+                console.error('Error loading schedule:', e);
+                $('#scheduleBody').html('<tr><td colspan="4" class="text-center text-danger">Error loading schedule</td></tr>');
+            }
+        }
+
+        function getNumberColor(number) {
+            const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+            if (number == 0) return 'green';
+            return redNumbers.includes(parseInt(number)) ? 'red' : 'black';
+        }
+
+        async function checkForcedNumber() {
+            $('#forcedNumberInfo').html('<div class="text-center py-2"><div class="spinner-border spinner-border-sm text-primary"></div> Checking...</div>');
+
+            const drawNum = await fetchCurrentDraw();
+            if (!drawNum) return;
+
+            try {
+                // ⏰ CRITICAL: Check NEXT draw first (upcoming draw), then next 5 draws
+                // Current draw is already in progress, we want to show the upcoming draw's forced number
+                const nextDraw = drawNum + 1;
+                for (let i = nextDraw; i <= nextDraw + 5; i++) {
+                    const response = await fetch(`${API_BASE}/direct_forced_number.php?draw_number=${i}&_cb=${Date.now()}`);
+                    const data = await response.json();
+
+                    if (data.status === 'success' && data.has_forced_number) {
+                        const source = data.source === 'preset_schedule' ? 'Preset Schedule' : 'Database Forced Number';
+                        const html = `
+                            <div class="alert alert-info mb-0">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-info-circle"></i> ${source} Found 
+                                    </h6>
+                                </div>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Draw #</small>
+                                        <strong>${data.draw_number}</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Number</small>
+                                        <span class="badge bg-success">${data.forced_number}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button id="applyForcedNumberBtn" class="btn btn-primary btn-sm w-100" onclick="applyNow(${data.forced_number}, ${data.draw_number})">
+                                        <i class="fas fa-check"></i> Apply Now
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        $('#forcedNumberInfo').html(html);
+                        return; // Found one, stop checking
+                    }
+                }
+
+                $('#forcedNumberInfo').html('<div class="alert alert-secondary mb-0"><small>No active forced number detected in next 5 draws.</small></div>');
+            } catch (e) {
+                console.error('Error checking forced number:', e);
+                $('#forcedNumberInfo').html('<div class="alert alert-danger mb-0"><small>Error checking forced numbers.</small></div>');
+            }
+        }
+
+        async function applyNow(number, drawNumber) {
+            if (!confirm(`Are you sure you want to apply number ${number} to draw #${drawNumber}?`)) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/set_winning_number.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `winning_number=${number}&draw_number=${drawNumber}&keep_auto_mode=true`
+                });
+
+                const data = await response.json();
+                if (data.status === 'success') {
+                    alert(`✅ Success: Number ${number} applied to draw #${drawNumber}`);
+                    loadSchedule(); // Refresh schedule to show the change
+                    checkForcedNumber(); // Refresh forced number info
+                } else {
+                    alert(`❌ Error: ${data.message}`);
+                }
+            } catch (e) {
+                console.error('Error applying forced number:', e);
+                alert('❌ Failed to apply forced number. See console for details.');
+            }
+        }
+
+        // Initialize
+        $(document).ready(function () {
+            // Initial load
+            updateServerTime();
+            loadSchedule();
+            checkForcedNumber();
+
+            // Intervals
+            setInterval(updateServerTime, 1000);
+            setInterval(() => {
+                $('#master-timer').text(getTimerFromFrame());
+            }, 500);
+            // ⏰ CRITICAL: Update draw number every 30 seconds to ensure it stays in sync
+            setInterval(() => {
+                fetchCurrentDraw();
+            }, 30000);
+
+            // Button handlers
+            $('#refreshScheduleBtn').click(loadSchedule);
+            $('#checkForcedNumberBtn').click(checkForcedNumber);
+            $('#generatePresetScheduleBtn').click(() => alert('Generating schedule...'));
+            
+            // Manual mode toggle
+            $('#toggleModeBtn').click(toggleMode);
+            $('#setManualNumberBtn').click(setManualNumber);
+        });
+
+        function toggleMode() {
+            isManualMode = !isManualMode;
+            updateModeDisplay();
+        }
+
+        function updateModeDisplay() {
+            const modeDisplay = $('#currentModeDisplay');
+            const toggleBtn = $('#toggleModeBtn');
+            
+            if (isManualMode) {
+                modeDisplay.removeClass('bg-secondary').addClass('bg-warning text-dark').text('Manual');
+                toggleBtn.html('<i class="fas fa-toggle-on"></i> Switch to Auto');
+                toggleBtn.removeClass('btn-outline-primary').addClass('btn-outline-warning');
+            } else {
+                modeDisplay.removeClass('bg-warning text-dark').addClass('bg-secondary').text('Auto');
+                toggleBtn.html('<i class="fas fa-toggle-off"></i> Switch to Manual');
+                toggleBtn.removeClass('btn-outline-warning').addClass('btn-outline-primary');
+            }
+        }
+
+        async function setManualNumber() {
+            const numberInput = $('#manualNumberInput');
+            const number = parseInt(numberInput.val());
+            const statusDiv = $('#manualNumberStatus');
+            
+            // Validate number
+            if (isNaN(number) || number < 0 || number > 36) {
+                statusDiv.html('<div class="alert alert-danger mb-0 py-2"><small>❌ Invalid number. Please enter 0-36.</small></div>');
+                return;
+            }
+
+            // Get current draw number to determine next draw
+            const drawNum = await fetchCurrentDraw();
+            if (!drawNum) {
+                statusDiv.html('<div class="alert alert-danger mb-0 py-2"><small>❌ Could not determine current draw number.</small></div>');
+                return;
+            }
+
+            // Show loading
+            statusDiv.html('<div class="alert alert-info mb-0 py-2"><small><div class="spinner-border spinner-border-sm me-2"></div>Setting number...</small></div>');
+
+            try {
+                // Calculate next draw number
+                const nextDraw = drawNum + 1;
+                
+                // Call API to set winning number with keep_auto_mode=false (manual mode)
+                const response = await fetch(`${API_BASE}/set_winning_number.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `winning_number=${number}&draw_number=${nextDraw}&keep_auto_mode=false`
+                });
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const colorClass = getNumberColor(number);
+                    statusDiv.html(`
+                        <div class="alert alert-success mb-0 py-2">
+                            <small>
+                                ✅ Number <span class="number-badge ${colorClass}">${number}</span> set for draw #${data.data.draw_number}<br>
+                                <span class="text-muted">Source: ${data.data.source}</span>
+                            </small>
+                        </div>
+                    `);
+                    
+                    // Switch to manual mode if not already
+                    if (!isManualMode) {
+                        isManualMode = true;
+                        updateModeDisplay();
+                    }
+                    
+                    // Refresh forced number checker to show the update
+                    setTimeout(() => {
+                        checkForcedNumber();
+                    }, 500);
+                    
+                    // Clear input after a delay
+                    setTimeout(() => {
+                        numberInput.val('0');
+                    }, 2000);
+                } else {
+                    statusDiv.html(`<div class="alert alert-danger mb-0 py-2"><small>❌ Error: ${data.message}</small></div>`);
+                }
+            } catch (e) {
+                console.error('Error setting manual number:', e);
+                statusDiv.html('<div class="alert alert-danger mb-0 py-2"><small>❌ Failed to set number. See console for details.</small></div>');
+            }
+        }
+    </script>
+</body>
+
+</html>

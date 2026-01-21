@@ -4,12 +4,12 @@
  * Follows the same design pattern as existing toggle controls
  */
 
-/* Hide the right-action-sidebar by default */
+/* Show the right-action-sidebar by default (buttons should always be accessible) */
 .right-action-sidebar {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 

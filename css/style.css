@@ -3012,10 +3012,10 @@ div {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  z-index: 10000 !important;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s, visibility 0.3s;
@@ -3052,6 +3052,9 @@ div {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
+  margin: 0 auto;
+  /* Centered by parent flexbox (justify-content: center, align-items: center) */
 }
 
 .print-slip-header {
@@ -3103,6 +3106,194 @@ div {
   font-family: 'Courier New', monospace;
   overflow-y: auto;
   max-height: 60vh;
+}
+
+/* Barcode Styles for Receipt */
+.barcode-container {
+  text-align: center !important;
+  margin: 20px 0 !important;
+  padding: 15px !important;
+  background: #f8f9fa !important;
+  border-radius: 4px !important;
+  display: block !important;
+  visibility: visible !important;
+  border: 1px solid #ddd !important;
+}
+
+.css-barcode {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-end !important;
+  height: 40px !important;
+  width: 95% !important;
+  margin: 10px auto !important;
+  background: white !important;
+  padding: 5px !important;
+  border-radius: 2px !important;
+  visibility: visible !important;
+  border: 1px solid #ddd !important;
+}
+
+.bar {
+  height: 100% !important;
+  display: inline-block !important;
+  background: #000 !important;
+  margin-right: 1px !important;
+  visibility: visible !important;
+}
+
+.bar.thin {
+  width: 1px !important;
+  height: 80% !important;
+}
+
+.bar.medium {
+  width: 2px !important;
+  height: 90% !important;
+}
+
+.bar.thick {
+  width: 3px !important;
+  height: 100% !important;
+}
+
+.barcode-number {
+  font-size: 14px !important;
+  font-weight: bold !important;
+  margin-top: 8px !important;
+  color: #333 !important;
+  letter-spacing: 2px !important;
+  font-family: 'Courier New', monospace !important;
+  display: block !important;
+  visibility: visible !important;
+  text-align: center !important;
+}
+
+/* Print-specific styles for barcode */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  .barcode-container {
+    display: block !important;
+    visibility: visible !important;
+    page-break-inside: avoid !important;
+    background: white !important;
+    border: 2px solid #000 !important;
+    padding: 20px !important;
+    margin: 20px auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  .css-barcode {
+    display: flex !important;
+    flex-direction: row !important;
+    visibility: visible !important;
+    height: 60px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background: white !important;
+    border: 2px solid #000 !important;
+    padding: 10px !important;
+    margin: 15px 0 !important;
+    justify-content: center !important;
+    align-items: flex-end !important;
+    box-sizing: border-box !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    overflow: visible !important;
+  }
+
+  .bar {
+    display: inline-block !important;
+    visibility: visible !important;
+    background: #000000 !important;
+    border: none !important;
+    margin-right: 2px !important;
+    vertical-align: bottom !important;
+    box-sizing: border-box !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    min-width: 2px !important;
+  }
+
+  .bar.thin {
+    width: 3px !important;
+    min-width: 3px !important;
+    height: 40px !important;
+    background: #000000 !important;
+    border: 1px solid #000 !important;
+  }
+
+  .bar.medium {
+    width: 4px !important;
+    min-width: 4px !important;
+    height: 50px !important;
+    background: #000000 !important;
+    border: 1px solid #000 !important;
+  }
+
+  .bar.thick {
+    width: 6px !important;
+    min-width: 6px !important;
+    height: 55px !important;
+    background: #000000 !important;
+    border: 1px solid #000 !important;
+  }
+
+  .barcode-number {
+    display: block !important;
+    visibility: visible !important;
+    color: #000000 !important;
+    font-size: 18px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    margin-top: 10px !important;
+    letter-spacing: 3px !important;
+    font-family: 'Courier New', monospace !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Ensure print slip content shows barcode */
+  .print-slip-content .barcode-container {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .print-slip-content .css-barcode {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .print-slip-content .bar {
+    display: inline-block !important;
+    visibility: visible !important;
+    background: #000000 !important;
+    opacity: 1 !important;
+    border: 1px solid #000 !important;
+  }
+
+  /* Hide background colors in print but keep barcode visible */
+  .print-slip-content {
+    background: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
 }
 
 .print-slip-actions {

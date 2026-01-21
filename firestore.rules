@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read/write access to spinCommands collection for real-time sync
+    match /spinCommands/{commandId} {
+      allow read, write: if true;
+    }
+    
+    // Allow read/write access to gameState collection
+    match /gameState/{document=**} {
+      allow read, write: if true;
+    }
+    
+    // Allow read/write access to winningNumbers collection
+    match /winningNumbers/{drawNumber} {
+      allow read, write: if true;
+    }
+    
+    // Default: deny all other access for security
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

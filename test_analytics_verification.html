@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Verification Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-card label {
+            display: block;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        .info-card .value {
+            font-size: 1.5em;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .draw-number {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .number-badge {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .number-red {
+            background: #dc3545;
+        }
+        
+        .number-black {
+            background: #343a40;
+        }
+        
+        .number-green {
+            background: #28a745;
+        }
+        
+        .source-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .source-preset {
+            background: #e7f3ff;
+            color: #0066cc;
+        }
+        
+        .source-manual {
+            background: #fff4e6;
+            color: #cc6600;
+        }
+        
+        .source-random {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .comparison-table {
+            margin-top: 20px;
+        }
+        
+        .match {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .mismatch {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            transition: background 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            background: #5568d3;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Analytics Verification Test</h1>
+        
+        <button class="refresh-btn" onclick="loadAllData()">🔄 Refresh Data</button>
+        
+        <!-- Server Time & Current Draw Info -->
+        <div class="section">
+            <h2>⏰ Server Time & Current Draw</h2>
+            <div class="info-grid" id="serverInfo">
+                <div class="info-card">
+                    <label>Server Time</label>
+                    <div class="value" id="serverTime">Loading...</div>
+                </div>
+                <div class="info-card">
+                    <label>Server Timezone</label>
+                    <div class="value" id="serverTimezone">Loading...</div>
+                </div>
+                <div class="info-card">
+                    <label>Current Draw Number</label>
+                    <div class="value" id="currentDrawNumber">Loading...</div>
+                </div>
+                <div class="info-card">
+                    <label>Next Draw Number</label>
+                    <div class="value" id="nextDrawNumber">Loading...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analytics History -->
+        <div class="section">
+            <h2>📊 Analytics History (Last 20 Draws)</h2>
+            <div id="analyticsLoading" class="loading">Loading analytics history...</div>
+            <div id="analyticsError" class="error" style="display:none;"></div>
+            <table id="analyticsTable" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>Draw #</th>
+                        <th>Winning Number</th>
+                        <th>Color</th>
+                        <th>Draw Time</th>
+                        <th>Source</th>
+                        <th>Preset</th>
+                        <th>Pattern</th>
+                    </tr>
+                </thead>
+                <tbody id="analyticsBody">
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Preset Schedule -->
+        <div class="section">
+            <h2>📅 Preset Schedule (Active)</h2>
+            <div id="presetInfo" class="info-grid" style="margin-bottom: 20px;">
+                <div class="info-card">
+                    <label>Active Preset</label>
+                    <div class="value" id="presetStatus">Checking...</div>
+                </div>
+                <div class="info-card">
+                    <label>Start Draw #</label>
+                    <div class="value" id="presetStart">-</div>
+                </div>
+                <div class="info-card">
+                    <label>End Draw #</label>
+                    <div class="value" id="presetEnd">-</div>
+                </div>
+                <div class="info-card">
+                    <label>Total Draws</label>
+                    <div class="value" id="presetTotal">-</div>
+                </div>
+            </div>
+            <div id="presetLoading" class="loading">Loading preset schedule...</div>
+            <div id="presetError" class="error" style="display:none;"></div>
+            <table id="presetTable" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>Draw #</th>
+                        <th>Scheduled Number</th>
+                        <th>Color</th>
+                        <th>Scheduled Time</th>
+                        <th>Pattern</th>
+                    </tr>
+                </thead>
+                <tbody id="presetBody">
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Forced Numbers -->
+        <div class="section">
+            <h2>🎯 Forced Numbers (Next Draw Winning Number)</h2>
+            <div id="forcedLoading" class="loading">Loading forced numbers...</div>
+            <div id="forcedError" class="error" style="display:none;"></div>
+            <table id="forcedTable" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>Draw #</th>
+                        <th>Forced Number</th>
+                        <th>Color</th>
+                        <th>Source</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody id="forcedBody">
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Comparison -->
+        <div class="section">
+            <h2>🔗 Comparison: Analytics vs Preset vs Forced</h2>
+            <div style="background: #e7f3ff; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.9em; color: #0066cc;">
+                <strong>ℹ️ Note:</strong> Analytics draw numbers may differ from server-time-based draw numbers. 
+                Preset schedule uses server-time-based numbers (#1-480 per day). 
+                If analytics draw numbers are outside the preset range, they won't match.
+            </div>
+            <div id="comparisonLoading" class="loading">Loading comparison...</div>
+            <div id="comparisonError" class="error" style="display:none;"></div>
+            <table id="comparisonTable" style="display:none;" class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Draw #</th>
+                        <th>Analytics History</th>
+                        <th>Preset Schedule</th>
+                        <th>Forced Number</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="comparisonBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // Load all data on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            loadAllData();
+            // Auto-refresh every 30 seconds
+            setInterval(loadAllData, 30000);
+        });
+        
+        async function loadAllData() {
+            await Promise.all([
+                loadServerInfo(),
+                loadAnalyticsHistory(),
+                loadPresetSchedule(),
+                loadForcedNumbers(),
+                loadComparison()
+            ]);
+        }
+        
+        async function loadServerInfo() {
+            try {
+                const response = await fetch('/slipp/api/get_current_draw.php?_cb=' + Date.now());
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.data) {
+                    document.getElementById('serverTime').textContent = data.data.server_time?.formatted || 'N/A';
+                    document.getElementById('serverTimezone').textContent = data.data.server_time?.timezone || 'N/A';
+                    document.getElementById('currentDrawNumber').textContent = '#' + (data.data.current_draw_number || 'N/A');
+                    document.getElementById('nextDrawNumber').textContent = '#' + ((data.data.current_draw_number || 0) + 1);
+                }
+            } catch (error) {
+                console.error('Error loading server info:', error);
+            }
+        }
+        
+        async function loadAnalyticsHistory() {
+            const loadingEl = document.getElementById('analyticsLoading');
+            const errorEl = document.getElementById('analyticsError');
+            const tableEl = document.getElementById('analyticsTable');
+            const bodyEl = document.getElementById('analyticsBody');
+            
+            loadingEl.style.display = 'block';
+            errorEl.style.display = 'none';
+            tableEl.style.display = 'none';
+            
+            try {
+                const response = await fetch('/slipp/api/get_analytics_history.php?limit=20&_cb=' + Date.now());
+                const data = await response.json();
+                
+                loadingEl.style.display = 'none';
+                
+                if (data.status === 'success' && data.data && Array.isArray(data.data.draws) && data.data.draws.length > 0) {
+                    bodyEl.innerHTML = '';
+                    
+                    data.data.draws.forEach(draw => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="draw-number">#${draw.draw_number}</td>
+                            <td>
+                                <span class="number-badge number-${draw.winning_color}">${draw.winning_number}</span>
+                            </td>
+                            <td><span class="source-badge" style="background: ${draw.winning_color === 'red' ? '#dc3545' : draw.winning_color === 'black' ? '#343a40' : '#28a745'}; color: white;">${draw.winning_color}</span></td>
+                            <td>${draw.draw_time || 'N/A'}</td>
+                            <td><span class="source-badge source-${draw.source || 'random'}">${draw.source || 'unknown'}</span></td>
+                            <td>${draw.is_preset ? '✅ Yes' : '❌ No'}</td>
+                            <td>${draw.pattern_type || '-'}</td>
+                        `;
+                        bodyEl.appendChild(row);
+                    });
+                    
+                    tableEl.style.display = 'table';
+                } else {
+                    if (data.status === 'error') {
+                        errorEl.textContent = 'Error: ' + (data.message || 'Unknown error');
+                    } else if (!data.data || !data.data.draws || data.data.draws.length === 0) {
+                        errorEl.textContent = 'No analytics data available. The analytics_history table may be empty or the query returned no results.';
+                    } else {
+                        errorEl.textContent = 'Unexpected response format';
+                    }
+                    errorEl.style.display = 'block';
+                    console.error('Analytics API response:', data);
+                }
+            } catch (error) {
+                loadingEl.style.display = 'none';
+                errorEl.textContent = 'Error loading analytics: ' + error.message;
+                errorEl.style.display = 'block';
+            }
+        }
+        
+        async function loadPresetSchedule() {
+            const loadingEl = document.getElementById('presetLoading');
+            const errorEl = document.getElementById('presetError');
+            const tableEl = document.getElementById('presetTable');
+            const bodyEl = document.getElementById('presetBody');
+            
+            loadingEl.style.display = 'block';
+            errorEl.style.display = 'none';
+            tableEl.style.display = 'none';
+            
+            try {
+                // Get current draw number first
+                const currentDrawResponse = await fetch('/slipp/api/get_current_draw.php?_cb=' + Date.now());
+                const currentDrawData = await currentDrawResponse.json();
+                const currentDraw = currentDrawData.data?.current_draw_number || 1;
+                
+                // Load preset schedule for current draw
+                const response = await fetch(`/slipp/api/load_preset_schedule.php?current_draw=${currentDraw}&_cb=${Date.now()}`);
+                const data = await response.json();
+                
+                loadingEl.style.display = 'none';
+                
+                if (data.status === 'success' && data.data) {
+                    const preset = data.data;
+                    
+                    // Update preset info
+                    document.getElementById('presetStatus').innerHTML = preset.is_active ? 
+                        '<span class="status-badge status-success">Active</span>' : 
+                        '<span class="status-badge status-warning">Inactive</span>';
+                    document.getElementById('presetStart').textContent = '#' + (preset.start_draw_number || '-');
+                    document.getElementById('presetEnd').textContent = '#' + (preset.end_draw_number || '-');
+                    document.getElementById('presetTotal').textContent = preset.total_draws || '-';
+                    
+                    if (preset.schedule_data && Array.isArray(preset.schedule_data)) {
+                        bodyEl.innerHTML = '';
+                        
+                        // Get current draw number for comparison
+                        const currentDrawResponse = await fetch('/slipp/api/get_current_draw.php?_cb=' + Date.now());
+                        const currentDrawData = await currentDrawResponse.json();
+                        const currentDraw = currentDrawData.data?.current_draw_number || 1;
+                        
+                        // Show draws around current draw number (past 10, current, next 10)
+                        const startDraw = preset.start_draw_number || 1;
+                        const endDraw = preset.end_draw_number || 480;
+                        const scheduleData = preset.schedule_data;
+                        
+                        // Calculate which draws to show (around current draw)
+                        const showStart = Math.max(startDraw, currentDraw - 10);
+                        const showEnd = Math.min(endDraw, currentDraw + 10);
+                        
+                        for (let drawNum = showStart; drawNum <= showEnd && drawNum <= endDraw; drawNum++) {
+                            const index = drawNum - startDraw;
+                            if (index < 0 || index >= scheduleData.length) continue;
+                            
+                            const scheduleItem = scheduleData[index];
+                            
+                            let winningNumber, color, scheduledTime, pattern;
+                            
+                            if (typeof scheduleItem === 'object' && scheduleItem !== null) {
+                                winningNumber = scheduleItem.winning_number || scheduleItem;
+                                color = scheduleItem.color || getColorForNumber(winningNumber);
+                                scheduledTime = scheduleItem.scheduled_time || calculateDrawTime(drawNum);
+                                pattern = scheduleItem.pattern || '-';
+                            } else {
+                                winningNumber = scheduleItem;
+                                color = getColorForNumber(winningNumber);
+                                scheduledTime = calculateDrawTime(drawNum);
+                                pattern = '-';
+                            }
+                            
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td class="draw-number">#${drawNum}</td>
+                                <td>
+                                    <span class="number-badge number-${color}">${winningNumber}</span>
+                                </td>
+                                <td><span class="source-badge" style="background: ${color === 'red' ? '#dc3545' : color === 'black' ? '#343a40' : '#28a745'}; color: white;">${color}</span></td>
+                                <td>${scheduledTime}</td>
+                                <td>${pattern}</td>
+                            `;
+                            bodyEl.appendChild(row);
+                        }
+                        
+                        tableEl.style.display = 'table';
+                    } else {
+                        errorEl.textContent = 'No schedule data available';
+                        errorEl.style.display = 'block';
+                    }
+                } else {
+                    errorEl.textContent = 'No active preset schedule found';
+                    errorEl.style.display = 'block';
+                }
+            } catch (error) {
+                loadingEl.style.display = 'none';
+                errorEl.textContent = 'Error loading preset schedule: ' + error.message;
+                errorEl.style.display = 'block';
+            }
+        }
+        
+        async function loadForcedNumbers() {
+            const loadingEl = document.getElementById('forcedLoading');
+            const errorEl = document.getElementById('forcedError');
+            const tableEl = document.getElementById('forcedTable');
+            const bodyEl = document.getElementById('forcedBody');
+            
+            loadingEl.style.display = 'block';
+            errorEl.style.display = 'none';
+            tableEl.style.display = 'none';
+            
+            try {
+                // Get current draw number
+                const currentDrawResponse = await fetch('/slipp/api/get_current_draw.php?_cb=' + Date.now());
+                const currentDrawData = await currentDrawResponse.json();
+                const currentDraw = currentDrawData.data?.current_draw_number || 1;
+                
+                // Get preset schedule to show preset numbers
+                const presetResponse = await fetch(`/slipp/api/load_preset_schedule.php?current_draw=${currentDraw}&_cb=${Date.now()}`);
+                const presetData = await presetResponse.json();
+                const preset = presetData.data;
+                
+                // Check forced numbers for next 10 draws
+                bodyEl.innerHTML = '';
+                let hasAnyNumber = false;
+                
+                for (let i = 0; i < 10; i++) {
+                    const drawNum = currentDraw + i;
+                    try {
+                        const response = await fetch(`/slipp/api/direct_forced_number.php?draw_number=${drawNum}&_cb=${Date.now()}`);
+                        const data = await response.json();
+                        
+                        // Always show the number (preset or forced)
+                        if (data.status === 'success' && data.has_forced_number) {
+                            hasAnyNumber = true;
+                            
+                            // Determine if it's manually set
+                            const isManual = data.source === 'manual';
+                            const sourceText = isManual ? 'Manually Set' : (data.source === 'preset_schedule' ? 'Preset Schedule' : 'Automatic');
+                            const sourceClass = isManual ? 'source-manual' : (data.source === 'preset_schedule' ? 'source-preset' : 'source-random');
+                            
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td class="draw-number">#${drawNum}</td>
+                                <td>
+                                    <span class="number-badge number-${data.forced_color || 'black'}">${data.forced_number}</span>
+                                </td>
+                                <td><span class="source-badge" style="background: ${data.forced_color === 'red' ? '#dc3545' : data.forced_color === 'black' ? '#343a40' : '#28a745'}; color: white;">${data.forced_color || 'unknown'}</span></td>
+                                <td><span class="source-badge ${sourceClass}">${sourceText}</span></td>
+                                <td>${isManual ? (data.forced_number_reason || 'Set by administrator') : (data.source === 'preset_schedule' ? 'From preset schedule' : '-')}</td>
+                            `;
+                            bodyEl.appendChild(row);
+                        } else {
+                            // No forced number, but check if preset exists
+                            if (preset && preset.is_active && preset.schedule_data) {
+                                const startDraw = preset.start_draw_number || 1;
+                                const endDraw = preset.end_draw_number || 480;
+                                if (drawNum >= startDraw && drawNum <= endDraw) {
+                                    const index = drawNum - startDraw;
+                                    if (index >= 0 && index < preset.schedule_data.length) {
+                                        const scheduleItem = preset.schedule_data[index];
+                                        const presetNum = typeof scheduleItem === 'object' ? (scheduleItem.winning_number || scheduleItem) : scheduleItem;
+                                        const presetColor = getColorForNumber(parseInt(presetNum));
+                                        
+                                        hasAnyNumber = true;
+                                        const row = document.createElement('tr');
+                                        row.innerHTML = `
+                                            <td class="draw-number">#${drawNum}</td>
+                                            <td>
+                                                <span class="number-badge number-${presetColor}">${presetNum}</span>
+                                            </td>
+                                            <td><span class="source-badge" style="background: ${presetColor === 'red' ? '#dc3545' : presetColor === 'black' ? '#343a40' : '#28a745'}; color: white;">${presetColor}</span></td>
+                                            <td><span class="source-badge source-preset">Preset Schedule</span></td>
+                                            <td>From preset schedule</td>
+                                        `;
+                                        bodyEl.appendChild(row);
+                                    }
+                                }
+                            }
+                        }
+                    } catch (error) {
+                        // Skip if error
+                    }
+                }
+                
+                loadingEl.style.display = 'none';
+                
+                if (hasAnyNumber) {
+                    tableEl.style.display = 'table';
+                } else {
+                    errorEl.textContent = 'No preset schedule or forced numbers found for upcoming draws';
+                    errorEl.style.display = 'block';
+                }
+            } catch (error) {
+                loadingEl.style.display = 'none';
+                errorEl.textContent = 'Error loading forced numbers: ' + error.message;
+                errorEl.style.display = 'block';
+            }
+        }
+        
+        async function loadComparison() {
+            const loadingEl = document.getElementById('comparisonLoading');
+            const errorEl = document.getElementById('comparisonError');
+            const tableEl = document.getElementById('comparisonTable');
+            const bodyEl = document.getElementById('comparisonBody');
+            
+            loadingEl.style.display = 'block';
+            errorEl.style.display = 'none';
+            tableEl.style.display = 'none';
+            
+            try {
+                // Get current draw first
+                const currentDrawRes = await fetch('/slipp/api/get_current_draw.php?_cb=' + Date.now());
+                const currentDrawData = await currentDrawRes.json();
+                const currentDraw = currentDrawData.data?.current_draw_number || 1;
+                
+                // Get all data
+                const [analyticsRes, presetRes] = await Promise.all([
+                    fetch('/slipp/api/get_analytics_history.php?limit=20&_cb=' + Date.now()),
+                    fetch(`/slipp/api/load_preset_schedule.php?current_draw=${currentDraw}&_cb=${Date.now()}`)
+                ]);
+                
+                const analyticsData = await analyticsRes.json();
+                const presetData = await presetRes.json();
+                
+                const analyticsDraws = analyticsData.data?.draws || [];
+                const preset = presetData.data;
+                
+                if (analyticsDraws.length === 0) {
+                    loadingEl.style.display = 'none';
+                    errorEl.textContent = 'No analytics data available for comparison';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+                
+                bodyEl.innerHTML = '';
+                
+                // Compare draws - use actual draw numbers from analytics_history
+                // Get the draw numbers we have in analytics
+                const analyticsDrawNumbers = analyticsDraws.map(d => d.draw_number).sort((a, b) => b - a);
+                
+                // Compare the last 10 draws that exist in analytics
+                const drawsToCompare = analyticsDrawNumbers.slice(0, 10);
+                
+                for (const drawNum of drawsToCompare) {
+                    // Get from analytics
+                    const analyticsDraw = analyticsDraws.find(d => d.draw_number === drawNum);
+                    
+                    // Get from preset
+                    let presetNumber = null;
+                    if (preset && preset.is_active && preset.schedule_data) {
+                        const startDraw = preset.start_draw_number || 1;
+                        const endDraw = preset.end_draw_number || 480;
+                        // Only check preset if draw number is within preset range
+                        if (drawNum >= startDraw && drawNum <= endDraw) {
+                            const index = drawNum - startDraw;
+                            if (index >= 0 && index < preset.schedule_data.length) {
+                                const scheduleItem = preset.schedule_data[index];
+                                presetNumber = typeof scheduleItem === 'object' ? (scheduleItem.winning_number || scheduleItem) : scheduleItem;
+                                presetNumber = parseInt(presetNumber);
+                            }
+                        }
+                    }
+                    
+                    // Get forced number
+                    let forcedNumber = null;
+                    let forcedSource = null;
+                    try {
+                        const forcedRes = await fetch(`/slipp/api/direct_forced_number.php?draw_number=${drawNum}&_cb=${Date.now()}`);
+                        const forcedData = await forcedRes.json();
+                        if (forcedData.has_forced_number && forcedData.draw_number === drawNum) {
+                            // Only use forced number if it's for this specific draw
+                            forcedNumber = parseInt(forcedData.forced_number);
+                            forcedSource = forcedData.source || 'unknown';
+                        }
+                    } catch (e) {
+                        // Skip
+                    }
+                    
+                    // Compare
+                    const analyticsNum = analyticsDraw ? parseInt(analyticsDraw.winning_number) : null;
+                    
+                    // Match logic: analytics should match preset if preset exists, or match forced if forced exists
+                    let matchStatus = 'unknown';
+                    let matchClass = '';
+                    if (analyticsNum !== null) {
+                        // Check if draw number is within preset range
+                        const inPresetRange = preset && preset.is_active && 
+                                            drawNum >= (preset.start_draw_number || 1) && 
+                                            drawNum <= (preset.end_draw_number || 480);
+                        
+                        if (presetNumber !== null && forcedNumber !== null) {
+                            // Both preset and forced exist for this draw
+                            // Priority: Manual forced > Preset
+                            // Analytics should match forced if forced is manual, or match preset if forced is automatic
+                            const isManualForced = forcedSource === 'manual';
+                            
+                            if (analyticsNum === forcedNumber && analyticsNum === presetNumber) {
+                                // All three match - perfect!
+                                matchStatus = '✅ All Match';
+                                matchClass = 'match';
+                            } else if (isManualForced && analyticsNum === forcedNumber) {
+                                // Manual forced exists and analytics matches it (forced overrides preset) - correct
+                                matchStatus = '✅ Match (Manual Override)';
+                                matchClass = 'match';
+                            } else if (!isManualForced && analyticsNum === presetNumber) {
+                                // Automatic forced exists but analytics matches preset (preset overrides automatic) - correct
+                                matchStatus = '✅ Match (Preset Override)';
+                                matchClass = 'match';
+                            } else if (analyticsNum === forcedNumber && !isManualForced) {
+                                // Analytics matches automatic forced, but preset differs - might be OK if preset wasn't active
+                                matchStatus = '✅ Match (Auto Forced)';
+                                matchClass = 'match';
+                            } else if (analyticsNum === presetNumber && isManualForced) {
+                                // Analytics matches preset but manual forced differs - forced should have been used!
+                                matchStatus = '❌ Mismatch (Should use Manual Forced)';
+                                matchClass = 'mismatch';
+                            } else {
+                                // Analytics doesn't match forced or preset
+                                matchStatus = '❌ Mismatch';
+                                matchClass = 'mismatch';
+                            }
+                        } else if (presetNumber !== null) {
+                            // Only preset exists - analytics should match preset
+                            matchStatus = (analyticsNum === presetNumber) ? '✅ Match' : '❌ Mismatch';
+                            matchClass = (analyticsNum === presetNumber) ? 'match' : 'mismatch';
+                        } else if (forcedNumber !== null) {
+                            // Only forced exists - analytics should match forced
+                            matchStatus = (analyticsNum === forcedNumber) ? '✅ Match' : '❌ Mismatch';
+                            matchClass = (analyticsNum === forcedNumber) ? 'match' : 'mismatch';
+                        } else {
+                            // No preset or forced
+                            if (!inPresetRange) {
+                                matchStatus = 'ℹ️ Outside preset range';
+                                matchClass = 'match'; // Not an error, just outside range
+                            } else {
+                                matchStatus = 'ℹ️ No preset/forced';
+                                matchClass = 'match';
+                            }
+                        }
+                    } else {
+                        matchStatus = '⚠️ No analytics data';
+                        matchClass = 'mismatch';
+                    }
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="draw-number">#${drawNum}</td>
+                        <td>${analyticsNum !== null ? 
+                            `<span class="number-badge number-${analyticsDraw.winning_color}">${analyticsNum}</span>` : 
+                            '<span style="color: #999;">N/A</span>'}</td>
+                        <td>${presetNumber !== null ? 
+                            `<span class="number-badge number-${getColorForNumber(presetNumber)}">${presetNumber}</span>` : 
+                            '<span style="color: #999;">N/A</span>'}</td>
+                        <td>${forcedNumber !== null ? 
+                            `<span class="number-badge number-${getColorForNumber(forcedNumber)}">${forcedNumber}</span>` : 
+                            '<span style="color: #999;">N/A</span>'}</td>
+                        <td><span class="${matchClass}">${matchStatus}</span></td>
+                    `;
+                    bodyEl.appendChild(row);
+                }
+                
+                loadingEl.style.display = 'none';
+                tableEl.style.display = 'table';
+            } catch (error) {
+                loadingEl.style.display = 'none';
+                errorEl.textContent = 'Error loading comparison: ' + error.message;
+                errorEl.style.display = 'block';
+            }
+        }
+        
+        function getColorForNumber(number) {
+            if (number === 0) return 'green';
+            const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+            return redNumbers.includes(number) ? 'red' : 'black';
+        }
+        
+        function calculateDrawTime(drawNumber) {
+            // Calculate time based on draw number (3 minutes per draw, starting at midnight)
+            const minutes = (drawNumber - 1) * 3;
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return String(hours).padStart(2, '0') + ':' + String(mins).padStart(2, '0') + ':00';
+        }
+    </script>
+</body>
+</html>
+

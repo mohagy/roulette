@@ -5,6 +5,7 @@
 
 class CashoutManager {
     constructor() {
+        this.isPrinting = false; // Flag to prevent multiple print calls
         this.init();
     }
 
@@ -84,6 +85,7 @@ class CashoutManager {
                         <div class="cashout-message" id="cashout-message"></div>
 
                         <button class="cashout-process-button" id="cashout-process-button">Process Cashout</button>
+                        <button class="cashout-process-another-button" id="cashout-process-another-button" style="display: none;">Process Another Slip</button>
                     </div>
                 </div>
             </div>
@@ -135,10 +137,25 @@ class CashoutManager {
         document.getElementById('cashout-process-button').addEventListener('click', () => {
             this.processCashout();
         });
+        
+        // Process another slip button
+        document.getElementById('cashout-process-another-button').addEventListener('click', () => {
+            this.resetForm();
+        });
 
-        // Print receipt button
+        // Print receipt button (manual print)
         document.getElementById('print-receipt').addEventListener('click', () => {
-            this.printReceipt();
+            // Only allow print if not already printing
+            if (!this.isPrinting) {
+                this.printReceipt();
+                // After printing, hide receipt and reset form after a delay
+                setTimeout(() => {
+                    document.getElementById('receipt-container').style.display = 'none';
+                    setTimeout(() => {
+                        this.resetForm();
+                    }, 500);
+                }, 2000);
+            }
         });
 
         // Enter key in input field
@@ -158,14 +175,14 @@ class CashoutManager {
 
     openModal() {
         document.querySelector('.cashout-modal').classList.add('visible');
-        document.getElementById('slip-number-input').focus();
-
-        // Reset the modal
-        document.querySelector('.cashout-results').style.display = 'none';
-        document.querySelector('.cashout-loading').style.display = 'none';
-        document.getElementById('cashout-error').style.display = 'none';
-        document.getElementById('slip-number-input').value = '';
-        document.getElementById('receipt-container').style.display = 'none';
+        
+        // Reset the modal completely
+        this.resetForm();
+        
+        // Focus input
+        setTimeout(() => {
+            document.getElementById('slip-number-input').focus();
+        }, 100);
     }
 
     closeModal() {
@@ -338,17 +355,48 @@ class CashoutManager {
                     return;
                 }
 
-                // Show success message
+                // Reset process button state immediately (fix stuck "Processing..." issue)
+                const processButton = document.getElementById('cashout-process-button');
+                processButton.disabled = false;
+                processButton.textContent = 'Process Cashout';
+                processButton.style.display = 'none';
+
+                // Show success message with better visual feedback
                 const messageEl = document.getElementById('cashout-message');
                 messageEl.className = 'cashout-message success';
-                messageEl.textContent = 'Cashout processed successfully!';
+                messageEl.innerHTML = '<i class="fas fa-check-circle"></i> Cashout processed successfully! Printing receipt...';
                 messageEl.style.display = 'block';
-
-                // Hide process button
-                document.getElementById('cashout-process-button').style.display = 'none';
 
                 // Show receipt
                 this.displayReceipt();
+                
+                // Show "Process Another Slip" button
+                document.getElementById('cashout-process-another-button').style.display = 'block';
+                
+                // Show receipt
+                this.displayReceipt();
+                
+                // Auto-print receipt after 800ms (gives time to see success message)
+                // Only print once - the printReceipt function has guards to prevent double printing
+                setTimeout(() => {
+                    if (!this.isPrinting) {
+                        this.printReceipt();
+                    }
+                    
+                    // After printing, auto-close receipt preview and reset form
+                    setTimeout(() => {
+                        // Hide receipt preview
+                        document.getElementById('receipt-container').style.display = 'none';
+                        
+                        // Update success message
+                        messageEl.innerHTML = '<i class="fas fa-check-circle"></i> Cashout complete! Ready for next slip.';
+                        
+                        // Reset form after a brief moment
+                        setTimeout(() => {
+                            this.resetForm();
+                        }, 500);
+                    }, 2000);
+                }, 800);
             })
             .catch(error => {
                 document.getElementById('cashout-process-button').disabled = false;
@@ -397,8 +445,13 @@ class CashoutManager {
         const receiptContainer = document.getElementById('receipt-container');
         const receiptBody = document.getElementById('receipt-body');
 
-        // Show the receipt container
+        // Show the receipt container with smooth animation
         receiptContainer.style.display = 'block';
+        receiptContainer.style.opacity = '0';
+        setTimeout(() => {
+            receiptContainer.style.transition = 'opacity 0.3s';
+            receiptContainer.style.opacity = '1';
+        }, 10);
 
         // Set receipt date
         document.getElementById('receipt-date').textContent = new Date().toLocaleString();
@@ -520,20 +573,76 @@ class CashoutManager {
     }
 
     printReceipt() {
+        // Prevent multiple print calls
+        if (this.isPrinting) {
+            console.log('Print already in progress, skipping...');
+            return;
+        }
+        
+        this.isPrinting = true;
         const receiptContent = document.getElementById('receipt-container').innerHTML;
 
         // Create a hidden iframe for printing
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none';
+        iframe.name = 'receipt-print-frame';
         document.body.appendChild(iframe);
+
+        let hasPrinted = false;
+        let printTimeoutId = null;
+        
+        const doPrint = () => {
+            if (hasPrinted) {
+                console.log('Print already executed, skipping duplicate call');
+                return; // Prevent double printing
+            }
+            hasPrinted = true;
+            
+            // Clear any pending timeout
+            if (printTimeoutId) {
+                clearTimeout(printTimeoutId);
+                printTimeoutId = null;
+            }
+            
+            printTimeoutId = setTimeout(() => {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                    
+                    // Remove iframe after print dialog
+                    setTimeout(() => {
+                        if (iframe.parentNode) {
+                            document.body.removeChild(iframe);
+                        }
+                        this.isPrinting = false;
+                        hasPrinted = false; // Reset for next print
+                    }, 1000);
+                } else {
+                    // If iframe not ready, reset flags
+                    this.isPrinting = false;
+                    hasPrinted = false;
+                }
+            }, 300);
+        };
 
         // Write the content to the iframe
         const doc = iframe.contentDocument || iframe.contentWindow.document;
+        doc.open();
         doc.write(`
             <html>
             <head>
                 <title>Cashout Receipt</title>
                 <style>
+                    @media print {
+                        @page {
+                            size: 80mm auto;
+                            margin: 0;
+                        }
+                        body {
+                            margin: 0;
+                            padding: 10px;
+                        }
+                    }
                     body {
                         font-family: 'Courier New', monospace;
                         padding: 20px;
@@ -626,17 +735,84 @@ class CashoutManager {
             </body>
             </html>
         `);
-
         doc.close();
 
-        // Print the iframe content
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
-
-        // Remove the iframe after printing
-        setTimeout(() => {
-            document.body.removeChild(iframe);
+        // Wait for iframe to load, then print (only once)
+        let fallbackTimeoutId = null;
+        
+        iframe.onload = () => {
+            // Clear fallback timeout since onload fired
+            if (fallbackTimeoutId) {
+                clearTimeout(fallbackTimeoutId);
+                fallbackTimeoutId = null;
+            }
+            
+            if (!hasPrinted) {
+                doPrint();
+            }
+        };
+        
+        // Fallback if onload doesn't fire (but only if we haven't printed yet)
+        // Use a longer timeout to ensure onload has a chance to fire first
+        fallbackTimeoutId = setTimeout(() => {
+            // Only print if onload didn't fire and we haven't printed yet
+            if (!hasPrinted && iframe.contentWindow) {
+                console.log('Using fallback print (onload did not fire)');
+                doPrint();
+            } else if (hasPrinted) {
+                // Clean up iframe if we already printed via onload
+                console.log('Already printed via onload, cleaning up');
+                setTimeout(() => {
+                    if (iframe.parentNode) {
+                        document.body.removeChild(iframe);
+                    }
+                    this.isPrinting = false;
+                }, 1000);
+            }
         }, 1000);
+    }
+
+    resetForm() {
+        // Clear the input field
+        const inputField = document.getElementById('slip-number-input');
+        inputField.value = '';
+        
+        // Hide results and receipt
+        document.querySelector('.cashout-results').style.display = 'none';
+        document.getElementById('receipt-container').style.display = 'none';
+        
+        // Hide error and loading
+        document.getElementById('cashout-error').style.display = 'none';
+        document.querySelector('.cashout-loading').style.display = 'none';
+        
+        // Reset process button
+        const processButton = document.getElementById('cashout-process-button');
+        processButton.disabled = false;
+        processButton.textContent = 'Process Cashout';
+        processButton.style.display = 'none'; // Hidden until verification
+        
+        // Hide "Process Another Slip" button
+        document.getElementById('cashout-process-another-button').style.display = 'none';
+        
+        // Clear message
+        const messageEl = document.getElementById('cashout-message');
+        messageEl.style.display = 'none';
+        messageEl.textContent = '';
+        messageEl.className = 'cashout-message';
+        
+        // Clear verification data
+        this.currentVerificationData = null;
+        
+        // Show input actions again
+        document.querySelector('.cashout-actions').style.display = 'flex';
+        
+        // Focus input for next slip with a small delay
+        setTimeout(() => {
+            inputField.focus();
+            inputField.select();
+        }, 100);
+        
+        console.log('✓ Form reset - ready for next slip');
     }
 
     showError(message) {

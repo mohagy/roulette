@@ -2,7 +2,7 @@
  * TV Display Synchronization with Main Game
  *
  * This module handles synchronization between the TV display and the main game.
- * It uses Firebase Realtime Database to receive real-time updates about draw numbers.
+ * It uses Server-Sent Events (SSE) or polling to receive real-time updates about draw numbers.
  */
 
 const GameSynchronizer = (function() {
@@ -10,10 +10,9 @@ const GameSynchronizer = (function() {
     const config = {
         sseEndpoint: '../draw_header_updates.php',
         pollEndpoint: '../draw_header.php?ajax=1',
-        pollInterval: 1000, // 1 second (fallback only)
+        pollInterval: 1000, // 1 second
         soundEnabled: true,
-        soundFile: '../sounds/draw_notifications.wav',
-        useFirebase: true // Prefer Firebase over SSE/polling
+        soundFile: '../sounds/draw_notifications.wav'
     };
 
     // State
@@ -23,8 +22,6 @@ const GameSynchronizer = (function() {
     let lastUpdateTimestamp = 0;
     let isConnected = false;
     let listeners = [];
-    let firebaseListeners = [];
-    let useFirebase = false;
 
     // Create notification sound object
     const notificationSound = new Audio(config.soundFile);
@@ -39,11 +36,8 @@ const GameSynchronizer = (function() {
         // Merge options with default config
         Object.assign(config, options);
 
-        // Try Firebase first if available
-        if (config.useFirebase && window.FirebaseService && window.FirebaseDrawManager) {
-            initFirebase();
-        } else if (typeof EventSource !== 'undefined') {
-            console.log('Firebase not available, using SSE');
+        // Try to use SSE first, fall back to polling if not available
+        if (typeof EventSource !== 'undefined') {
             initSSE();
         } else {
             console.log('EventSource not supported, falling back to polling');
@@ -57,149 +51,6 @@ const GameSynchronizer = (function() {
         if (localStorage.getItem('tvDrawSoundMuted') === 'true') {
             config.soundEnabled = false;
         }
-    }
-
-    /**
-     * Initialize Firebase real-time listeners
-     */
-    function initFirebase() {
-        if (!window.FirebaseService || !window.FirebaseDrawManager) {
-            console.error('Firebase not available, falling back to SSE/polling');
-            if (typeof EventSource !== 'undefined') {
-                initSSE();
-            } else {
-                initPolling();
-            }
-            return;
-        }
-
-        console.log('Initializing Firebase real-time synchronization');
-
-        useFirebase = true;
-        isConnected = true;
-        updateConnectionStatus(true);
-
-        // Load initial data from Firebase when tvdisplay opens
-        async function loadInitialData() {
-            try {
-                console.log('🔥 Loading initial draw data from Firebase...');
-                
-                // Get current draw state
-                const gameState = await FirebaseDrawManager.getCurrentDrawState();
-                const drawInfo = await FirebaseService.GameState.getDrawInfo();
-                
-                if (gameState || drawInfo) {
-                    const currentDraw = drawInfo?.currentDraw || gameState?.drawNumber || gameState?.currentDrawNumber;
-                    const nextDraw = drawInfo?.nextDraw || gameState?.nextDrawNumber;
-                    
-                    if (currentDraw && nextDraw) {
-                        console.log('✅ Loaded initial draw data from Firebase:', { currentDraw, nextDraw });
-                        processUpdate({
-                            currentDrawNumber: currentDraw,
-                            nextDrawNumber: nextDraw
-                        });
-                    }
-                }
-
-                // Get latest draw result
-                if (drawInfo?.currentDraw) {
-                    const latestDraw = await FirebaseDrawManager.getDraw(drawInfo.currentDraw);
-                    if (latestDraw) {
-                        console.log('✅ Loaded latest draw result from Firebase:', latestDraw);
-                        // Update display with latest draw
-                        processUpdate({
-                            currentDrawNumber: latestDraw.drawNumber,
-                            nextDrawNumber: latestDraw.drawNumber + 1,
-                            winningNumber: latestDraw.winningNumber,
-                            winningColor: latestDraw.winningColor
-                        });
-                    }
-                }
-            } catch (error) {
-                console.error('❌ Error loading initial data from Firebase:', error);
-            }
-        }
-
-        // Load initial data
-        loadInitialData();
-
-        // Listen to draw info changes
-        const drawInfoListener = FirebaseService.GameState.listenDrawInfo((data) => {
-            if (data) {
-                console.log('Firebase draw info updated:', data);
-                processUpdate({
-                    currentDrawNumber: data.currentDraw,
-                    nextDrawNumber: data.nextDraw
-                });
-            }
-        });
-
-        // Listen to game state changes
-        const gameStateListener = FirebaseDrawManager.listenToCurrentDraw((data) => {
-            if (data) {
-                console.log('Firebase game state updated:', data);
-                const currentDraw = data.drawNumber || data.currentDrawNumber;
-                const nextDraw = data.nextDrawNumber;
-
-                if (currentDraw && nextDraw) {
-                    processUpdate({
-                        currentDrawNumber: currentDraw,
-                        nextDrawNumber: nextDraw
-                    });
-                }
-            }
-        });
-
-        // Listen to new draw results
-        const drawListener = FirebaseDrawManager.listenToDraws((data) => {
-            if (data) {
-                console.log('🔥 TV Display: New draw result from Firebase:', data);
-                
-                // Update display with new draw result
-                processUpdate({
-                    currentDrawNumber: data.drawNumber,
-                    nextDrawNumber: data.drawNumber + 1,
-                    winningNumber: data.winningNumber,
-                    winningColor: data.winningColor
-                });
-                
-                // If countdown is at zero or very close, trigger auto-spin
-                // This ensures the wheel spins when a new draw result arrives
-                const timerEl = document.querySelector('.timer-display');
-                if (timerEl) {
-                    const timerText = timerEl.textContent.trim();
-                    if (timerText === '00:00' || timerText === '0:00') {
-                        console.log('🔥 TV Display: Timer at zero, triggering auto-spin for new draw result');
-                        setTimeout(() => {
-                            const spinButton = document.querySelector('.button-spin');
-                            if (spinButton && !document.querySelector('.roulette-wheel-container')?.classList.contains('roulette-wheel-visible')) {
-                                spinButton.click();
-                            }
-                        }, 1000);
-                    }
-                }
-                
-                // Trigger notification for new draw
-                if (config.soundEnabled) {
-                    playNotificationSound();
-                }
-            }
-        });
-
-        // Monitor connection status
-        FirebaseService.onConnectionStatusChange((online) => {
-            isConnected = online;
-            updateConnectionStatus(online);
-            
-            // When coming online, reload data
-            if (online) {
-                console.log('🔥 Firebase reconnected, reloading data...');
-                loadInitialData();
-            }
-        });
-
-        firebaseListeners = [drawInfoListener, gameStateListener, drawListener];
-        console.log('Firebase listeners initialized');
     }
 
     /**
@@ -305,25 +156,20 @@ const GameSynchronizer = (function() {
      * @param {Object} data - The draw update data
      */
     function processUpdate(data) {
-        if (!data) return;
-
-        // Handle different data formats (Firebase vs server)
-        const currentDraw = data.currentDrawNumber || data.currentDraw || data.drawNumber;
-        if (!currentDraw) return;
+        if (!data || !data.currentDrawNumber) return;
 
         // Check if there's a new current draw number
-        const hasNewDraw = lastDrawNumber !== null && lastDrawNumber !== currentDraw;
+        const hasNewDraw = lastDrawNumber !== null && lastDrawNumber !== data.currentDrawNumber;
 
         // Update last draw number
-        lastDrawNumber = currentDraw;
+        lastDrawNumber = data.currentDrawNumber;
 
         // Notify listeners
         notifyListeners({
-            currentDrawNumber: currentDraw,
-            nextDrawNumber: data.nextDrawNumber || data.nextDraw || (currentDraw + 1),
+            currentDrawNumber: data.currentDrawNumber,
             drawNumbers: data.drawNumbers,
             isNewDraw: hasNewDraw,
-            timestamp: data.timestamp || data.updatedAt || Date.now()
+            timestamp: data.timestamp || Date.now()
         });
 
         // If it's a new draw, highlight it
@@ -658,37 +504,6 @@ const GameSynchronizer = (function() {
     }
 
     // Public API
-    /**
-     * Stop all listeners and cleanup
-     */
-    function stop() {
-        // Stop Firebase listeners
-        if (useFirebase && firebaseListeners.length > 0) {
-            firebaseListeners.forEach(listenerKey => {
-                if (listenerKey && window.FirebaseService) {
-                    FirebaseService.unlisten(listenerKey);
-                }
-            });
-            firebaseListeners = [];
-        }
-
-        // Stop SSE
-        if (eventSource) {
-            eventSource.close();
-            eventSource = null;
-        }
-
-        // Stop polling
-        if (pollTimer) {
-            clearInterval(pollTimer);
-            pollTimer = null;
-        }
-
-        isConnected = false;
-        updateConnectionStatus(false);
-        console.log('GameSynchronizer stopped');
-    }
-
     return {
         initialize,
         registerListener,
@@ -698,12 +513,8 @@ const GameSynchronizer = (function() {
     };
 })();
 
-// Initialize when DOM is loaded and Firebase is ready
-function initGameSynchronizer() {
-    console.log('🔥 GameSynchronizer: Attempting to initialize...');
-    console.log('🔥 FirebaseService available:', !!window.FirebaseService);
-    console.log('🔥 FirebaseDrawManager available:', !!window.FirebaseDrawManager);
-    
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
     // Initialize the synchronizer
     GameSynchronizer.initialize();
 
@@ -719,20 +530,4 @@ function initGameSynchronizer() {
             document.dispatchEvent(event);
         }
     });
-}
-
-// Wait for DOM and Firebase
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        // Wait a bit for Firebase to initialize
-        setTimeout(initGameSynchronizer, 1500);
-    });
-} else {
-    setTimeout(initGameSynchronizer, 1500);
-}
-
-// Also listen for firebase-ready event
-window.addEventListener('firebase-ready', () => {
-    console.log('🔥 GameSynchronizer: firebase-ready event received');
-    setTimeout(initGameSynchronizer, 500);
-}, { once: true });
+});

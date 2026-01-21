@@ -67,14 +67,14 @@ console.log('📺 Keeping updateCountdownDisplay function for sync updates');
 
 ## 🧪 Testing Tools Created
 
-### **1. Timer Sync Test Page**
-**URL:** `http://localhost:8080/slipp/tvdisplay/timer-sync-test.html`
+### **1. Draw Monitor Page**
+**URL:** `http://localhost:8080/slipp/tvdisplay/draw-monitor.html`
 
 **Features:**
-- ✅ Real-time monitoring of all three displays
-- ✅ Side-by-side timer comparison
-- ✅ Synchronization status indicators
-- ✅ Automatic sync analysis
+- ✅ Real-time monitoring of master display
+- ✅ Preset schedule monitoring and range viewing
+- ✅ Forced number detection and manual application
+- ✅ Server time and draw number synchronization
 - ✅ Individual display refresh controls
 
 ### **2. BroadcastChannel Test Page**
@@ -146,10 +146,10 @@ if (totalSeconds <= 10) {
 5. **Verify:** Timers update simultaneously every second
 
 ### **Comprehensive Test:**
-1. Open test page: `http://localhost:8080/slipp/tvdisplay/timer-sync-test.html`
-2. Click "🧪 Run Synchronization Test"
-3. **Verify:** All status indicators show "✅ Synchronized"
-4. **Verify:** Analysis shows "✅ ALL TIMERS SYNCHRONIZED"
+1. Open monitor page: `http://localhost:8080/slipp/tvdisplay/draw-monitor.html`
+2. Click "🧪 Run Synchronization Test" (if applicable) or observe real-time updates.
+3. **Verify:** Master display is active and timer is counting down.
+4. **Verify:** Preset schedule shows upcoming draws correctly.
 
 ### **Browser Console Verification:**
 **Master Console:**

@@ -621,15 +621,10 @@ var bankSum = 0; // Will be loaded from database
 
 // Initialize cash from database when CashManager is ready
 $(document).ready(function() {
-  // Try to run auto fix transactions (only works on local PHP server)
+  // First run the auto fix transactions script to ensure everything is in sync
   fetch('auto_fix_transactions.php')
     .then(() => {
       console.log('Auto fix transactions completed');
-    })
-    .catch(() => {
-      console.log('Auto fix transactions skipped (not on PHP server)');
-    })
-    .finally(() => {
 
       // Now initialize the CashManager with the updated balance
       if (typeof CashManager !== 'undefined') {
@@ -1730,6 +1725,7 @@ function getChipClass(amount) {
 // Bet tracking system for the display window
 const betTracker = {
   bets: [],
+  isPrinting: false, // Flag to prevent multiple print calls
 
   // Add or update a bet
   addBet: function(element, amount) {
@@ -4321,14 +4317,54 @@ const betTracker = {
         document.body.appendChild(iframe);
 
         const slipContent = document.querySelector('.print-slip-content').innerHTML;
+        
+        // Debug: Log the content to verify barcode is included
+        console.log('🖨️ Print: Slip content length:', slipContent.length);
+        console.log('🖨️ Print: Contains barcode-container?', slipContent.includes('barcode-container'));
+        console.log('🖨️ Print: Contains css-barcode?', slipContent.includes('css-barcode'));
+        console.log('🖨️ Print: Contains bar class?', slipContent.includes('class="bar'));
+        
+        // Extract barcode number if it exists in the content
+        const barcodeMatch = slipContent.match(/barcode-number[^>]*>(\d+)/);
+        const barcodeNumber = barcodeMatch ? barcodeMatch[1] : Math.floor(10000000 + Math.random() * 90000000).toString();
+        console.log('🖨️ Print: Extracted barcode number:', barcodeNumber);
+        
+        // If barcode is missing from content, add it
+        let finalContent = slipContent;
+        if (!slipContent.includes('barcode-container')) {
+          console.log('🖨️ Print: Barcode missing from content, adding it...');
+          const barcodeHTML = `
+      <div class="barcode-container" style="text-align: center; margin: 20px 0; padding: 15px; background: white; border: 2px solid #000; display: block; visibility: visible;">
+        <div class="css-barcode" style="display: flex; flex-direction: row; justify-content: center; align-items: flex-end; height: 60px; width: 100%; margin: 15px auto; background: white; border: 2px solid #000; padding: 10px; box-sizing: border-box; visibility: visible; overflow: visible;">
+          ${betTracker.generateCSSBarcode(barcodeNumber)}
+        </div>
+        <div class="barcode-number" style="display: block; visibility: visible; color: #000; font-size: 16px; font-weight: bold; margin-top: 10px; letter-spacing: 3px; font-family: 'Courier New', monospace;">${barcodeNumber}</div>
+      </div>`;
+          
+          // Insert barcode before footer
+          if (slipContent.includes('</div>') && slipContent.includes('footer')) {
+            finalContent = slipContent.replace(/(<div class="footer")/, barcodeHTML + '\n      $1');
+          } else {
+            finalContent = slipContent + barcodeHTML;
+          }
+          console.log('🖨️ Print: Barcode added to content');
+        }
 
         // Write the content to the iframe
         const doc = iframe.contentDocument || iframe.contentWindow.document;
+        doc.open();
         doc.write(`
+          <!DOCTYPE html>
           <html>
           <head>
             <title>Roulette Betting Slip</title>
+            <meta charset="UTF-8">
             <style>
+              * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+              }
               body {
                 font-family: 'Courier New', monospace;
                 padding: 20px;
@@ -4378,10 +4414,22 @@ const betTracker = {
               .barcode-container {
                 text-align: center;
                 margin: 20px 0;
+                padding: 15px;
+                background: white;
+                border: 2px solid #000;
+                display: block;
+                visibility: visible;
+                page-break-inside: avoid;
               }
               .barcode-number {
-                font-size: 12px;
-                margin-top: 5px;
+                font-size: 16px;
+                font-weight: bold;
+                margin-top: 10px;
+                color: #000;
+                letter-spacing: 3px;
+                font-family: 'Courier New', monospace;
+                display: block;
+                visibility: visible;
               }
               .footer {
                 text-align: center;
@@ -4391,40 +4439,153 @@ const betTracker = {
                 padding-top: 10px;
               }
               .css-barcode {
-                display: flex;
+                display: flex !important;
+                flex-direction: row !important;
                 justify-content: center;
-                height: 40px;
-                width: 95%;
-                margin: 10px auto;
+                align-items: flex-end;
+                height: 60px;
+                width: 100%;
+                max-width: 100%;
+                margin: 15px auto;
+                background: white;
+                border: 2px solid #000;
+                padding: 10px;
+                box-sizing: border-box;
+                visibility: visible;
+                overflow: visible;
               }
               .bar {
-                height: 100%;
-                width: 2px;
-                display: inline-block;
-                background: black;
-                margin-right: 1px;
+                display: inline-block !important;
+                background: #000000 !important;
+                margin-right: 2px;
+                vertical-align: bottom;
+                box-sizing: border-box;
+                visibility: visible;
+                border: 1px solid #000;
+                min-width: 2px;
               }
               .bar.thin {
-                width: 1px;
+                width: 3px !important;
+                min-width: 3px !important;
+                height: 32px !important;
+                max-height: 32px !important;
+                background: #000000 !important;
+                border: 1px solid #000 !important;
               }
               .bar.medium {
-                width: 2px;
+                width: 4px !important;
+                min-width: 4px !important;
+                height: 36px !important;
+                max-height: 36px !important;
+                background: #000000 !important;
+                border: 1px solid #000 !important;
               }
               .bar.thick {
-                width: 3px;
+                width: 6px !important;
+                min-width: 6px !important;
+                height: 40px !important;
+                max-height: 40px !important;
+                background: #000000 !important;
+                border: 1px solid #000 !important;
+              }
+              @media print {
+                .barcode-container {
+                  display: block !important;
+                  visibility: visible !important;
+                  -webkit-print-color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+                  color-adjust: exact !important;
+                }
+                .css-barcode {
+                  display: flex !important;
+                  visibility: visible !important;
+                  -webkit-print-color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+                  color-adjust: exact !important;
+                }
+                .bar {
+                  display: inline-block !important;
+                  visibility: visible !important;
+                  background: #000000 !important;
+                  -webkit-print-color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+                  color-adjust: exact !important;
+                }
               }
             </style>
           </head>
           <body>
-            ${slipContent}
+            ${finalContent}
           </body>
           </html>
         `);
         doc.close();
 
-        // Print the iframe content
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
+        // Wait for iframe to load, then ensure barcode is visible before printing
+        iframe.onload = function() {
+          console.log('🖨️ Print iframe loaded, ensuring barcode visibility...');
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+          const barcodeContainer = iframeDoc.querySelector('.barcode-container');
+          const cssBarcode = iframeDoc.querySelector('.css-barcode');
+          const bars = iframeDoc.querySelectorAll('.bar');
+          
+          console.log('🖨️ Barcode container found:', !!barcodeContainer);
+          console.log('🖨️ CSS barcode found:', !!cssBarcode);
+          console.log('🖨️ Number of bars found:', bars.length);
+          
+          // Force barcode visibility with inline styles
+          if (barcodeContainer) {
+            barcodeContainer.style.display = 'block';
+            barcodeContainer.style.visibility = 'visible';
+            barcodeContainer.style.opacity = '1';
+            barcodeContainer.style.background = 'white';
+            barcodeContainer.style.border = '2px solid #000';
+          }
+          if (cssBarcode) {
+            cssBarcode.style.display = 'flex';
+            cssBarcode.style.visibility = 'visible';
+            cssBarcode.style.opacity = '1';
+            cssBarcode.style.background = 'white';
+            cssBarcode.style.border = '2px solid #000';
+            cssBarcode.style.height = '60px';
+          }
+          bars.forEach(bar => {
+            bar.style.display = 'inline-block';
+            bar.style.visibility = 'visible';
+            bar.style.background = '#000000';
+            bar.style.opacity = '1';
+            bar.style.border = '1px solid #000';
+            if (bar.classList.contains('thin')) {
+              bar.style.width = '3px';
+              bar.style.height = '40px';
+            } else if (bar.classList.contains('medium')) {
+              bar.style.width = '4px';
+              bar.style.height = '50px';
+            } else if (bar.classList.contains('thick')) {
+              bar.style.width = '6px';
+              bar.style.height = '55px';
+            }
+          });
+          
+          console.log('🖨️ Barcode visibility forced for print');
+          
+          // Small delay to ensure styles are applied, then print
+          setTimeout(() => {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+          }, 100);
+        };
+        
+        // If onload doesn't fire (already loaded), trigger print immediately
+        if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
+          iframe.onload();
+        } else {
+          // Print the iframe content after a short delay
+          setTimeout(() => {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+          }, 500);
+        }
 
         // Remove the iframe after printing
         setTimeout(() => {
@@ -4505,19 +4666,290 @@ const betTracker = {
 
     // Show the modal
     document.querySelector('.print-slip-modal').classList.add('visible');
+    
+    // Auto-print after a short delay (similar to cashout receipt)
+    setTimeout(() => {
+      this.autoPrintBettingSlip(barcodeNumber);
+    }, 800);
+  },
+  
+  // Auto-print function for betting slip (similar to cashout receipt)
+  autoPrintBettingSlip: function(barcodeNumber) {
+    // Prevent multiple print calls
+    if (this.isPrinting) {
+      console.log('Print already in progress, skipping...');
+      return;
+    }
+    
+    this.isPrinting = true;
+    const slipContent = document.querySelector('.print-slip-content').innerHTML;
+    
+    // Ensure barcode is in the content
+    let finalContent = slipContent;
+    if (!slipContent.includes('barcode-container')) {
+      console.log('🖨️ Auto-Print: Barcode missing from content, adding it...');
+      const barcodeHTML = `
+      <div class="barcode-container" style="text-align: center; margin: 20px 0; padding: 15px; background: white; border: 2px solid #000; display: block; visibility: visible;">
+        <div class="css-barcode" style="display: flex; flex-direction: row; justify-content: center; align-items: flex-end; height: 60px; width: 100%; margin: 15px auto; background: white; border: 2px solid #000; padding: 10px; box-sizing: border-box; visibility: visible; overflow: visible;">
+          ${this.generateCSSBarcode(barcodeNumber)}
+        </div>
+        <div class="barcode-number" style="display: block; visibility: visible; color: #000; font-size: 16px; font-weight: bold; margin-top: 10px; letter-spacing: 3px; font-family: 'Courier New', monospace;">${barcodeNumber}</div>
+      </div>`;
+      
+      // Insert barcode before footer
+      if (slipContent.includes('</div>') && slipContent.includes('footer')) {
+        finalContent = slipContent.replace(/(<div class="footer")/, barcodeHTML + '\n      $1');
+      } else {
+        finalContent = slipContent + barcodeHTML;
+      }
+    }
+
+    // Create a hidden iframe for printing
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.name = 'betting-slip-print-frame';
+    document.body.appendChild(iframe);
+
+    let hasPrinted = false;
+    let printTimeoutId = null;
+    
+    const doPrint = () => {
+      if (hasPrinted) {
+        console.log('Print already executed, skipping duplicate call');
+        return;
+      }
+      hasPrinted = true;
+      
+      // Clear any pending timeout
+      if (printTimeoutId) {
+        clearTimeout(printTimeoutId);
+        printTimeoutId = null;
+      }
+      
+      printTimeoutId = setTimeout(() => {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+          
+          // Remove iframe after print dialog
+          setTimeout(() => {
+            if (iframe.parentNode) {
+              document.body.removeChild(iframe);
+            }
+            this.isPrinting = false;
+            hasPrinted = false; // Reset for next print
+            
+            // Close the modal after printing
+            setTimeout(() => {
+              const modal = document.querySelector('.print-slip-modal');
+              if (modal) {
+                modal.classList.remove('visible');
+              }
+            }, 1000);
+          }, 1000);
+        } else {
+          // If iframe not ready, reset flags
+          this.isPrinting = false;
+          hasPrinted = false;
+        }
+      }, 300);
+    };
+
+    // Write the content to the iframe
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open();
+    doc.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Roulette Betting Slip</title>
+        <meta charset="UTF-8">
+        <style>
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+          @media print {
+            @page {
+              size: 80mm auto;
+              margin: 0;
+            }
+            body {
+              margin: 0;
+              padding: 10px;
+            }
+          }
+          body {
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            max-width: 350px;
+            margin: 0 auto;
+            background-color: white;
+            color: black;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px dotted #000;
+            padding-bottom: 10px;
+          }
+          .header h1 {
+            margin: 0;
+            font-size: 24px;
+          }
+          .header p {
+            margin: 5px 0;
+            font-size: 14px;
+          }
+          .bet-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-bottom: 1px dotted #ccc;
+          }
+          .bet-type {
+            font-weight: bold;
+            margin-bottom: 5px;
+          }
+          .bet-details {
+            display: flex;
+            justify-content: space-between;
+          }
+          .summary {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 2px dotted #000;
+            font-weight: bold;
+          }
+          .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+          }
+          .barcode-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border: 2px solid #000;
+            display: block !important;
+            visibility: visible !important;
+            page-break-inside: avoid;
+          }
+          .barcode-number {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #000;
+            letter-spacing: 3px;
+            font-family: 'Courier New', monospace;
+            display: block !important;
+            visibility: visible !important;
+          }
+          .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            border-top: 2px dotted #000;
+            padding-top: 10px;
+          }
+          .css-barcode {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center;
+            align-items: flex-end;
+            height: 60px;
+            width: 100%;
+            max-width: 100%;
+            margin: 15px auto;
+            background: white;
+            border: 2px solid #000;
+            padding: 10px;
+            box-sizing: border-box;
+            visibility: visible !important;
+            overflow: visible;
+          }
+          .bar {
+            display: inline-block !important;
+            visibility: visible !important;
+            background: #000000 !important;
+            height: 100%;
+            margin-right: 1px;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+          .bar.thin {
+            width: 3px;
+            height: 40px;
+          }
+          .bar.medium {
+            width: 4px;
+            height: 50px;
+          }
+          .bar.thick {
+            width: 6px;
+            height: 55px;
+          }
+        </style>
+      </head>
+      <body>
+        ${finalContent}
+      </body>
+      </html>
+    `);
+    doc.close();
+
+    // Wait for iframe to load, then print (only once)
+    let fallbackTimeoutId = null;
+    
+    iframe.onload = () => {
+      // Clear fallback timeout since onload fired
+      if (fallbackTimeoutId) {
+        clearTimeout(fallbackTimeoutId);
+        fallbackTimeoutId = null;
+      }
+      
+      if (!hasPrinted) {
+        doPrint();
+      }
+    };
+    
+    // Fallback if onload doesn't fire (but only if we haven't printed yet)
+    fallbackTimeoutId = setTimeout(() => {
+      // Only print if onload didn't fire and we haven't printed yet
+      if (!hasPrinted && iframe.contentWindow) {
+        console.log('Using fallback print (onload did not fire)');
+        doPrint();
+      } else if (hasPrinted) {
+        // Clean up iframe if we already printed via onload
+        console.log('Already printed via onload, cleaning up');
+        setTimeout(() => {
+          if (iframe.parentNode) {
+            document.body.removeChild(iframe);
+          }
+          this.isPrinting = false;
+        }, 1000);
+      }
+    }, 1000);
   },
 
   // Helper function to generate a CSS-based barcode
   generateCSSBarcode: function(number) {
     let barcodeHTML = '';
+    if (!number || number.length === 0) {
+      number = Math.floor(10000000 + Math.random() * 90000000).toString();
+    }
     for (let i = 0; i < number.length; i++) {
       const digit = parseInt(number[i]);
+      if (isNaN(digit)) continue;
       // Create different bar widths based on the digit
       for (let j = 0; j < 3; j++) {
         const thickness = (digit + j) % 3 === 0 ? 'thick' : ((digit + j) % 2 === 0 ? 'medium' : 'thin');
-        barcodeHTML += `<div class="bar ${thickness}"></div>`;
+        barcodeHTML += `<div class="bar ${thickness}" style="display: inline-block; background: #000; height: 100%;"></div>`;
       }
     }
+    console.log('🎫 Generated barcode HTML for number:', number, 'Bars:', barcodeHTML.split('</div>').length - 1);
     return barcodeHTML;
   },
 
@@ -5570,14 +6002,54 @@ betTracker.printBettingSlip = function() {
         document.body.appendChild(iframe);
 
         const slipContent = document.querySelector('.print-slip-content').innerHTML;
+        
+        // Debug: Log the content to verify barcode is included
+        console.log('🖨️ Print (2nd location): Slip content length:', slipContent.length);
+        console.log('🖨️ Print (2nd location): Contains barcode-container?', slipContent.includes('barcode-container'));
+        console.log('🖨️ Print (2nd location): Contains css-barcode?', slipContent.includes('css-barcode'));
+        console.log('🖨️ Print (2nd location): Contains bar class?', slipContent.includes('class="bar'));
+        
+        // Extract barcode number if it exists in the content
+        const barcodeMatch2 = slipContent.match(/barcode-number[^>]*>(\d+)/);
+        const barcodeNumber2 = barcodeMatch2 ? barcodeMatch2[1] : (this.pendingSlipData && this.pendingSlipData.barcodeNumber) ? this.pendingSlipData.barcodeNumber : Math.floor(10000000 + Math.random() * 90000000).toString();
+        console.log('🖨️ Print (2nd location): Extracted barcode number:', barcodeNumber2);
+        
+        // If barcode is missing from content, add it
+        let finalContent2 = slipContent;
+        if (!slipContent.includes('barcode-container')) {
+          console.log('🖨️ Print (2nd location): Barcode missing from content, adding it...');
+          const barcodeHTML2 = `
+      <div class="barcode-container" style="text-align: center; margin: 20px 0; padding: 15px; background: white; border: 2px solid #000; display: block; visibility: visible;">
+        <div class="css-barcode" style="display: flex; flex-direction: row; justify-content: center; align-items: flex-end; height: 60px; width: 100%; margin: 15px auto; background: white; border: 2px solid #000; padding: 10px; box-sizing: border-box; visibility: visible; overflow: visible;">
+          ${betTracker.generateCSSBarcode(barcodeNumber2)}
+        </div>
+        <div class="barcode-number" style="display: block; visibility: visible; color: #000; font-size: 16px; font-weight: bold; margin-top: 10px; letter-spacing: 3px; font-family: 'Courier New', monospace;">${barcodeNumber2}</div>
+      </div>`;
+          
+          // Insert barcode before footer
+          if (slipContent.includes('</div>') && slipContent.includes('footer')) {
+            finalContent2 = slipContent.replace(/(<div class="footer")/, barcodeHTML2 + '\n      $1');
+          } else {
+            finalContent2 = slipContent + barcodeHTML2;
+          }
+          console.log('🖨️ Print (2nd location): Barcode added to content');
+        }
 
         // Write the content to the iframe
         const doc = iframe.contentDocument || iframe.contentWindow.document;
-      doc.write(`
-        <html>
-        <head>
-          <title>Roulette Betting Slip</title>
-          <style>
+        doc.open();
+        doc.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Roulette Betting Slip</title>
+            <meta charset="UTF-8">
+            <style>
+              * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+              }
             body {
               font-family: 'Courier New', monospace;
               padding: 20px;
@@ -5627,10 +6099,22 @@ betTracker.printBettingSlip = function() {
             .barcode-container {
               text-align: center;
               margin: 20px 0;
+              padding: 15px;
+              background: white;
+              border: 2px solid #000;
+              display: block;
+              visibility: visible;
+              page-break-inside: avoid;
             }
             .barcode-number {
-              font-size: 12px;
-              margin-top: 5px;
+              font-size: 16px;
+              font-weight: bold;
+              margin-top: 10px;
+              color: #000;
+              letter-spacing: 3px;
+              font-family: 'Courier New', monospace;
+              display: block;
+              visibility: visible;
             }
             .footer {
               text-align: center;
@@ -5640,40 +6124,154 @@ betTracker.printBettingSlip = function() {
               padding-top: 10px;
             }
             .css-barcode {
-              display: flex;
+              display: flex !important;
+              flex-direction: row !important;
               justify-content: center;
-              height: 40px;
-              width: 95%;
-              margin: 10px auto;
+              align-items: flex-end;
+              height: 50px !important;
+              min-height: 50px !important;
+              width: 100%;
+              max-width: 100%;
+              margin: 15px auto;
+              background: white;
+              border: 2px solid #000;
+              padding: 5px 10px;
+              box-sizing: border-box;
+              visibility: visible;
+              overflow: visible;
             }
             .bar {
-              height: 100%;
-              width: 2px;
-              display: inline-block;
-              background: black;
-              margin-right: 1px;
+              display: inline-block !important;
+              background: #000000 !important;
+              margin-right: 2px;
+              vertical-align: bottom;
+              box-sizing: border-box;
+              visibility: visible;
+              border: 1px solid #000;
+              min-width: 2px;
             }
             .bar.thin {
-              width: 1px;
+              width: 3px !important;
+              min-width: 3px !important;
+              height: 32px !important;
+              max-height: 32px !important;
+              background: #000000 !important;
+              border: 1px solid #000 !important;
             }
             .bar.medium {
-              width: 2px;
+              width: 4px !important;
+              min-width: 4px !important;
+              height: 36px !important;
+              max-height: 36px !important;
+              background: #000000 !important;
+              border: 1px solid #000 !important;
             }
             .bar.thick {
-              width: 3px;
+              width: 6px !important;
+              min-width: 6px !important;
+              height: 40px !important;
+              max-height: 40px !important;
+              background: #000000 !important;
+              border: 1px solid #000 !important;
+            }
+            @media print {
+              .barcode-container {
+                display: block !important;
+                visibility: visible !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+              }
+              .css-barcode {
+                display: flex !important;
+                visibility: visible !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+              }
+              .bar {
+                display: inline-block !important;
+                visibility: visible !important;
+                background: #000000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+              }
             }
           </style>
         </head>
         <body>
-          ${slipContent}
+          ${finalContent2}
         </body>
         </html>
       `);
       doc.close();
 
-      // Print the iframe content
-      iframe.contentWindow.focus();
-      iframe.contentWindow.print();
+      // Wait for iframe to load, then ensure barcode is visible before printing
+      iframe.onload = function() {
+        console.log('🖨️ Print iframe (2nd) loaded, ensuring barcode visibility...');
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        const barcodeContainer = iframeDoc.querySelector('.barcode-container');
+        const cssBarcode = iframeDoc.querySelector('.css-barcode');
+        const bars = iframeDoc.querySelectorAll('.bar');
+        
+        console.log('🖨️ Barcode container found:', !!barcodeContainer);
+        console.log('🖨️ CSS barcode found:', !!cssBarcode);
+        console.log('🖨️ Number of bars found:', bars.length);
+        
+        // Force barcode visibility with inline styles
+        if (barcodeContainer) {
+          barcodeContainer.style.display = 'block';
+          barcodeContainer.style.visibility = 'visible';
+          barcodeContainer.style.opacity = '1';
+          barcodeContainer.style.background = 'white';
+          barcodeContainer.style.border = '2px solid #000';
+        }
+        if (cssBarcode) {
+          cssBarcode.style.display = 'flex';
+          cssBarcode.style.visibility = 'visible';
+          cssBarcode.style.opacity = '1';
+          cssBarcode.style.background = 'white';
+          cssBarcode.style.border = '2px solid #000';
+          cssBarcode.style.height = '60px';
+        }
+        bars.forEach(bar => {
+          bar.style.display = 'inline-block';
+          bar.style.visibility = 'visible';
+          bar.style.background = '#000000';
+          bar.style.opacity = '1';
+          bar.style.border = '1px solid #000';
+          if (bar.classList.contains('thin')) {
+            bar.style.width = '3px';
+            bar.style.height = '40px';
+          } else if (bar.classList.contains('medium')) {
+            bar.style.width = '4px';
+            bar.style.height = '50px';
+          } else if (bar.classList.contains('thick')) {
+            bar.style.width = '6px';
+            bar.style.height = '55px';
+          }
+        });
+        
+        console.log('🖨️ Barcode visibility forced for print');
+        
+        // Small delay to ensure styles are applied, then print
+        setTimeout(() => {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+        }, 100);
+      };
+      
+      // If onload doesn't fire (already loaded), trigger print immediately
+      if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
+        iframe.onload();
+      } else {
+        // Print the iframe content after a short delay
+        setTimeout(() => {
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+        }, 500);
+      }
 
       // Remove the iframe after printing
       setTimeout(() => {
@@ -6519,7 +7117,7 @@ function saveBettingSlipToDatabase(barcodeNumber, bets, totalStakes, potentialRe
 // Timer variables
 let countdownEndTime = 0;
 let countdownInterval = null;
-const countdownDisplay = document.getElementById('countdown-timer');
+const countdownDisplay = document.getElementById('countdown-timer'); // May be null - timer is created by real-time-countdown-timer.js
 
 // Function to start the countdown
 function startCountdown() {
@@ -6568,6 +7166,11 @@ function startCountdown() {
 
 // Function to update the countdown display
 function updateCountdownDisplay() {
+  // Check if element exists - timer is handled by real-time-countdown-timer.js
+  if (!countdownDisplay) {
+    return; // Exit early if element doesn't exist
+  }
+  
   // Calculate remaining time
   const now = Date.now();
   const remainingTime = Math.max(0, countdownEndTime - now);
@@ -6632,33 +7235,8 @@ function refreshPageOnTimerEnd() {
   }
 }
 
-// Function to update the countdown display
-function updateCountdownDisplay() {
-  // Calculate remaining time
-  const now = Date.now();
-  const remainingTime = Math.max(0, countdownEndTime - now);
-
-  // Convert to minutes and seconds
-  const minutes = Math.floor(remainingTime / 60000);
-  const seconds = Math.floor((remainingTime % 60000) / 1000);
-
-  // Update display
-  countdownDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-  // Add warning class if less than 10 seconds
-  if (remainingTime < 10000) {
-    countdownDisplay.classList.add('timer-warning');
-  } else {
-    countdownDisplay.classList.remove('timer-warning');
-  }
-
-  // If time is up, clear interval and refresh the page
-  if (remainingTime <= 0) {
-    clearInterval(countdownInterval);
-    refreshPageOnTimerEnd();
-    return; // Return early since we're refreshing the page
-  }
-}
+// DUPLICATE FUNCTION - REMOVED (handled above)
+// The timer is now handled by real-time-countdown-timer.js
 
 // Handle page visibility changes
 document.addEventListener('visibilitychange', () => {
@@ -6825,10 +7403,6 @@ function saveRollHistoryToServer() {
     const lastDraw = $('#last-draw-number').text() || '#0';
     const nextDraw = $('#next-draw-number').text() || '#1';
 
-    // Extract draw numbers (remove # if present)
-    const currentDrawNumber = parseInt(lastDraw.replace('#', '')) || 0;
-    const nextDrawNumber = parseInt(nextDraw.replace('#', '')) || 1;
-
     // Current countdown time - get from timer if available
     let countdownTime = 120;
     const timerEl = document.querySelector('.timer-display');
@@ -6851,59 +7425,7 @@ function saveRollHistoryToServer() {
 
     console.log('Saving game state to server:', gameState);
 
-    // Save to Firebase if available
-    if (window.FirebaseService && window.FirebaseDrawManager) {
-      try {
-        // Get the latest winning number (first in the array)
-        const latestWinningNumber = rolledNumbersArray.length > 0 ? rolledNumbersArray[0] : null;
-        const latestWinningColor = rolledNumbersColorArray.length > 0 ? rolledNumbersColorArray[0] : null;
-
-        if (latestWinningNumber !== null && currentDrawNumber > 0) {
-          console.log('🔥 Saving draw result to Firebase:', {
-            drawNumber: currentDrawNumber,
-            winningNumber: latestWinningNumber,
-            winningColor: latestWinningColor
-          });
-
-          // Save draw result to Firebase
-          FirebaseDrawManager.saveDrawResult({
-            drawNumber: currentDrawNumber,
-            winningNumber: latestWinningNumber,
-            winningColor: latestWinningColor,
-            isForced: false,
-            source: 'index.php'
-          }).then(result => {
-            console.log('✅ Draw result saved to Firebase:', result);
-          }).catch(error => {
-            console.error('❌ Error saving to Firebase:', error);
-          });
-
-          // Also update draw numbers
-          FirebaseDrawManager.updateDrawNumbers(currentDrawNumber, nextDrawNumber).catch(error => {
-            console.error('❌ Error updating draw numbers in Firebase:', error);
-          });
-        }
-
-        // Update game state in Firebase
-        const firebaseGameState = {
-          rollHistory: rolledNumbersArray.slice(0, 5),
-          rollColors: rolledNumbersColorArray.slice(0, 5),
-          drawNumber: currentDrawNumber,
-          nextDrawNumber: nextDrawNumber,
-          lastDrawFormatted: lastDraw,
-          nextDrawFormatted: nextDraw,
-          updatedAt: new Date().toISOString()
-        };
-
-        FirebaseService.GameState.updateCurrent(firebaseGameState).catch(error => {
-          console.error('❌ Error updating game state in Firebase:', error);
-        });
-      } catch (error) {
-        console.error('❌ Error in Firebase save:', error);
-      }
-    }
-
-    // Send data to server (keep for backward compatibility)
+    // Send data to server
     fetch('/slipp/save_state.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -6918,83 +7440,6 @@ function saveRollHistoryToServer() {
     });
   } catch (error) {
     console.error('Error in saveRollHistoryToServer:', error);
-  }
-}
-
-/**
- * Save draw result to Firebase when a spin completes
- * This ensures draw data is saved even if tvdisplay is closed
- */
-async function saveDrawResultToFirebase(winningNumber, winningColor) {
-  if (!window.FirebaseDrawManager || !window.FirebaseService) {
-    console.warn('Firebase not available, skipping Firebase save');
-    return;
-  }
-
-  try {
-    // Get current draw number from various sources
-    const lastDrawElement = document.getElementById('last-draw-number');
-    const nextDrawElement = document.getElementById('next-draw-number');
-    
-    let currentDrawNumber = null;
-    let nextDrawNumber = null;
-
-    // Try to get from DOM elements
-    if (lastDrawElement) {
-      const lastDrawText = lastDrawElement.textContent || '';
-      currentDrawNumber = parseInt(lastDrawText.replace('#', '')) || null;
-    }
-
-    if (nextDrawElement) {
-      const nextDrawText = nextDrawElement.textContent || '';
-      nextDrawNumber = parseInt(nextDrawText.replace('#', '')) || null;
-    }
-
-    // If we don't have draw numbers from DOM, try to get from Firebase or DrawSync
-    if (!currentDrawNumber && window.DrawSync) {
-      currentDrawNumber = DrawSync.getCurrentDraw();
-      nextDrawNumber = DrawSync.getNextDraw();
-    }
-
-    // If still no draw number, use the latest from rolledNumbersArray context
-    // The winning number just completed the "next" draw, so that becomes the current
-    if (currentDrawNumber && nextDrawNumber) {
-      // The spin just completed, so the "next" draw is now the completed one
-      const completedDrawNumber = nextDrawNumber - 1 > 0 ? nextDrawNumber - 1 : currentDrawNumber;
-      
-      console.log('🔥 Saving completed draw to Firebase:', {
-        drawNumber: completedDrawNumber,
-        winningNumber: winningNumber,
-        winningColor: winningColor,
-        currentDraw: currentDrawNumber,
-        nextDraw: nextDrawNumber
-      });
-
-      // Save the completed draw result
-      const result = await FirebaseDrawManager.saveDrawResult({
-        drawNumber: completedDrawNumber,
-        winningNumber: winningNumber,
-        winningColor: winningColor,
-        isForced: false,
-        source: 'index.php-spin'
-      });
-
-      if (result.status === 'success') {
-        console.log('✅ Draw result saved to Firebase successfully');
-        
-        // Update draw numbers - the completed draw becomes current, next becomes completed+1
-        const newCurrent = completedDrawNumber;
-        const newNext = completedDrawNumber + 1;
-        await FirebaseDrawManager.updateDrawNumbers(newCurrent, newNext);
-        console.log('✅ Draw numbers updated in Firebase:', { current: newCurrent, next: newNext });
-      } else {
-        console.error('❌ Failed to save draw result:', result.message);
-      }
-    } else {
-      console.warn('⚠️ Cannot save to Firebase: Draw numbers not available yet');
-    }
-  } catch (error) {
-    console.error('❌ Error saving draw result to Firebase:', error);
   }
 }
 

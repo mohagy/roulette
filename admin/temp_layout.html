@@ -1,0 +1,465 @@
+<div class="content-wrapper">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Bet Distribution & Draw Control</h1>
+        <div class="breadcrumb">
+            <div class="breadcrumb-item"><a href="index.php">Admin</a></div>
+            <div class="breadcrumb-item active">Bet Distribution & Draw Control</div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mb-4">
+        <button id="refreshButton" class="btn btn-primary">
+            <i class="fas fa-sync-alt"></i> Refresh Data
+        </button>
+        <button id="toggleDrawControlButton" class="btn btn-info ms-2">
+            <i class="fas fa-sliders-h"></i> <span id="toggleDrawControlText">Show Draw Control</span>
+        </button>
+    </div>
+
+    <!-- Tab Container -->
+    <div class="tab-container">
+        <button class="view-tab active" data-view="chart">Chart View</button>
+        <button class="view-tab" data-view="grid">Grid View</button>
+    </div>
+
+    <div class="row">
+        <!-- LEFT COLUMN: Main Content -->
+        <div class="col-lg-8">
+            <!-- Bet Distribution Container -->
+            <div class="bet-distribution-container">
+                <div class="auto-refresh-status mb-3">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <span>Auto-refreshing data for 10 upcoming draws every 15 seconds</span>
+                </div>
+
+                <!-- Draw Selection Tabs -->
+                <div class="draw-selection-tabs mb-3">
+                    <div class="card shadow">
+                        <div class="card-body p-2">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                <div class="draw-tabs-container flex-grow-1">
+                                    <div class="draw-tabs" id="drawTabs">
+                                        <!-- Draw tabs will be populated here -->
+                                        <div class="draw-tab loading">
+                                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                                            <span>Loading...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="draw-navigation ms-3">
+                                    <button class="btn btn-sm btn-outline-secondary" id="prevDraw" disabled>
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="nextDraw" disabled>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="draw-info-header">
+                    <h2>Draw: <span id="upcomingDrawNumber">Loading...</span> <span id="drawStatus"
+                            class="badge bg-primary">Current</span></h2>
+                    <div class="legend-container">
+                        <div class="legend-item">
+                            <div class="legend-color has-bets-legend"></div>
+                            <span>Has Bets</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color no-bets-legend"></div>
+                            <span>No Bets</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-container active" id="chartView">
+                    <div id="chartContainer" class="chart-container">
+                        <div class="loading-indicator">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p>Loading bet distribution data...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-container" id="gridView">
+                    <div id="betInfoGrid" class="bet-info-grid">
+                        <!-- Bet information for each number will be populated here -->
+                        <div class="loading-indicator">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p>Loading bet distribution data...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bet Type Distribution -->
+            <div class="bet-distribution-container">
+                <h3>Bet Type Distribution</h3>
+                <div id="betTypeChartContainer" class="chart-container">
+                    <div class="loading-indicator">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p>Loading bet type distribution...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Draw Control Section (Hidden by default) -->
+            <div id="drawControlSection" class="draw-control-section" style="display: none;">
+                <!-- Mobile View Placeholder - Keeping structure for JS compatibility -->
+                <div class="d-block d-md-none">
+                    <!-- Mobile content omitted for brevity in this view, but structure preserved -->
+                </div>
+
+                <div class="d-none d-md-block">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card shadow mb-4">
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Winning Number Control</h6>
+                                    <button class="btn btn-primary btn-sm" id="toggleAutoMode">
+                                        <i class="fas fa-robot"></i> <span id="modeToggleText">Auto Mode</span>
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="text-center mb-3">
+                                        <div class="number-circle mx-auto" id="winningNumberDisplay">-</div>
+                                    </div>
+                                    <div id="winningNumberSource" class="text-center">Source: -</div>
+                                    <div id="winningNumberReason" class="text-center mb-3">Reason: -</div>
+
+                                    <div class="form-group">
+                                        <label for="manualWinningNumber">Set Manual Winning Number:</label>
+                                        <input type="number" id="manualWinningNumber" class="form-control" value="0"
+                                            min="0" max="36">
+                                    </div>
+                                    <button class="btn btn-primary btn-sm mt-2" id="setManualWinningNumber">
+                                        <i class="fas fa-hand-pointer"></i> Set Winning Number
+                                    </button>
+
+                                    <!-- Recommended Numbers Section -->
+                                    <div class="recommended-numbers-container mt-4">
+                                        <div class="recommended-numbers-header">
+                                            <h6 class="recommended-numbers-title">Recommended Numbers</h6>
+                                            <button class="btn btn-sm btn-outline-primary" id="refreshRecommendations">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </button>
+                                        </div>
+
+                                        <div class="recommended-numbers-tabs">
+                                            <div class="recommended-tab active" data-type="no-bets">No Bets</div>
+                                            <div class="recommended-tab" data-type="lowest-payout">Lowest Payout</div>
+                                            <div class="recommended-tab" data-type="highest-payout">Highest Payout</div>
+                                        </div>
+
+                                        <div id="recommendedNumbersGrid" class="recommended-numbers-grid">
+                                            <div class="no-recommendations">
+                                                <i class="fas fa-info-circle"></i> Loading recommendations...
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Advanced Smart Number Management -->
+                                    <div class="card shadow mt-4" style="border: 2px solid #4e73df;">
+                                        <div class="card-header py-3 bg-primary text-white">
+                                            <h6 class="m-0 font-weight-bold">
+                                                <i class="fas fa-brain"></i> Smart Number Management
+                                                <span class="badge badge-light ml-2">House Profit Optimizer</span>
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <!-- Time-Based Presets -->
+                                            <div class="mb-4">
+                                                <label class="font-weight-bold mb-2">
+                                                    <i class="fas fa-clock"></i> Time-Based Preset:
+                                                </label>
+                                                <select id="timePreset" class="form-control form-control-sm">
+                                                    <option value="auto">Auto (Based on Current Time)</option>
+                                                    <option value="morning">Morning (6AM-12PM) - Lower Numbers</option>
+                                                    <option value="afternoon">Afternoon (12PM-6PM) - Mid Range</option>
+                                                    <option value="evening">Evening (6PM-12AM) - Higher Numbers</option>
+                                                    <option value="night">Night (12AM-6AM) - Random Distribution
+                                                    </option>
+                                                    <option value="custom">Custom Pattern</option>
+                                                </select>
+                                                <small class="text-muted">Time-based patterns appear mathematical but
+                                                    optimize for house profit</small>
+                                            </div>
+
+                                            <!-- Pattern Type -->
+                                            <div class="mb-4">
+                                                <label class="font-weight-bold mb-2">
+                                                    <i class="fas fa-chart-line"></i> Pattern Strategy:
+                                                </label>
+                                                <select id="patternType" class="form-control form-control-sm">
+                                                    <option value="smart">Smart (Pattern + Low Payout)</option>
+                                                    <option value="fibonacci">Fibonacci-like Sequence</option>
+                                                    <option value="color_alternate">Color Alternation</option>
+                                                    <option value="cold_numbers">Cold Numbers (Not Recent)</option>
+                                                    <option value="lowest_payout">Pure Lowest Payout</option>
+                                                </select>
+                                                <small class="text-muted">Creates patterns users think they can
+                                                    predict</small>
+                                            </div>
+
+                                            <!-- Smart Selection Button -->
+                                            <div class="mb-3">
+                                                <button class="btn btn-success btn-block" id="smartSelectNumber">
+                                                    <i class="fas fa-magic"></i> Generate Smart Number
+                                                </button>
+                                                <small class="text-muted d-block mt-1">
+                                                    Analyzes bets, patterns, and time to select optimal number
+                                                </small>
+                                            </div>
+
+                                            <!-- Smart Selection Result -->
+                                            <div id="smartSelectionResult" class="alert alert-info"
+                                                style="display: none;">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong>Selected:</strong>
+                                                        <span class="number-circle-sm" id="smartSelectedNumber">-</span>
+                                                        <span id="smartSelectionReason" class="ml-2"></span>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-primary" id="applySmartSelection">
+                                                        <i class="fas fa-check"></i> Apply
+                                                    </button>
+                                                </div>
+                                                <div class="mt-2">
+                                                    <small>
+                                                        <strong>Pattern Analysis:</strong>
+                                                        <span id="patternAnalysis"></span>
+                                                    </small>
+                                                </div>
+                                                <div class="mt-1">
+                                                    <small>
+                                                        <strong>Payout:</strong>
+                                                        <span id="smartPayout"
+                                                            class="text-success font-weight-bold">$0.00</span>
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Pattern Visualization -->
+                                            <div class="mt-3">
+                                                <label class="font-weight-bold mb-2">
+                                                    <i class="fas fa-chart-bar"></i> Pattern Analysis:
+                                                </label>
+                                                <div id="patternVisualization" class="pattern-chart">
+                                                    <div class="text-center text-muted">
+                                                        <i class="fas fa-chart-line fa-2x mb-2"></i>
+                                                        <p>Click "Generate Smart Number" to see pattern analysis</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Sidebar & Preview -->
+        <div class="col-lg-4">
+            <!-- Live TV Preview -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Live TV Preview</h6>
+                </div>
+                <div class="card-body p-0"
+                    style="height: 240px; overflow: hidden; position: relative; background: #000;">
+                    <iframe src="../tvdisplay/index.html"
+                        style="width: 1920px; height: 1080px; border: 0; transform: scale(0.2); transform-origin: 0 0; position: absolute; top: 0; left: 0;"></iframe>
+                </div>
+            </div>
+
+            <!-- Upcoming Draws Overview -->
+            <div class="upcoming-draws-overview mb-4">
+                <div class="card shadow">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">10 Upcoming Draws Overview</h6>
+                        <button class="btn btn-sm btn-outline-primary" id="refreshAllDraws">
+                            <i class="fas fa-sync-alt"></i> Refresh All
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="upcomingDrawsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Draw #</th>
+                                        <th>Est. Time</th>
+                                        <th>Betting Slips</th>
+                                        <th>Total Stake</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" class="text-center py-3">
+                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <span class="ms-2">Loading upcoming draws...</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Draw Information -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Current Draw Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="h3 mb-0 font-weight-bold text-gray-800" id="currentDrawNumber">-</div>
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Current Draw Number</div>
+
+                    <table class="table table-sm mt-3">
+                        <tr>
+                            <td>Last Draw Time:</td>
+                            <td id="lastDrawTime">-</td>
+                        </tr>
+                        <tr>
+                            <td>Next Draw Time:</td>
+                            <td id="nextDrawTime">-</td>
+                        </tr>
+                        <tr>
+                            <td>Mode:</td>
+                            <td id="currentMode">-</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Draw Timer -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Draw Timer</h6>
+                </div>
+                <div class="card-body p-0">
+                    <!-- 3D Timer Container -->
+                    <div class="timer-3d-container">
+                        <!-- Three.js scene will be rendered here -->
+                        <div id="timer3dScene" class="timer-3d-scene"></div>
+
+                        <!-- Timer display -->
+                        <div id="timer3dDisplay" class="timer-3d-display">00:00</div>
+
+                        <!-- Sync indicator -->
+                        <div id="timerSyncIndicator" class="timer-sync-indicator" style="display: none;">
+                            <i class="fas fa-sync-alt fa-spin"></i>
+                            <span class="sync-text">Synced with real-time</span>
+                        </div>
+
+                        <!-- Next draw time display -->
+                        <div class="next-draw-time"
+                            style="position: absolute; bottom: 50px; left: 0; right: 0; text-align: center; color: white; font-size: 0.9rem; text-shadow: 0 0 5px rgba(0,0,0,0.5);">
+                            Next draw at: <span id="nextDrawTimeDisplay">--:--:--</span>
+                        </div>
+
+                        <!-- Particle container -->
+                        <div id="particles" class="particles"></div>
+
+                        <!-- Timer controls -->
+                        <div class="timer-3d-controls">
+                            <button id="startTimer3d" class="timer-3d-btn start">
+                                <i class="fas fa-play"></i> Start
+                            </button>
+                            <button id="pauseTimer3d" class="timer-3d-btn pause">
+                                <i class="fas fa-pause"></i> Pause
+                            </button>
+                            <button id="resetTimer3d" class="timer-3d-btn reset">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Timer settings -->
+                    <div class="timer-3d-settings">
+                        <label for="timerInterval3d">Draw Interval (seconds):</label>
+                        <input type="number" id="timerInterval3d" value="60" min="10" max="300">
+                        <button id="updateTimerSettings3d">
+                            <i class="fas fa-save"></i> Update Settings
+                        </button>
+                    </div>
+
+                    <!-- Hidden original timer for compatibility -->
+                    <div style="display: none;">
+                        <div id="timerDisplay">00:00</div>
+                        <button id="startTimer"></button>
+                        <button id="pauseTimer"></button>
+                        <button id="resetTimer"></button>
+                        <input id="timerInterval" value="60">
+                        <button id="updateTimerSettings"></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forced Number Checker -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Forced Number Checker</h6>
+                    <button class="btn btn-primary btn-sm" id="checkForcedNumber">
+                        <i class="fas fa-sync-alt"></i> Check Now
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="forced-number-container">
+                        <div class="forced-number-status mb-2" id="forcedNumberStatus">Click to check for forced numbers
+                        </div>
+
+                        <div class="forced-number-display">
+                            <div class="forced-number-badge-container">
+                                <div class="forced-number-badge" id="forcedNumberBadge">?</div>
+                                <div class="forced-number-glow"></div>
+                            </div>
+                            <div class="forced-number-info mt-2">
+                                <div class="forced-number-draw">Draw: <span id="forcedNumberDraw">-</span></div>
+                            </div>
+                        </div>
+
+                        <div class="forced-number-details mt-3">
+                            <div class="forced-number-detail-item">
+                                <i class="fas fa-info-circle"></i>
+                                <span id="forcedNumberMessage">No information available</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Roll History -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Roll History</h6>
+                </div>
+                <div class="card-body">
+                    <div class="roll-history" id="rollHistory">
+                        <!-- Roll history items will be added here -->
+                    </div>
+                    <div class="auto-refresh-status mt-3">
+                        <span>Auto-refreshing data every 15 seconds (Last updated: -)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

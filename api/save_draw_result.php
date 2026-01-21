@@ -7,7 +7,6 @@
 
 // Include database connection
 require_once '../php/db_connect.php';
-require_once '../php/firebase-helper.php';
 
 // Set headers
 header('Content-Type: application/json');
@@ -40,6 +39,20 @@ if ($drawNumber === null || $winningNumber === null || $winningColor === null) {
     exit;
 }
 
+// ⚠️ CRITICAL: Ensure draw number never exceeds 480 (max draws per day)
+// Draw numbers reset daily: 1-480 (3-minute intervals = 480 draws per day)
+if ($drawNumber > 480) {
+    $response['message'] = 'Invalid draw number: Draw numbers must be between 1 and 480';
+    echo json_encode($response);
+    exit;
+}
+
+if ($drawNumber < 1) {
+    $response['message'] = 'Invalid draw number: Draw numbers must be between 1 and 480';
+    echo json_encode($response);
+    exit;
+}
+
 // Validate the winning number
 if ($winningNumber < 0 || $winningNumber > 36) {
     $response['message'] = 'Invalid winning number';
@@ -58,8 +71,40 @@ try {
     // Begin transaction
     $pdo->beginTransaction();
 
+    // ⚠️ CRITICAL: Check for manually forced number in next_draw_winning_number
+    // If a manually forced number exists for this draw, ALWAYS use it (user explicitly set it)
+    // The user's explicit manual setting takes priority over everything
+    $manualForcedStmt = $pdo->prepare("
+        SELECT winning_number, source, reason
+        FROM next_draw_winning_number
+        WHERE draw_number = ? AND source = 'manual'
+        LIMIT 1
+    ");
+    $manualForcedStmt->execute([$drawNumber]);
+    $manualForced = $manualForcedStmt->fetch(PDO::FETCH_ASSOC);
+    
+    // If a manually forced number exists, ALWAYS use it (user explicitly set it)
+    if ($manualForced) {
+        $winningNumber = intval($manualForced['winning_number']);
+        $source = 'manual';
+        $isForced = 1;
+        
+        // Determine color based on the manually forced number
+        if ($winningNumber === 0) {
+            $winningColor = 'green';
+        } else {
+            $redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+            $winningColor = in_array($winningNumber, $redNumbers) ? 'red' : 'black';
+        }
+    }
+
     // Generate a unique draw ID
     $drawId = 'DRAW-' . date('Ymd') . '-' . $drawNumber;
+
+    // Set server timezone
+    date_default_timezone_set('America/Guyana');
+    $now = new DateTime('now', new DateTimeZone('America/Guyana'));
+    $drawTime = $now->format('Y-m-d H:i:s');
 
     // Insert into detailed_draw_results
     $stmt = $pdo->prepare("
@@ -70,15 +115,79 @@ try {
 
     $notes = $isForced ? "Forced number set by {$source}" : "Random number";
     $stmt->execute([$drawId, $drawNumber, $winningNumber, $winningColor, $notes]);
+    
+    // ⏰ CRITICAL: Also insert into analytics_history table (new analytics system)
+    // Check if this draw is from preset_schedule (only if not manually forced)
+    $presetScheduleId = null;
+    $isPreset = 0;
+    $patternType = null;
+    
+    // ⚠️ CRITICAL: Priority: Manual forced > Preset schedule > Random
+    // If a user explicitly set a number manually, ALWAYS save it as 'manual' in analytics_history
+    // The display logic in get_analytics_history.php will handle showing it as preset if it matches
+    if ($manualForced) {
+        // User explicitly set this number manually - always save as 'manual'
+        $analyticsSource = 'manual';
+        $isPreset = 0;
+    } else if ($source === 'preset_schedule') {
+        // Check if this draw matches a preset schedule
+        $presetStmt = $pdo->prepare("
+            SELECT id, pattern_type 
+            FROM preset_schedule 
+            WHERE start_draw_number <= ? AND end_draw_number >= ? AND is_active = 1 
+            ORDER BY created_at DESC 
+            LIMIT 1
+        ");
+        $presetStmt->execute([$drawNumber, $drawNumber]);
+        $preset = $presetStmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($preset) {
+            $presetScheduleId = $preset['id'];
+            $isPreset = 1;
+            $patternType = $preset['pattern_type'];
+            $analyticsSource = 'preset_schedule';
+        } else {
+            $analyticsSource = $isForced ? 'manual' : 'random';
+        }
+    } else {
+        $analyticsSource = $isForced ? 'manual' : 'random';
+    }
+    
+    // Insert or update analytics_history
+    try {
+        $analyticsStmt = $pdo->prepare("
+            INSERT INTO analytics_history 
+            (draw_number, winning_number, winning_color, draw_time, source, preset_schedule_id, is_preset, pattern_type, server_timezone)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'America/Guyana')
+            ON DUPLICATE KEY UPDATE
+                winning_number = VALUES(winning_number),
+                winning_color = VALUES(winning_color),
+                draw_time = VALUES(draw_time),
+                source = VALUES(source),
+                preset_schedule_id = VALUES(preset_schedule_id),
+                is_preset = VALUES(is_preset),
+                pattern_type = VALUES(pattern_type),
+                updated_at = CURRENT_TIMESTAMP
+        ");
+        
+        $analyticsStmt->execute([
+            $drawNumber,
+            $winningNumber,
+            $winningColor,
+            $drawTime,
+            $analyticsSource,
+            $presetScheduleId,
+            $isPreset,
+            $patternType
+        ]);
+    } catch (PDOException $e) {
+        // Log error but don't fail the transaction - analytics_history might not exist yet
+        error_log("Warning: Could not save to analytics_history: " . $e->getMessage());
+    }
 
-    // Insert into game_history
-    $stmt = $pdo->prepare("
-        INSERT INTO game_history
-        (winning_number, winning_color, draw_id)
-        VALUES (?, ?, ?)
-    ");
-
-    $stmt->execute([$winningNumber, $winningColor, $drawId]);
+    // NOTE: Removed redundant writes to game_history and roulette_draw_history
+    // All draw results are now stored only in detailed_draw_results (primary source)
+    // Aggregated analytics are stored in roulette_analytics
 
     // Get the most recent state record
     $stmt = $pdo->prepare("
@@ -90,14 +199,6 @@ try {
     ");
     $stmt->execute();
     $state = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // Insert into roulette_draw_history
-    $stmt = $pdo->prepare("
-        INSERT INTO roulette_draw_history
-        (draw_number, winning_number, winning_color, is_manual)
-        VALUES (?, ?, ?, ?)
-    ");
-    $stmt->execute([$drawNumber, $winningNumber, $winningColor, $isForced ? 1 : 0]);
 
     if ($state) {
         // Extract additional data
@@ -121,12 +222,23 @@ try {
         $rollColors = array_slice($rollColors, 0, 5);
         $newRollColors = implode(',', $rollColors);
 
-        // Insert a new state record
+        // Update or insert state with id=1 (single row pattern)
         $stmt = $pdo->prepare("
             INSERT INTO roulette_state
-            (state_type, draw_number, next_draw_number, countdown_time, end_time,
-             winning_number, next_winning_number, manual_mode, additional_data)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (id, state_type, draw_number, next_draw_number, countdown_time, end_time,
+             winning_number, next_winning_number, manual_mode, additional_data, updated_at)
+            VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            ON DUPLICATE KEY UPDATE
+                state_type = VALUES(state_type),
+                draw_number = VALUES(draw_number),
+                next_draw_number = VALUES(next_draw_number),
+                countdown_time = VALUES(countdown_time),
+                end_time = VALUES(end_time),
+                winning_number = VALUES(winning_number),
+                next_winning_number = VALUES(next_winning_number),
+                manual_mode = VALUES(manual_mode),
+                additional_data = VALUES(additional_data),
+                updated_at = NOW()
         ");
 
         $newAdditionalData = json_encode([
@@ -150,11 +262,19 @@ try {
             $newAdditionalData
         ]);
     } else {
-        // Insert new state
+        // Update or insert new state with id=1 (single row pattern)
         $stmt = $pdo->prepare("
             INSERT INTO roulette_state
-            (state_type, draw_number, next_draw_number, countdown_time, winning_number, additional_data)
-            VALUES (?, ?, ?, ?, ?, ?)
+            (id, state_type, draw_number, next_draw_number, countdown_time, winning_number, additional_data, updated_at)
+            VALUES (1, ?, ?, ?, ?, ?, ?, NOW())
+            ON DUPLICATE KEY UPDATE
+                state_type = VALUES(state_type),
+                draw_number = VALUES(draw_number),
+                next_draw_number = VALUES(next_draw_number),
+                countdown_time = VALUES(countdown_time),
+                winning_number = VALUES(winning_number),
+                additional_data = VALUES(additional_data),
+                updated_at = NOW()
         ");
 
         $initialRollHistory = $winningNumber . ',0,0,0,0';
@@ -234,33 +354,29 @@ try {
         ]);
     }
 
-    // Delete from next_draw_winning_number if it exists
-    $stmt = $pdo->prepare("
-        DELETE FROM next_draw_winning_number
-        WHERE draw_number = ?
-    ");
-
-    $stmt->execute([$drawNumber]);
-
-    // 🔥 SAVE TO FIREBASE FIRST (Primary storage)
+    // ⚠️ CRITICAL: Delete forced number for this draw after it's been completed
+    // This ensures forced numbers are cleared after the draw passes
+    // The system will then use preset schedule numbers for future draws
     try {
-        $firebaseSuccess = firebaseSaveDrawResult($drawNumber, $winningNumber, $winningColor, $isForced, $source);
-        firebaseUpdateAnalytics($winningNumber, $drawNumber);
-        error_log("✅ Draw result saved to Firebase: Draw #{$drawNumber}, Number: {$winningNumber}");
+        $deleteStmt = $pdo->prepare("
+            DELETE FROM next_draw_winning_number
+            WHERE draw_number = ?
+        ");
+        $deleteStmt->execute([$drawNumber]);
         
-        if ($firebaseSuccess) {
-            // If Firebase save succeeds, commit MySQL transaction (for backup only)
-            $pdo->commit();
-        } else {
-            // If Firebase fails, still commit MySQL as fallback
-            $pdo->commit();
-            error_log("⚠️ Firebase save failed, using MySQL as fallback");
-        }
-    } catch (Exception $e) {
-        error_log("❌ Error saving to Firebase: " . $e->getMessage());
-        // Commit MySQL transaction as fallback
-        $pdo->commit();
+        // Also clean up any forced numbers for draws that have already passed
+        // This prevents stale forced numbers from lingering in the database
+        $cleanupStmt = $pdo->prepare("
+            DELETE FROM next_draw_winning_number
+            WHERE draw_number < ?
+        ");
+        $cleanupStmt->execute([$drawNumber]);
+    } catch (PDOException $e) {
+        // Ignore if table doesn't exist or other error
     }
+
+    // Commit transaction
+    $pdo->commit();
 
     // Set success response
     $response['status'] = 'success';
